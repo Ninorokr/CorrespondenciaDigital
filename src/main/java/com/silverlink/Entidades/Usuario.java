@@ -1,5 +1,8 @@
 package com.silverlink.Entidades;
 
+import static com.silverlink.Main.tiposRegCaso;
+import static com.silverlink.Main.usuarios;
+
 public class Usuario {
 
     private short idUsuario;
@@ -22,5 +25,14 @@ public class Usuario {
 
     public String getNomUsuario() {
         return nomUsuario;
+    }
+
+    public static Usuario existeUsuario (String codUsuario) {
+        for (Usuario usuario : usuarios) {
+            if(usuario.getNomUsuario().equals(codUsuario)) {
+                return usuario;
+            }
+        }
+        return null;
     }
 }

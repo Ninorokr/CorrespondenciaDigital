@@ -1,5 +1,7 @@
 package com.silverlink.Entidades;
 
+import static com.silverlink.Main.estadosCaso;
+
 public class EstadoCaso {
 
     private short idEstadoCaso;
@@ -16,5 +18,14 @@ public class EstadoCaso {
 
     public String getNomEstadoCaso() {
         return nomEstadoCaso;
+    }
+
+    public static EstadoCaso existeEstadoCaso(String nomEstadoCaso) {
+        for (EstadoCaso estadoCaso : estadosCaso) {
+            if(estadoCaso.getNomEstadoCaso().equals(nomEstadoCaso)) {
+                return estadoCaso;
+            }
+        }
+        return null;
     }
 }

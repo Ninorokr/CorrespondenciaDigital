@@ -1,5 +1,7 @@
 package com.silverlink.Entidades;
 
+import static com.silverlink.Main.provincias;
+
 public class Provincia {
 
     private short idProvincia;
@@ -16,5 +18,14 @@ public class Provincia {
 
     public String getNomProvincia() {
         return nomProvincia;
+    }
+
+    public static Provincia existeProvincia(String nomProvincia) {
+        for (Provincia provincia : provincias) {
+            if(provincia.getNomProvincia().equals(nomProvincia)) {
+                return provincia;
+            }
+        }
+        return null;
     }
 }

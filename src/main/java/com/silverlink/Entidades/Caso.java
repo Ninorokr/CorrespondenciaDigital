@@ -3,6 +3,10 @@ package com.silverlink.Entidades;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import static com.silverlink.Commander.insertTipoAtencion;
+import static com.silverlink.Commander.insertTipoRegCaso;
+import static com.silverlink.Main.tiposAtencion;
+
 public class Caso {
 
     private TipoAtencion tipoAtencion;
@@ -97,11 +101,39 @@ public class Caso {
         this.tipoAtencion = tipoAtencion;
     }
 
+    public void setTipoAtencion(String nomTipoAtencion) {
+        boolean flag = true;
+        TipoAtencion tipoAtencion = null;
+        while(flag){
+            tipoAtencion = TipoAtencion.existeTipoAtencion(nomTipoAtencion);
+            if(tipoAtencion == null){
+                insertTipoAtencion(nomTipoAtencion);
+            } else {
+                flag = false;
+            }
+        }
+        this.tipoAtencion = tipoAtencion;
+    }
+
     public TipoRegCaso getTipoRegCaso() {
         return tipoRegCaso;
     }
 
     public void setTipoRegCaso(TipoRegCaso tipoRegCaso) {
+        this.tipoRegCaso = tipoRegCaso;
+    }
+
+    public void setTipoRegCaso(String nomtipoRegCaso) {
+        boolean flag = true;
+        TipoRegCaso tipoRegCaso = null;
+        while(flag){
+            tipoRegCaso = TipoRegCaso.existeTipoRegCaso(nomtipoRegCaso);
+            if(tipoRegCaso == null){
+                insertTipoRegCaso(nomtipoRegCaso);
+            } else {
+                flag = false;
+            }
+        }
         this.tipoRegCaso = tipoRegCaso;
     }
 
@@ -119,6 +151,20 @@ public class Caso {
 
     public void setTipoCarta(TipoCarta tipoCarta) {
         this.tipoCarta = tipoCarta;
+    }
+
+    public void setTipoCarta(String nomTipoCarta) {
+        boolean flag = true;
+        TipoCarta tipoCarta = null;
+        while(flag){
+            tipoCarta = TipoCarta.existeTipoCarta(nomTipoCarta);
+            if(tipoCarta == null){
+                insertTipoRegCaso(nomtipoRegCaso);
+            } else {
+                flag = false;
+            }
+        }
+        this.tipoRegCaso = tipoRegCaso;
     }
 
     public int getNroCaso() {

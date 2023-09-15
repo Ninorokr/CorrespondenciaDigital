@@ -1,5 +1,8 @@
 package com.silverlink.Entidades;
 
+import static com.silverlink.Main.tiposCarta;
+import static com.silverlink.Main.tiposRegCaso;
+
 public class TipoRegCaso {
 
     private short idTipoRegCaso;
@@ -16,5 +19,14 @@ public class TipoRegCaso {
 
     public String getNomTipoRegCaso() {
         return nomTipoRegCaso;
+    }
+
+    public static TipoRegCaso existeTipoRegCaso(String nomTipoRegCaso) {
+        for (TipoRegCaso tipoRegCaso : tiposRegCaso) {
+            if(tipoRegCaso.getNomTipoRegCaso().equals(nomTipoRegCaso)) {
+                return tipoRegCaso;
+            }
+        }
+        return null;
     }
 }
