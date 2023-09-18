@@ -1,5 +1,6 @@
 package com.silverlink.Entidades;
 
+import static com.silverlink.Commander.updateCodUsuario;
 import static com.silverlink.Main.tiposRegCaso;
 import static com.silverlink.Main.usuarios;
 
@@ -27,12 +28,45 @@ public class Usuario {
         return nomUsuario;
     }
 
-    public static Usuario existeUsuario (String codUsuario) {
+    public static Usuario existeUsuario (String codUsuario, String nomUsuario) {
         for (Usuario usuario : usuarios) {
-            if(usuario.getNomUsuario().equals(codUsuario)) {
+            if (usuario.getNomUsuario().equalsIgnoreCase(nomUsuario)) {
+                if (usuario.getCodUsuario() == null) {
+                    updateCodUsuario(codUsuario, nomUsuario);
+                }
+                return usuario;
+            }
+        }
+
+        for (Usuario usuario : usuarios) {
+            if (usuario.codUsuario == null){ continue; }
+            if (usuario.getCodUsuario().equalsIgnoreCase(codUsuario)) {
                 return usuario;
             }
         }
         return null;
+    }
+
+    public static Usuario existeUsuarioCodigo (String codUsuario) {
+        for (Usuario usuario : usuarios) {
+            if(usuario.getCodUsuario().equals(codUsuario)) {
+                return usuario;
+            }
+        }
+        return null;
+    }
+
+    public static Usuario existeUsuarioNombre (String nomUsuario) {
+        for (Usuario usuario : usuarios) {
+            if(usuario.getNomUsuario().equalsIgnoreCase(nomUsuario)) {
+                return usuario;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return codUsuario + " | " + nomUsuario;
     }
 }

@@ -107,9 +107,9 @@ public class Commander {
     }
 
     public static void insertPrioridad(String nomPrioridad){
-        String insertProvinciaQuery = "INSERT INTO [digi].[provincia] ([nomProvincia]) VALUES (?)";
+        String insertPrioridadQuery = "INSERT INTO [digi].[prioridad] ([nomPrioridad]) VALUES (?)";
 
-        try(PreparedStatement ps = conn.prepareStatement(insertProvinciaQuery)){
+        try(PreparedStatement ps = conn.prepareStatement(insertPrioridadQuery)){
             ps.setString(1, nomPrioridad);
             ps.execute();
         } catch (SQLException sqle){
@@ -136,6 +136,22 @@ public class Commander {
         System.out.println("Se insertó el nuevo estado: " + nomEstado);
 
         estados = queryEstados();
+    }
+
+    public static void insertCanalRegistro(String nomCanalRegistro) {
+        String insertCanalRegistro = "INSERT INTO [digi].[canalRegistro] ([nomCanalRegistro]) VALUES (?)";
+
+        try(PreparedStatement ps = conn.prepareStatement(insertCanalRegistro)){
+            ps.setString(1, nomCanalRegistro);
+            ps.execute();
+        } catch (SQLException sqle){
+            System.out.println("No se pudo ingresar el estado a la BD");
+            sqle.printStackTrace();
+            System.exit(0);
+        }
+        System.out.println("Se insertó el nuevo canal de registro: " + nomCanalRegistro);
+
+        canalesRegistro = queryCanalesRegistro();
     }
 
     public static void insertUsuarioCompleto (String codUsuario, String nomUsuario){
@@ -167,6 +183,22 @@ public class Commander {
             System.exit(0);
         }
         System.out.println("Se insertó el nuevo usuario: " + nomUsuario);
+
+        usuarios = queryUsuarios();
+    }
+
+    public static void updateCodUsuario(String codUsuario, String nomUsuario) {
+        String updateUsuarioQuery = "UPDATE [digi].[usuario] SET codUsuario = ? WHERE nomUsuario = " + nomUsuario;
+
+        try(PreparedStatement ps = conn.prepareStatement(updateUsuarioQuery)){
+            ps.setString(1, codUsuario);
+            ps.execute();
+        } catch (SQLException sqle){
+            System.out.println("No se pudo actualizar el código de usuario para " + nomUsuario);
+            sqle.printStackTrace();
+            System.exit(0);
+        }
+        System.out.println("Se actualizó el código de usuario: " + codUsuario + " | " + nomUsuario);
 
         usuarios = queryUsuarios();
     }

@@ -3,9 +3,7 @@ package com.silverlink.Entidades;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import static com.silverlink.Commander.insertTipoAtencion;
-import static com.silverlink.Commander.insertTipoRegCaso;
-import static com.silverlink.Main.tiposAtencion;
+import static com.silverlink.Commander.*;
 
 public class Caso {
 
@@ -30,38 +28,13 @@ public class Caso {
     private LocalDate fecUltimaModificacion;
     private LocalDate fecha;
     private LocalDate fecVencimientoLegal;
-    private Usuario CreadoPor;
+    private Usuario creadoPor;
     private CanalRegistro canalRegistro;
-    private Usuario PropietarioCaso;
+    private Usuario propietarioCaso;
     private short diasVencidosPorVencer;
 
     public Caso(){
 
-    }
-
-    public Caso(TipoAtencion tipoAtencion, TipoRegCaso tipoRegCaso, String idActividad, TipoCarta tipoCarta, int nroCaso, EstadoCaso estadoCaso, CanalNotificacion canalNotificacion, LocalDate fecCreacionCaso, short correlativoCarta, int nroSuministro, Provincia provincia, Prioridad prioridad, LocalDate fecCreacion, LocalDateTime fecNotificacionCarta, LocalDate fecUltimaModificacion, LocalDate fecha, LocalDate fecVencimientoLegal, Usuario creadoPor, CanalRegistro canalRegistro, Usuario propietarioCaso, short diasVencidosPorVencer) {
-        //Constructor para caso obtenido desde Excel para importar a BD
-        this.tipoAtencion = tipoAtencion;
-        this.tipoRegCaso = tipoRegCaso;
-        this.idActividad = idActividad;
-        this.tipoCarta = tipoCarta;
-        this.nroCaso = nroCaso;
-        this.estadoCaso = estadoCaso;
-        this.canalNotificacion = canalNotificacion;
-        this.fecCreacionCaso = fecCreacionCaso;
-        this.correlativoCarta = correlativoCarta;
-        this.nroSuministro = nroSuministro;
-        this.provincia = provincia;
-        this.prioridad = prioridad;
-        this.fecCreacion = fecCreacion;
-        this.fecNotificacionCarta = fecNotificacionCarta;
-        this.fecUltimaModificacion = fecUltimaModificacion;
-        this.fecha = fecha;
-        this.fecVencimientoLegal = fecVencimientoLegal;
-        CreadoPor = creadoPor;
-        this.canalRegistro = canalRegistro;
-        PropietarioCaso = propietarioCaso;
-        this.diasVencidosPorVencer = diasVencidosPorVencer;
     }
 
     public Caso(TipoAtencion tipoAtencion, TipoRegCaso tipoRegCaso, String idActividad, TipoCarta tipoCarta, int nroCaso, EstadoCaso estadoCaso, CanalNotificacion canalNotificacion, LocalDate fecCreacionCaso, short correlativoCarta, int nroSuministro, Provincia provincia, Prioridad prioridad, Estado estado, LocalDate fecCreacion, LocalDate fecEmision, LocalDateTime fecDespacho, LocalDateTime fecNotificiacion, LocalDateTime fecNotificacionCarta, LocalDate fecUltimaModificacion, LocalDate fecha, LocalDate fecVencimientoLegal, Usuario creadoPor, CanalRegistro canalRegistro, Usuario propietarioCaso, short diasVencidosPorVencer) {
@@ -87,9 +60,9 @@ public class Caso {
         this.fecUltimaModificacion = fecUltimaModificacion;
         this.fecha = fecha;
         this.fecVencimientoLegal = fecVencimientoLegal;
-        CreadoPor = creadoPor;
+        this.creadoPor = creadoPor;
         this.canalRegistro = canalRegistro;
-        PropietarioCaso = propietarioCaso;
+        this.propietarioCaso = propietarioCaso;
         this.diasVencidosPorVencer = diasVencidosPorVencer;
     }
 
@@ -159,20 +132,20 @@ public class Caso {
         while(flag){
             tipoCarta = TipoCarta.existeTipoCarta(nomTipoCarta);
             if(tipoCarta == null){
-                insertTipoRegCaso(nomtipoRegCaso);
+                insertTipoCarta(nomTipoCarta);
             } else {
                 flag = false;
             }
         }
-        this.tipoRegCaso = tipoRegCaso;
+        this.tipoCarta = tipoCarta;
     }
 
     public int getNroCaso() {
         return nroCaso;
     }
 
-    public void setNroCaso(int nroCaso) {
-        this.nroCaso = nroCaso;
+    public void setNroCaso(String nroCaso) {
+        this.nroCaso = Integer.parseInt(nroCaso);
     }
 
     public EstadoCaso getEstadoCaso() {
@@ -183,11 +156,39 @@ public class Caso {
         this.estadoCaso = estadoCaso;
     }
 
+    public void setEstadoCaso(String nomEstadoCaso) {
+        boolean flag = true;
+        EstadoCaso estadoCaso = null;
+        while(flag){
+            estadoCaso = EstadoCaso.existeEstadoCaso(nomEstadoCaso);
+            if(estadoCaso == null){
+                insertEstadoCaso(nomEstadoCaso);
+            } else {
+                flag = false;
+            }
+        }
+        this.estadoCaso = estadoCaso;
+    }
+
     public CanalNotificacion getCanalNotificacion() {
         return canalNotificacion;
     }
 
     public void setCanalNotificacion(CanalNotificacion canalNotificacion) {
+        this.canalNotificacion = canalNotificacion;
+    }
+
+    public void setCanalNotificacion(String nomCanalNotificacion) {
+        boolean flag = true;
+        CanalNotificacion canalNotificacion = null;
+        while(flag){
+            canalNotificacion = CanalNotificacion.existeCanalNotificacion(nomCanalNotificacion);
+            if(canalNotificacion == null){
+                insertCanalNotificacion(nomCanalNotificacion);
+            } else {
+                flag = false;
+            }
+        }
         this.canalNotificacion = canalNotificacion;
     }
 
@@ -211,8 +212,12 @@ public class Caso {
         return nroSuministro;
     }
 
-    public void setNroSuministro(int nroSuministro) {
-        this.nroSuministro = nroSuministro;
+    public void setNroSuministro(String nroSuministro) {
+        if(nroSuministro.equals("")) {
+            this.nroSuministro = 0;
+        } else {
+            this.nroSuministro = Integer.parseInt(nroSuministro);
+        }
     }
 
     public Provincia getProvincia() {
@@ -220,6 +225,20 @@ public class Caso {
     }
 
     public void setProvincia(Provincia provincia) {
+        this.provincia = provincia;
+    }
+
+    public void setProvincia(String nomProvincia) {
+        boolean flag = true;
+        Provincia provincia = null;
+        while(flag){
+            provincia = Provincia.existeProvincia(nomProvincia);
+            if(provincia == null){
+                insertProvincia(nomProvincia);
+            } else {
+                flag = false;
+            }
+        }
         this.provincia = provincia;
     }
 
@@ -231,11 +250,39 @@ public class Caso {
         this.prioridad = prioridad;
     }
 
+    public void setPrioridad(String nomPrioridad) {
+        boolean flag = true;
+        Prioridad prioridad = null;
+        while(flag) {
+            prioridad = Prioridad.existePrioridad(nomPrioridad);
+            if(prioridad == null){
+                insertPrioridad(nomPrioridad);
+            } else {
+                flag = false;
+            }
+        }
+        this.prioridad = prioridad;
+    }
+
     public Estado getEstado() {
         return estado;
     }
 
     public void setEstado(Estado estado) {
+        this.estado = estado;
+    }
+
+    public void setEstado(String nomEstado) {
+        boolean flag = true;
+        Estado estado = null;
+        while(flag) {
+            estado = Estado.existeEstado(nomEstado);
+            if(estado == null){
+                insertEstado(nomEstado);
+            } else {
+                flag = false;
+            }
+        }
         this.estado = estado;
     }
 
@@ -304,11 +351,25 @@ public class Caso {
     }
 
     public Usuario getCreadoPor() {
-        return CreadoPor;
+        return creadoPor;
     }
 
     public void setCreadoPor(Usuario creadoPor) {
-        CreadoPor = creadoPor;
+        this.creadoPor = creadoPor;
+    }
+
+    public void setCreadoPor(String nomCreadoPor) {
+        boolean flag = true;
+        Usuario usuario = null;
+        while(flag) {
+            usuario = Usuario.existeUsuarioNombre(nomCreadoPor);
+            if(usuario == null){
+                insertUsuarioIncompleto(nomCreadoPor);
+            } else {
+                flag = false;
+            }
+        }
+        this.creadoPor = usuario;
     }
 
     public CanalRegistro getCanalRegistro() {
@@ -319,12 +380,40 @@ public class Caso {
         this.canalRegistro = canalRegistro;
     }
 
+    public void setCanalRegistro(String nomCanalRegistro) {
+        boolean flag = true;
+        CanalRegistro canalRegistro = null;
+        while(flag) {
+            canalRegistro = CanalRegistro.existeCanalRegistro(nomCanalRegistro);
+            if(canalRegistro == null){
+                insertCanalRegistro(nomCanalRegistro);
+            } else {
+                flag = false;
+            }
+        }
+        this.canalRegistro = canalRegistro;
+    }
+
     public Usuario getPropietarioCaso() {
-        return PropietarioCaso;
+        return propietarioCaso;
     }
 
     public void setPropietarioCaso(Usuario propietarioCaso) {
-        PropietarioCaso = propietarioCaso;
+        this.propietarioCaso = propietarioCaso;
+    }
+
+    public void setPropietarioCaso(String codPropietarioCaso, String nomPropietarioCaso) {
+        boolean flag = true;
+        Usuario usuario = null;
+        while(flag) {
+            usuario = Usuario.existeUsuario(codPropietarioCaso, nomPropietarioCaso);
+            if(usuario == null){
+                insertUsuarioCompleto(codPropietarioCaso, nomPropietarioCaso);
+            } else {
+                flag = false;
+            }
+        }
+        this.propietarioCaso = usuario;
     }
 
     public short getDiasVencidosPorVencer() {
@@ -333,5 +422,33 @@ public class Caso {
 
     public void setDiasVencidosPorVencer(short diasVencidosPorVencer) {
         this.diasVencidosPorVencer = diasVencidosPorVencer;
+    }
+
+    @Override
+    public String toString() {
+        return "Tipo Atención: " + tipoAtencion.getNomTipoAtencion() + "\n" +
+                "Tipo Reg Caso: " + tipoRegCaso.getNomTipoRegCaso() + "\n" +
+                "ID Actividad: " + idActividad + "\n" +
+                "Tipo carta: " + tipoCarta.getNomTipoCarta() + "\n" +
+                "Nro Caso: " + nroCaso + "\n" +
+                "Estado Caso: " + estadoCaso.getNomEstadoCaso() + "\n" +
+                "Canal Notificacion: " + canalNotificacion.getNomCanalNotificacion() + "\n" +
+                "Correlativo: " + correlativoCarta + "\n" +
+                "Nro. Suministro: " + nroSuministro + "\n" +
+                "Provincia: " + provincia.getNomProvincia() + "\n" +
+                "Prioridad: " + prioridad.getNomPrioridad() + "\n" +
+                "Estado: " + estado.getNomEstado() + "\n" +
+                "Fecha Creación: " + fecCreacion + "\n" +
+                "Fecha Emisión: " + fecEmision + "\n" +
+                "Fecha Despacho: " + fecDespacho + "\n" +
+                "Fecha Notif.: " + fecNotificiacion + "\n" +
+                "Fecha fec. Notif. Carta: " + fecNotificacionCarta + "\n" +
+                "Fecha Ult. Modificacion: " + fecUltimaModificacion + "\n" +
+                "Fecha: " + fecha + "\n" +
+                "Fecha Vcto. Legal: " + fecVencimientoLegal + "\n" +
+                "Creado Por: " + creadoPor + "\n" +
+                "Canal Registro: " + canalRegistro.getNomCanalRegistro() + "\n" +
+                "Propietario Caso: " + propietarioCaso + "\n" +
+                "Días Vencidos / Por Vencer: " + diasVencidosPorVencer + "\n";
     }
 }

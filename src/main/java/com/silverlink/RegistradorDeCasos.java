@@ -9,25 +9,45 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class RegistradorDeCasos {
+
+    String tempPath = "Z:\\Servicios ENEL\\002 - Correspondencia digital\\temp";
+    Scanner scanner = new Scanner(System.in);
+
+    Walker johnnie = new Walker();
+
+    public void start() {
+        System.out.println("IMPORTANTE: ABRIR EL ARCHIVO DESCARGADO Y GUARDARLO COMO .XLSX. (Ingrese una letra para continuar)");
+        scanner.nextLine();
+
+        try {
+            Files.walkFileTree(Path.of(tempPath), johnnie);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
     //Abrir Excel, leer cada registro y almacenar en una lista
-    public static void registrarCasos() {
+    public void registrarCasos(Path rutaArchivo) {
         //TODO obtener archivo de carpeta temp, mover archivo a carpeta de OS,
         // a su vez dentro de OTRA carpeta 'listas' con su nombre y correlativo
 
-        try(FileInputStream fis = new FileInputStream("Z:\\Servicios ENEL\\002 - Correspondencia digital\\" +
-                "temp\\report1694036567856.xlsx");
+        try(FileInputStream fis = new FileInputStream(rutaArchivo.toFile());
             XSSFWorkbook wb = new XSSFWorkbook(fis)) {
 
             XSSFSheet sheet = wb.getSheetAt(0);
 
-            //TODO si dice "despachada" ignorar el caso
-
             ArrayList<Caso> casos = new ArrayList<>();
 
-            for (int i = 1; i < sheet.getLastRowNum(); i++) { //0-based row index; 0 es el encabezado
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) { //0-based row index; 0 es el encabezado
                 XSSFRow row = sheet.getRow(i);
 
                 //Si estado (14) es "despachada", ignorar el caso
@@ -44,67 +64,42 @@ public class RegistradorDeCasos {
                         case 2: caso.setIdActividad(cell.getStringCellValue()); break;
                         case 3: caso.setTipoCarta(cell.getStringCellValue()); break;
                         case 4: caso.setNroCaso(cell.getStringCellValue()); break; //Número almacenado como texto
-                        case 5: caso.setFecCreacionCaso(cell.getDateCellValue()); break;
-                        case 6: caso.setCorrelativoCarta((short) cell.getNumericCellValue()); break;
-                        case 7: caso.setNroSuministro(cell.getStringCellValue()); break; //Número almacenado como texto
-                        case 8: caso.setCanalNotificacion(cell.getStringCellValue()) break;
-                        case 9: caso.setProvincia(cell.getStringCellValue()); break;
-                        case 10: caso.setPrioridad(cell.getStringCellValue()); break;
-                        case 11: caso.setEstado(cell.getStringCellValue()); break;
-                        case 12: caso.setFecCreacion(cell.getDateCellValue()); break;
-                        //13, 14, 15 son las fechas a obtener de los documentos a revisar.
-                        case 16: caso.setFecNotificacionCarta(cell.getDateCellValue()); break;
-                        case 17: caso.setFecUltimaModificacion(cell.getDateCellValue()); break;
-                        case 18: caso.setFecha(cell.getDateCellValue()); break;
-                        case 19: caso.setFecVencimientoLegal(cell.getDateCellValue()); break;
+                        case 5: caso.setEstadoCaso(cell.getStringCellValue()); break;
+                        case 6: caso.setFecCreacionCaso(cell.getLocalDateTimeCellValue().toLocalDate()); break;
+                        case 7: caso.setCorrelativoCarta((short) cell.getNumericCellValue()); break;
+                        case 8: caso.setNroSuministro(cell.getStringCellValue()); break; //Número almacenado como texto
+                        case 10: caso.setCanalNotificacion(cell.getStringCellValue()); break;
+                        case 12: caso.setProvincia(cell.getStringCellValue()); break;
+                        case 13: caso.setPrioridad(cell.getStringCellValue()); break;
+                        case 14: caso.setEstado(cell.getStringCellValue()); break;
+                        case 15: caso.setFecCreacion(cell.getLocalDateTimeCellValue().toLocalDate()); break;
+                        //16, 17, 18 son las fechas a obtener de los documentos a revisar.
+                        case 19: caso.setFecNotificacionCarta(cell.getLocalDateTimeCellValue()); break;
+                        case 20: caso.setFecUltimaModificacion(cell.getLocalDateTimeCellValue().toLocalDate()); break;
+                        case 21: caso.setFecha(cell.getLocalDateTimeCellValue().toLocalDate()); break;
+                        case 22: caso.setFecVencimientoLegal(cell.getLocalDateTimeCellValue().toLocalDate()); break;
 //                        case 20: caso.setCreadoPor(cell.getStringCellValue()); break;
-                        case 21: caso.setCanalRegistro(cell.getStringCellValue()); break;
-                        case 23: caso.setPropietarioCaso(cell.getStringCellValue(),
-                                                        row.getCell(22).getStringCellValue());
-                                caso.setCreadoPor(row.getCell(20).getStringCellValue()); break;
-                        case 24: caso.setDiasVencidosPorVencer((short) cell.getNumericCellValue()); break;
-
+                        case 24: caso.setCanalRegistro(cell.getStringCellValue()); break;
+                        case 26: caso.setPropietarioCaso(cell.getStringCellValue(),
+                                                        row.getCell(25).getStringCellValue());
+                                caso.setCreadoPor(row.getCell(23).getStringCellValue()); break;
+                        case 27: caso.setDiasVencidosPorVencer((short) cell.getNumericCellValue()); break;
                     }
                 }
+                System.out.println(caso);
             }
-
-
-//
-//
-//
-//            System.out.println(row.getCell(0).getStringCellValue());
-//            System.out.println(row.getCell(1).getStringCellValue());
-//            System.out.println(row.getCell(2).getStringCellValue());
-//            System.out.println(row.getCell(3).getStringCellValue());
-//            System.out.println(row.getCell(4).getStringCellValue());
-//            System.out.println(row.getCell(5).getStringCellValue());
-//            System.out.println(row.getCell(6).getDateCellValue());
-//            System.out.println(row.getCell(7).getNumericCellValue());
-//            System.out.println(row.getCell(8).getNumericCellValue());
-//            System.out.println(row.getCell(9).getStringCellValue());
-//            System.out.println(row.getCell(10).getStringCellValue());
-//            System.out.println(row.getCell(11).getStringCellValue());
-//            System.out.println(row.getCell(12).getStringCellValue());
-//            System.out.println(row.getCell(13).getStringCellValue());
-//            System.out.println(row.getCell(14).getStringCellValue());
-//            System.out.println(row.getCell(15).getDateCellValue());
-//            System.out.println(row.getCell(16).getDateCellValue());
-//            System.out.println(row.getCell(17).getDateCellValue());
-//            System.out.println(row.getCell(18).getDateCellValue());
-//            System.out.println(row.getCell(19).getDateCellValue());
-//            System.out.println(row.getCell(20).getDateCellValue());
-//            System.out.println(row.getCell(21).getDateCellValue());
-//            System.out.println(row.getCell(22).getDateCellValue());
-//            System.out.println(row.getCell(23).getStringCellValue());
-//            System.out.println(row.getCell(24).getStringCellValue());
-//            System.out.println(row.getCell(25).getStringCellValue());
-//            System.out.println(row.getCell(26).getStringCellValue());
-//            System.out.println(row.getCell(27).getNumericCellValue());
-
-
         } catch(IOException ioe) {
             ioe.printStackTrace();
         }
 
+    }
+
+    public class Walker extends SimpleFileVisitor<Path> {
+
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+            registrarCasos(file);
+            return super.visitFile(file, attrs);
+        }
     }
 }

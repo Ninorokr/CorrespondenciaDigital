@@ -9,7 +9,7 @@ public class Datasource {
     public static String connURL = "jdbc:sqlserver://192.168.1.2\\SQLS19;" +
             "database=TEST;" +
             "user=sa;" +
-            "password=;" + //Añadir contraseña para loguearse
+            "password=Usuari0LSF;" + //Añadir contraseña para loguearse
             "encrypt=true;" +
             "trustServerCertificate=true;";
 
