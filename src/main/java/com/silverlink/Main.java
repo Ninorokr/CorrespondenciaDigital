@@ -29,7 +29,9 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
 
-        new Navigator().descargarReporte();
-        new RegistradorDeCasos().start();
+//        new Navigator().descargarReporte();
+//        new RegistradorDeCasos().start();
+        new ProcesadorDatos().start();
+
     }
 }

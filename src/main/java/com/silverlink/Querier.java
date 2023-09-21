@@ -161,6 +161,13 @@ public class Querier {
         return usuarios;
     }
 
+//    public static void insertCasos() {
+//        String insertCasosQuery = ""
+//    }
+//
+//    public static ArrayList<Caso> queryCasosPendientes() {
+//        String casos = "SELECT ";
+//    }
 
 
 }

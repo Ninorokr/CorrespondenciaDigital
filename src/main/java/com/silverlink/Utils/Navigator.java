@@ -30,7 +30,7 @@ public class Navigator {
         usernameField.sendKeys("mensajeria@enel.com");
         passwordField.sendKeys("25*Jul*2023*");
         loginButton.click();
-        Thread.sleep(5000); //TODO verificar si se puede remover esta pausa
+//        Thread.sleep(5000); //TODO verificar si se puede remover esta pausa
 //
 //        //TODO: Si no hay ninguna pestaña abierta, no ejecutar este código
         WebElement ddMenu = driver.findElement(By.xpath("/html/body/div[4]/div/div[2]/div[1]"));

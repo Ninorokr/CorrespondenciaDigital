@@ -25,7 +25,7 @@ public class RegistradorDeCasos {
     Walker johnnie = new Walker();
 
     public void start() {
-        System.out.println("IMPORTANTE: ABRIR EL ARCHIVO DESCARGADO Y GUARDARLO COMO .XLSX. (Ingrese una letra para continuar)");
+        System.out.println("IMPORTANTE: ABRIR EL ARCHIVO DESCARGADO Y GUARDARLO COMO .XLSX. (Presiona ENTER para continuar)");
         scanner.nextLine();
 
         try {
@@ -94,7 +94,7 @@ public class RegistradorDeCasos {
 
     }
 
-    public class Walker extends SimpleFileVisitor<Path> {
+     class Walker extends SimpleFileVisitor<Path> {
 
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
