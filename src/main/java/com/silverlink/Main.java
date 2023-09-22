@@ -2,7 +2,7 @@ package com.silverlink;
 
 import com.silverlink.Entidades.*;
 import com.silverlink.Utils.Datasource;
-import com.silverlink.Utils.Navigator;
+import com.silverlink.Utils.Navegador;
 
 
 import java.util.ArrayList;
@@ -29,9 +29,10 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
 
+        new Navegador().abrirSesion();
 //        new Navigator().descargarReporte();
-//        new RegistradorDeCasos().start();
-        new ProcesadorDatos().start();
+        ArrayList<Caso> casos = new RegistradorDeCasos().registrarCasos();
+        new ProcesadorDatos().procesarCasos(casos);
 
     }
 }

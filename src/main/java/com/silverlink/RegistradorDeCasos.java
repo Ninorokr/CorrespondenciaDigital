@@ -21,22 +21,32 @@ public class RegistradorDeCasos {
 
     String tempPath = "Z:\\Servicios ENEL\\002 - Correspondencia digital\\temp";
     Scanner scanner = new Scanner(System.in);
+    ArrayList<Caso> casos;
 
     Walker johnnie = new Walker();
 
-    public void start() {
+    public ArrayList<Caso> registrarCasos() {
         System.out.println("IMPORTANTE: ABRIR EL ARCHIVO DESCARGADO Y GUARDARLO COMO .XLSX. (Presiona ENTER para continuar)");
         scanner.nextLine();
 
+        casos = new ArrayList<>();
+
+        //Recorrer archivos, buscar archivo .xlsx a trabajar
         try {
             Files.walkFileTree(Path.of(tempPath), johnnie);
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
+
+        //TODO Ingresar casos a la BD
+
+
+        return casos;
+
     }
 
     //Abrir Excel, leer cada registro y almacenar en una lista
-    public void registrarCasos(Path rutaArchivo) {
+    public void leerCasosDesdeExcel(Path rutaArchivo) {
         //TODO obtener archivo de carpeta temp, mover archivo a carpeta de OS,
         // a su vez dentro de OTRA carpeta 'listas' con su nombre y correlativo
 
@@ -44,8 +54,6 @@ public class RegistradorDeCasos {
             XSSFWorkbook wb = new XSSFWorkbook(fis)) {
 
             XSSFSheet sheet = wb.getSheetAt(0);
-
-            ArrayList<Caso> casos = new ArrayList<>();
 
             for (int i = 1; i <= sheet.getLastRowNum(); i++) { //0-based row index; 0 es el encabezado
                 XSSFRow row = sheet.getRow(i);
@@ -86,19 +94,21 @@ public class RegistradorDeCasos {
                         case 27: caso.setDiasVencidosPorVencer((short) cell.getNumericCellValue()); break;
                     }
                 }
-                System.out.println(caso);
+                System.out.println(i + ". " + caso.getIdActividad() + " | " + caso.getNroCaso());
+                casos.add(caso);
             }
         } catch(IOException ioe) {
             ioe.printStackTrace();
         }
-
     }
 
-     class Walker extends SimpleFileVisitor<Path> {
+    class Walker extends SimpleFileVisitor<Path> {
 
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-            registrarCasos(file);
+            if(file.toString().endsWith(".xlsx")){
+                leerCasosDesdeExcel(file);
+            }
             return super.visitFile(file, attrs);
         }
     }

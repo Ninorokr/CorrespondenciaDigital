@@ -16,6 +16,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -23,36 +24,38 @@ import java.util.List;
 
 public class Prueba {
 
-    static String cartasPath = "Z:\\Alvaro Giron\\Correspondencia digital\\cartas";
-
+    static String cartasPath = "D:\\cartas";
 
     public static void main(String[] args) {
 
-
-
+        try {
+            Files.walkFileTree(Path.of(cartasPath), new Walker());
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
     }
-
 }
 
 class Walker extends SimpleFileVisitor<Path> {
 
     int pageNum;
-    int docNum;
+    int docNum = 1;
 
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
         try (PDDocument cartaPDF = Loader.loadPDF(file.toFile())){
             pageNum = 1;
-            SaveImagesInPdf printer = new SaveImagesInPdf(docNum, pageNum);
+            SaveImagesInPdf printer;
             for(PDPage page : cartaPDF.getPages()) {
+                printer = new SaveImagesInPdf(docNum, pageNum);
+                System.out.println("Processing page: " + pageNum);
                 pageNum++;
-                System.out.println( "Processing page: " + pageNum );
                 printer.processPage(page);
             }
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
-
+        docNum++;
         return super.visitFile(file, attrs);
     }
 }
@@ -71,11 +74,11 @@ class SaveImagesInPdf extends PDFStreamEngine {
     @Override
     public void processOperator(Operator operator, List<COSBase> operands) throws IOException {
         String operation = operator.getName();
-        if( "Do".equals(operation) )
+        if("Do".equals(operation))
         {
-            COSName objectName = (COSName) operands.get( 0 );
-            PDXObject xobject = getResources().getXObject( objectName );
-            if( xobject instanceof PDImageXObject)
+            COSName objectName = (COSName) operands.get(0);
+            PDXObject xobject = getResources().getXObject(objectName);
+            if(xobject instanceof PDImageXObject)
             {
                 PDImageXObject image = (PDImageXObject)xobject;
 

@@ -3,6 +3,7 @@ package com.silverlink;
 import com.silverlink.Entidades.CanalNotificacion;
 import com.silverlink.Entidades.CanalRegistro;
 import com.silverlink.Entidades.Caso;
+import com.silverlink.Utils.Navegador;
 import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
@@ -23,94 +24,74 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ProcesadorDatos {
 
-//    String cartaPath = "Z:\\Servicios ENEL\\002 - Correspondencia digital\\Temp\\Carta N° 493465352-1 (2).pdf";
-//    String acta = "Z:\\Servicios ENEL\\002 - Correspondencia digital\\Temp\\communicationAct (7) (7).pdf";
-//
-//
-//    public void start() {
-////        ArrayList<Caso> casosPendientes = new ArrayList<>();
-//
-//        try (PDDocument cartaPDF = Loader.loadPDF(new File(cartaPath))){
-////            String textoCarta = new PDFTextStripper().getText(cartaPDF);
-////            String encabezado = getEncabezado(textoCarta);
-//            SaveImagesInPdf printer = new SaveImagesInPdf();
-//            int pageNum = 0;
-//            for( PDPage page : cartaPDF.getPages() )
-//            {
-//                pageNum++;
-//                System.out.println( "Processing page: " + pageNum );
-//                printer.processPage(page);
-//            }
-//        } catch (IOException ioe) {
-//            ioe.printStackTrace();
-//        }
-//
-//    }
-//
-//    public void getNroCarta(String encabezado) {
-//        Pattern patternNroCarta = Pattern.compile("\\d{9}");
-//        Matcher matcher = patternNroCarta.matcher(encabezado);
-//        matcher.find();
-//        System.out.println(matcher.group());
-//    }
-//
-//    public void getFirmaSize(String textoCarta) {
-//
-//    }
-//
-//    public String getEncabezado(String textoCarta) {
-//        return textoCarta.substring(0, 150);
-//    }
-//
-//}
+    String tempPath = "D:\\Temp";
+    String os1Path = "D:\\002\\23\\0001\\";
 
-//class SaveImagesInPdf extends PDFStreamEngine {
-//
-//    public int imageNumber = 1;
-//
-//    @Override
-//    public void processOperator(Operator operator, List<COSBase> operands) throws IOException {
-//        String operation = operator.getName();
-//        if( "Do".equals(operation) )
-//        {
-//            COSName objectName = (COSName) operands.get( 0 );
-//            PDXObject xobject = getResources().getXObject( objectName );
-//            if( xobject instanceof PDImageXObject)
-//            {
-//                PDImageXObject image = (PDImageXObject)xobject;
-//
-//                // same image to local
-//                BufferedImage bImage = image.getImage();
-//                ImageIO.write(bImage,"PNG", new File("D:\\imagenesExtraidasPDF\\image_"+imageNumber+".png"));
-//                System.out.println("Image saved.");
-//                imageNumber++;
-//
+
+    public void procesarCasos(ArrayList<Caso> casos) {
+        Navegador navegador = new Navegador();
+        Encarpetador encarpetador;
+
+        for (int i = 1; i < casos.size(); i++) {
+            Caso caso = casos.get(i-1);
+            navegador.descargarArchivos(caso.getIdActividad());
+            try {
+                String item =  String.format("%04d", i);
+                Path destino = Files.createDirectory(Path.of(os1Path + item));
+                encarpetador = new Encarpetador(destino.toString());
+                Files.walkFileTree(Path.of(tempPath), encarpetador);
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+
+        }
+    }
+
+    public void getNroCarta(String encabezado) {
+        Pattern patternNroCarta = Pattern.compile("\\d{9}");
+        Matcher matcher = patternNroCarta.matcher(encabezado);
+        matcher.find();
+        System.out.println(matcher.group());
+    }
+
+    public void getFirmaSize(String textoCarta) {
+
+    }
+
+    public String getEncabezado(String textoCarta) {
+        return textoCarta.substring(0, 150);
+    }
+
+    class Encarpetador extends SimpleFileVisitor<Path> {
+
+        String destino;
+
+        public Encarpetador (String destino) {
+            this.destino = destino;
+        }
+
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+//            if(file.toString().endsWith(".pdf") || file.toString().endsWith(".PDF")) {
+                Files.move(file, Path.of(destino + "\\" + file.getName(file.getNameCount()-1)));
 //            }
-//            else if(xobject instanceof PDFormXObject)
-//            {
-//                PDFormXObject form = (PDFormXObject)xobject;
-//                showForm(form);
-//            }
-//        }
-//        else
-//        {
-//            super.processOperator( operator, operands);
-//        }
-//    }
+            return super.visitFile(file, attrs);
+        }
+    }
+
 }
 
 
