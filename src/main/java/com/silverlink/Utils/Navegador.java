@@ -104,13 +104,15 @@ public class Navegador {
 //        Thread.sleep(18000);
     }
 
-    public void descargarArchivos(String idActividad) {
-        try {
-            System.out.println("Esperando a que se muevan los archivos...");
-            Thread.sleep(2000);
-        } catch (InterruptedException ie) {
+    public int descargarArchivos(String idActividad) {
+        int cantArchivos;
 
-        }
+//        try {
+//            System.out.println("Esperando a que se muevan los archivos...");
+//            Thread.sleep(2000);
+//        } catch (InterruptedException ie) {
+//
+//        }
         driver.get("https://enelsud.my.salesforce.com/" + idActividad);
 
         WebElement archivoLink;
@@ -119,17 +121,19 @@ public class Navegador {
             archivoLink = driver.findElement(By.xpath("//table/tbody/tr[" + i + "]/td[1]/a[text()='Descargar']"));
             archivoLink.click();
             } catch (NoSuchElementException nsee) {
-                System.out.println(nroDoc + ". Nro. de archivos en " + idActividad + " : " + (i-2));
+                cantArchivos = i-2;
+                System.out.println(nroDoc + ". Nro. de archivos en " + idActividad + " : " + cantArchivos);
                 break;
             }
         }
-        try {
-            System.out.println("Esperando a que descarguen los archivos...");
-            Thread.sleep(10000);
-        } catch (InterruptedException ie) {
-
-        }
+//        try {
+//            System.out.println("Esperando a que descarguen los archivos...");
+//            Thread.sleep(10000);
+//        } catch (InterruptedException ie) {
+//
+//        }
         nroDoc++;
+        return cantArchivos;
     }
 
 }
