@@ -1,10 +1,10 @@
-package com.silverlink;
+package com.silverlink.Utils;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import static com.silverlink.Main.*;
-import static com.silverlink.Querier.*;
+import static com.silverlink.Utils.Querier.*;
 import static com.silverlink.Utils.Datasource.conn;
 
 

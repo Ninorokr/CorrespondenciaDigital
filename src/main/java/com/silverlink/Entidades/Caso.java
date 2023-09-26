@@ -3,7 +3,7 @@ package com.silverlink.Entidades;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import static com.silverlink.Commander.*;
+import static com.silverlink.Utils.Commander.*;
 
 public class Caso {
 

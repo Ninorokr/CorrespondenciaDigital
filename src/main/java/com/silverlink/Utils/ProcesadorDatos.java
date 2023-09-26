@@ -1,4 +1,4 @@
-package com.silverlink;
+package com.silverlink.Utils;
 
 import com.silverlink.Entidades.Caso;
 import com.silverlink.Utils.Navegador;
@@ -16,7 +16,6 @@ public class ProcesadorDatos {
     String os1Path = "D:\\002\\23\\0001\\";
     int cuentaArchivos;
 
-
     public void procesarCasos(ArrayList<Caso> casos) {
         Navegador navegador = new Navegador();
         Encarpetador encarpetador;
@@ -25,7 +24,6 @@ public class ProcesadorDatos {
             Caso caso = casos.get(i);
             int cantArchivos = navegador.descargarArchivos(caso.getIdActividad());
             try {
-                //Contar que los archivos estén completos
                 while(true) {
                     if(isArchivosCompletos(cantArchivos))
                         break;
@@ -39,7 +37,6 @@ public class ProcesadorDatos {
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }
-
         }
     }
 
@@ -48,23 +45,6 @@ public class ProcesadorDatos {
         cuentaArchivos = 0;
         Files.walkFileTree(Path.of(tempPath), new ContadorArchivos());
         return cantArchivos == cuentaArchivos;
-    }
-
-    public void getNroCarta(String encabezado) {
-        Pattern patternNroCarta = Pattern.compile("\\d{9}");
-        Matcher matcher = patternNroCarta.matcher(encabezado);
-        matcher.find();
-        System.out.println(matcher.group());
-    }
-
-    public void getFirmaSize(String textoCarta) {
-
-    }
-
-
-
-    public String getEncabezado(String textoCarta) {
-        return textoCarta.substring(0, 150);
     }
 
     class Encarpetador extends SimpleFileVisitor<Path> {
@@ -86,11 +66,6 @@ public class ProcesadorDatos {
     }
 
     class ContadorArchivos extends SimpleFileVisitor<Path> {
-//        int metaArchivos;
-//
-//        public ContadorArchivos(int metaArchivos) {
-//            this.metaArchivos = metaArchivos;
-//        }
 
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {

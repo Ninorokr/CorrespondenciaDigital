@@ -1,7 +1,6 @@
 package com.silverlink.Entidades;
 
-import static com.silverlink.Commander.updateCodUsuario;
-import static com.silverlink.Main.tiposRegCaso;
+import static com.silverlink.Utils.Commander.updateCodUsuario;
 import static com.silverlink.Main.usuarios;
 
 public class Usuario {

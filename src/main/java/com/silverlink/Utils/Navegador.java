@@ -27,7 +27,7 @@ public class Navegador {
         driver = new ChromeDriver(options);
     }
 
-    public void abrirSesion() {
+    public void abrirSesionSalesforce() {
         driver.get("https://enelsud.my.salesforce.com/?ec=302&startURL=%2Fconsole");
 
         WebElement usernameField = driver.findElement(By.id("username"));
@@ -37,36 +37,10 @@ public class Navegador {
         usernameField.sendKeys("mensajeria@enel.com");
         passwordField.sendKeys("25*Jul*2023*");
         loginButton.click();
-
-        driver.get("https://enelsud.my.salesforce.com/home/home.jsp");
-
-        try {
-            WebElement noGraciasJoven = driver.findElement(By.id("lexNoThanks"));
-            noGraciasJoven.click();
-            WebElement noGraciasJoven2 = driver.findElement(By.id("lexSubmit"));
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ie) {
-                System.out.println("Too fast to click the button");
-            }
-            noGraciasJoven2.click();
-        } catch (NoSuchElementException nsee) {
-            System.out.println("No gracias Lightning Exp.");
-        }
     }
 
     public void descargarReporte() throws InterruptedException {
-        driver.get("https://enelsud.my.salesforce.com/?ec=302&startURL=%2Fconsole");
 
-        WebElement usernameField = driver.findElement(By.id("username"));
-        WebElement passwordField = driver.findElement(By.id("password"));
-        WebElement loginButton = driver.findElement(By.id("Login"));
-
-        usernameField.sendKeys("mensajeria@enel.com");
-        passwordField.sendKeys("25*Jul*2023*");
-        loginButton.click();
-//        Thread.sleep(5000); //verificar si se puede remover esta pausa
-//
 //        //TODO: Si no hay ninguna pestaña abierta, no ejecutar este código
         WebElement ddMenu = driver.findElement(By.xpath("/html/body/div[4]/div/div[2]/div[1]"));
         ddMenu.click();
@@ -84,35 +58,37 @@ public class Navegador {
 
         driver.switchTo().defaultContent();
         WebElement corDigIFrame = driver.findElement(By.xpath("/html/body/div[4]/div/div[3]/div/div[2]/div[2]/div[2]/div/div/div/iframe"));
-//        WebElement corDigIFrame = driver.findElement(By.id("ext-comp-1036"));
         driver.switchTo().frame(corDigIFrame);
-        // No es necesario ordenar las filas (eso solo es para humanos)
-//        WebElement thfecCreacion = driver.findElement(By.xpath("//*[@title=\"Fecha de creación - Haga clic para clasificar en orden ascendente\"]"));
-//        thfecCreacion.click();
-//        Thread.sleep(18000);
-        //Para capturar la tabla que contiene toda la informacion de los casos
-//        WebElement tableCorDig = driver.findElement(By.xpath("//table[@class=\"reportTable tabularReportTable\"]"));
-
 
         WebElement btnExportar = driver.findElement(By.name("csvsetup"));
         btnExportar.click();
         WebElement btnExportar2 = driver.findElement(By.name("export"));
         btnExportar2.click();
-//        Thread.sleep(18000);
         WebElement btnListo = driver.findElement(By.name("cancel"));
         btnListo.click();
-//        Thread.sleep(18000);
+    }
+
+    public void rechazarLightningExp() {
+        driver.get("https://enelsud.my.salesforce.com/home/home.jsp");
+
+        try {
+            WebElement noGraciasJoven = driver.findElement(By.id("lexNoThanks"));
+            noGraciasJoven.click();
+            WebElement noGraciasJoven2 = driver.findElement(By.id("lexSubmit"));
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ie) {
+                System.out.println("Too fast to click the button");
+            }
+            noGraciasJoven2.click();
+        } catch (NoSuchElementException nsee) {
+            System.out.println("No gracias Lightning Exp.");
+        }
     }
 
     public int descargarArchivos(String idActividad) {
         int cantArchivos;
 
-//        try {
-//            System.out.println("Esperando a que se muevan los archivos...");
-//            Thread.sleep(2000);
-//        } catch (InterruptedException ie) {
-//
-//        }
         driver.get("https://enelsud.my.salesforce.com/" + idActividad);
 
         WebElement archivoLink;
@@ -126,12 +102,6 @@ public class Navegador {
                 break;
             }
         }
-//        try {
-//            System.out.println("Esperando a que descarguen los archivos...");
-//            Thread.sleep(10000);
-//        } catch (InterruptedException ie) {
-//
-//        }
         nroDoc++;
         return cantArchivos;
     }
