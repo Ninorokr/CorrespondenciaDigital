@@ -1,6 +1,6 @@
 package com.silverlink.Entidades;
 
-public enum MesAbr {
+public enum MesAbrv {
     ene,
     feb,
     mar,

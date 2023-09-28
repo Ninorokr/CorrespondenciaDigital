@@ -24,7 +24,7 @@ import java.util.List;
 
 public class Prueba {
 
-    static String cartasPath = "D:\\cartas";
+    static String cartasPath = "D:\\002\\23\\0001";
 
     public static void main(String[] args) {
 
@@ -85,7 +85,7 @@ class SaveImagesInPdf extends PDFStreamEngine {
                 // same image to local
                 BufferedImage bImage = image.getImage();
                 ImageIO.write(bImage,"PNG", new File("D:\\imagenesExtraidasPDF\\image_"+docNum+"_"+pageNum+"_"+imageNumber+".png"));
-                System.out.println("Image saved.");
+//                System.out.println("Image saved.");
                 imageNumber++;
 
             }

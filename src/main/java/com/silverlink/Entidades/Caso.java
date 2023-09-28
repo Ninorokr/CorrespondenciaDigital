@@ -2,6 +2,7 @@ package com.silverlink.Entidades;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 import static com.silverlink.Utils.Commander.*;
 
@@ -32,38 +33,11 @@ public class Caso {
     private CanalRegistro canalRegistro;
     private Usuario propietarioCaso;
     private short diasVencidosPorVencer;
+    private ArrayList<Carta> cartas = new ArrayList<>();
+    private ArrayList<Acta> actas = new ArrayList<>();
 
     public Caso(){
 
-    }
-
-    public Caso(TipoAtencion tipoAtencion, TipoRegCaso tipoRegCaso, String idActividad, TipoCarta tipoCarta, int nroCaso, EstadoCaso estadoCaso, CanalNotificacion canalNotificacion, LocalDate fecCreacionCaso, short correlativoCarta, int nroSuministro, Provincia provincia, Prioridad prioridad, Estado estado, LocalDate fecCreacion, LocalDate fecEmision, LocalDateTime fecDespacho, LocalDateTime fecNotificiacion, LocalDateTime fecNotificacionCarta, LocalDate fecUltimaModificacion, LocalDate fecha, LocalDate fecVencimientoLegal, Usuario creadoPor, CanalRegistro canalRegistro, Usuario propietarioCaso, short diasVencidosPorVencer) {
-        //Constructor para caso obtenido a BD para exportar a reporte
-        this.tipoAtencion = tipoAtencion;
-        this.tipoRegCaso = tipoRegCaso;
-        this.idActividad = idActividad;
-        this.tipoCarta = tipoCarta;
-        this.nroCaso = nroCaso;
-        this.estadoCaso = estadoCaso;
-        this.canalNotificacion = canalNotificacion;
-        this.fecCreacionCaso = fecCreacionCaso;
-        this.correlativoCarta = correlativoCarta;
-        this.nroSuministro = nroSuministro;
-        this.provincia = provincia;
-        this.prioridad = prioridad;
-        this.estado = estado;
-        this.fecCreacion = fecCreacion;
-        this.fecEmision = fecEmision;
-        this.fecDespacho = fecDespacho;
-        this.fecNotificiacion = fecNotificiacion;
-        this.fecNotificacionCarta = fecNotificacionCarta;
-        this.fecUltimaModificacion = fecUltimaModificacion;
-        this.fecha = fecha;
-        this.fecVencimientoLegal = fecVencimientoLegal;
-        this.creadoPor = creadoPor;
-        this.canalRegistro = canalRegistro;
-        this.propietarioCaso = propietarioCaso;
-        this.diasVencidosPorVencer = diasVencidosPorVencer;
     }
 
     public TipoAtencion getTipoAtencion() {
@@ -422,6 +396,14 @@ public class Caso {
 
     public void setDiasVencidosPorVencer(short diasVencidosPorVencer) {
         this.diasVencidosPorVencer = diasVencidosPorVencer;
+    }
+
+    public ArrayList<Carta> getCartas() {
+        return cartas;
+    }
+
+    public ArrayList<Acta> getActas() {
+        return actas;
     }
 
     @Override

@@ -1,50 +1,70 @@
 package com.silverlink.Utils;
 
 import com.silverlink.Entidades.Caso;
-import com.silverlink.Utils.Navegador;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ProcesadorDatos {
 
     String tempPath = "D:\\Temp";
     String os1Path = "D:\\002\\23\\0001\\";
     int cuentaArchivos;
+    ArrayList<PDDocument> archivosEnOS;
 
-    public void procesarCasos(ArrayList<Caso> casos) {
+    public void descargarYEncarpetarCasos(ArrayList<Caso> casos) {
+
         Navegador navegador = new Navegador();
-        Encarpetador encarpetador;
 
         for (int i = 0; i < casos.size(); i++) {
             Caso caso = casos.get(i);
-            int cantArchivos = navegador.descargarArchivos(caso.getIdActividad());
+            int cantArchivos = navegador.descargarArchivosCaso(caso.getIdActividad());
             try {
                 while(true) {
                     if(isArchivosCompletos(cantArchivos))
                         break;
                 }
+                encarpetarArchivos(i, cantArchivos);
 
-                //Mover los archivos
-                String item =  String.format("%04d", i+1);
-                Path destino = Files.createDirectory(Path.of(os1Path + item));
-                encarpetador = new Encarpetador(destino.toString(), cantArchivos);
-                Files.walkFileTree(Path.of(tempPath), encarpetador);
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }
         }
     }
 
+    public void recolectarDatosDeArchivos(ArrayList<Caso> casos) {
+        for (int i = 0; i < casos.size(); i++) {
+            archivosEnOS = new ArrayList<>();
+            String item =  String.format("%04d", i+1);
+            Path rutaItem = Path.of("D:\\002\\23\\0001\\" + item);
+            try {
+                Files.walkFileTree(rutaItem, new RevisadorArchivos());
+            } catch (IOException ioe) {
+                System.out.println(ioe.getMessage());
+            }
+            System.out.println((i+1) + ". ");
+            AnalistaPDF analista = new AnalistaPDF();
+            analista.reconocerActaOCarta(archivosEnOS, casos.get(i));
+        }
+    }
+
     public boolean isArchivosCompletos(int cantArchivos) throws IOException{
-        //TODO Debe dar OK si cantArchivos = nroArchivos en carpeta
+        //Debe dar OK si cantArchivos = nroArchivos en carpeta
         cuentaArchivos = 0;
         Files.walkFileTree(Path.of(tempPath), new ContadorArchivos());
         return cantArchivos == cuentaArchivos;
+    }
+
+    public void encarpetarArchivos(int i, int cantArchivos) throws IOException{
+        //Encarpetar archivos en "temp" a la carpeta de su respectivo item
+        String item =  String.format("%04d", i+1);
+        Path destino = Files.createDirectory(Path.of(os1Path + item));
+        Encarpetador encarpetador = new Encarpetador(destino.toString(), cantArchivos);
+        Files.walkFileTree(Path.of(tempPath), encarpetador);
     }
 
     class Encarpetador extends SimpleFileVisitor<Path> {
@@ -72,6 +92,15 @@ public class ProcesadorDatos {
             if(!(file.toString().endsWith(".crdownload") || file.toString().endsWith(".tmp"))){
                 cuentaArchivos++;
             }
+            return super.visitFile(file, attrs);
+        }
+    }
+
+    class RevisadorArchivos extends SimpleFileVisitor<Path> {
+
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+            archivosEnOS.add(Loader.loadPDF(file.toFile()));
             return super.visitFile(file, attrs);
         }
     }

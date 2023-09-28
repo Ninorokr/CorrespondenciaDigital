@@ -17,11 +17,15 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import static com.silverlink.Main.scanner;
+import static com.silverlink.Main.tempPath;
+
 public class RegistradorDeCasos {
 
-    String tempPath = "Z:\\Servicios ENEL\\002 - Correspondencia digital\\temp";
-    Scanner scanner = new Scanner(System.in);
+//    String tempPath = "Z:\\Servicios ENEL\\002 - Correspondencia digital\\temp";
+//    Scanner scanner = new Scanner(System.in);
     ArrayList<Caso> casos;
+    Path excelFile;
 
     Walker johnnie = new Walker();
 
@@ -31,18 +35,17 @@ public class RegistradorDeCasos {
 
         casos = new ArrayList<>();
 
-        //Recorrer archivos, buscar archivo .xlsx a trabajar
+        //Buscar archivo .xlsx a trabajar
         try {
             Files.walkFileTree(Path.of(tempPath), johnnie);
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
 
+        leerCasosDesdeExcel(excelFile);
         //TODO Ingresar casos a la BD
 
-
         return casos;
-
     }
 
     //Abrir Excel, leer cada registro y almacenar en una lista
@@ -106,8 +109,9 @@ public class RegistradorDeCasos {
 
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+            //TODO Encontrar archivo excel y moverlo a la carpeta de la OS
             if(file.toString().endsWith(".xlsx")){
-                leerCasosDesdeExcel(file);
+                excelFile = file;
             }
             return super.visitFile(file, attrs);
         }

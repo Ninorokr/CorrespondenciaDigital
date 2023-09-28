@@ -1,9 +1,7 @@
 package com.silverlink.Entidades;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -18,51 +16,51 @@ public class Acta {
     String correoDestinatario;
     LocalDateTime fechaEntrega;
 
-    public Acta (PDDocument pdf) {
+    public Acta (PDDocument pdf, String texto) {
         this.documentoPDF = pdf;
-        this.texto = getTexto();
+        this.texto = texto;
         obtenerNroCarta();
         obtenerCorreo();
         obtenerFecha();
     }
 
-    private String getTexto() {
-        try {
-            PDFTextStripper stripper = new PDFTextStripper();
-            return stripper.getText(documentoPDF);
-        } catch (IOException ioe) {
-            System.out.println(ioe.getMessage());
-        }
-        return null;
-    }
+//    private String getTexto() {
+//        try {
+//            PDFTextStripper stripper = new PDFTextStripper();
+//            return stripper.getText(documentoPDF);
+//        } catch (IOException ioe) {
+//            System.out.println(ioe.getMessage());
+//        }
+//        return null;
+//    }
 
     private void obtenerNroCarta() {
         Pattern emailPattern = Pattern.compile("(?!0)\\d{9}"); //Matches a consecutive 9-digit, but it doesn't start with 0
         Matcher matcher = emailPattern.matcher(texto);
-        matcher.find(); matcher.find(); //Para ubicar la segunda coincidencia
+        matcher.find();; //Para ubicar la segunda coincidencia
         this.nroCarta = Integer.parseInt(matcher.group());
-        System.out.println(this.nroCarta);
+        System.out.println("Acta | nroCarta: " + this.nroCarta);
     }
 
     private void obtenerCorreo() {
-        Pattern emailPattern = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\\\.[A-Z]{2,6}$");
+        Pattern emailPattern = Pattern.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}");
         Matcher matcher = emailPattern.matcher(texto);
         matcher.find(); matcher.find(); //Para ubicar la segunda coincidencia
         this.correoDestinatario = matcher.group();
-        System.out.println(this.correoDestinatario);
+        System.out.println("Acta | correoDes: " + this.correoDestinatario);
     }
 
     private void obtenerFecha() {
         Pattern fechaPattern = Pattern.compile("[0-9]{4}-[a-z]{3}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}");
         Matcher matcher = fechaPattern.matcher(texto);
         matcher.find(); matcher.find(); //Para ubicar la segunda coincidencia
-        System.out.println(matcher.group());
+        System.out.println("Acta | fecha: " + matcher.group());
         this.fechaEntrega = descifrarFechaHora(matcher.group());
     }
 
     private LocalDateTime descifrarFechaHora(String texto) {
         int year = Integer.parseInt(texto.substring(0, 4));
-        int month = MesAbr.valueOf(texto.substring(5, 8)).ordinal()+1;
+        int month = MesAbrv.valueOf(texto.substring(5, 8)).ordinal()+1;
         int day = Integer.parseInt(texto.substring(9, 11));
         LocalDate date = LocalDate.of(year, month, day);
 

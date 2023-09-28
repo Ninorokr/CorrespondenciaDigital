@@ -64,8 +64,8 @@ public class Navegador {
         btnExportar.click();
         WebElement btnExportar2 = driver.findElement(By.name("export"));
         btnExportar2.click();
-        WebElement btnListo = driver.findElement(By.name("cancel"));
-        btnListo.click();
+//        WebElement btnListo = driver.findElement(By.name("cancel"));
+//        btnListo.click();
     }
 
     public void rechazarLightningExp() {
@@ -86,7 +86,7 @@ public class Navegador {
         }
     }
 
-    public int descargarArchivos(String idActividad) {
+    public int descargarArchivosCaso(String idActividad) {
         int cantArchivos;
 
         driver.get("https://enelsud.my.salesforce.com/" + idActividad);
