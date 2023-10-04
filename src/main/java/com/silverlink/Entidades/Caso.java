@@ -29,12 +29,17 @@ public class Caso {
     private LocalDate fecUltimaModificacion;
     private LocalDate fecha;
     private LocalDate fecVencimientoLegal;
+    private LocalDate fecDescarga;
     private Usuario creadoPor;
     private CanalRegistro canalRegistro;
     private Usuario propietarioCaso;
     private short diasVencidosPorVencer;
     private ArrayList<Carta> cartas = new ArrayList<>();
     private ArrayList<Acta> actas = new ArrayList<>();
+    private boolean errorNroCarta;
+    private boolean errorCorreoNotif;
+    private boolean errorFechas;
+    private boolean descargadoEnSalesforce;
 
     public Caso(){
 
@@ -404,6 +409,38 @@ public class Caso {
 
     public ArrayList<Acta> getActas() {
         return actas;
+    }
+
+    public boolean isErrorNroCarta() {
+        return errorNroCarta;
+    }
+
+    public void setErrorNroCarta(boolean errorNroCarta) {
+        this.errorNroCarta = errorNroCarta;
+    }
+
+    public boolean isErrorCorreoNotif() {
+        return errorCorreoNotif;
+    }
+
+    public void setErrorCorreoNotif(boolean errorCorreoNotif) {
+        this.errorCorreoNotif = errorCorreoNotif;
+    }
+
+    public boolean isErrorFechas() {
+        return errorFechas;
+    }
+
+    public void setErrorFechas(boolean errorFechas) {
+        this.errorFechas = errorFechas;
+    }
+
+    public boolean isDescargadoEnSalesforce() {
+        return descargadoEnSalesforce;
+    }
+
+    public void setDescargadoEnSalesforce(boolean descargadoEnSalesforce) {
+        this.descargadoEnSalesforce = descargadoEnSalesforce;
     }
 
     @Override

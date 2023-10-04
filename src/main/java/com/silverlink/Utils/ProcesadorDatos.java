@@ -37,6 +37,8 @@ public class ProcesadorDatos {
     }
 
     public void recolectarDatosDeArchivos(ArrayList<Caso> casos) {
+        AnalistaPDF analista;
+
         for (int i = 0; i < casos.size(); i++) {
             archivosEnOS = new ArrayList<>();
             String item =  String.format("%04d", i+1);
@@ -47,7 +49,7 @@ public class ProcesadorDatos {
                 System.out.println(ioe.getMessage());
             }
             System.out.println((i+1) + ". ");
-            AnalistaPDF analista = new AnalistaPDF();
+            analista = new AnalistaPDF();
             analista.reconocerActaOCarta(archivosEnOS, casos.get(i));
         }
     }

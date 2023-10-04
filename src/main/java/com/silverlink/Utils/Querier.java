@@ -161,6 +161,20 @@ public class Querier {
         return usuarios;
     }
 
+    public static int queryUltNroOS(int anio) {
+        String ultimoNroOSQuery = "SELECT MAX(nroOS) FROM [digi].[casosCorrespondenciaDigital] GROUP BY anio HAVING anio = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(ultimoNroOSQuery)) {
+            ps.setInt(1, anio);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            return rs.getShort(1);
+        } catch (SQLException sqle) {
+            System.out.println("No se pudo consultar el último número de OS");
+        }
+        return 0;
+    }
+
 //    public static void insertCasos() {
 //        String insertCasosQuery = ""
 //    }

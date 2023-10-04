@@ -24,9 +24,9 @@ public class AnalistaPDF {
 
                 if (matcher.find()) {
                     System.out.println(matcher.group());
-                    caso.getActas().add(new Acta(doc, texto));
+                    caso.getActas().add(new Acta(texto));
                 } else {
-                    caso.getCartas().add(new Carta(doc, texto));
+                    caso.getCartas().add(new Carta(texto));
                 }
             } catch (IOException ioe) {
                 System.out.println(ioe.getMessage());

@@ -1,38 +1,24 @@
 package com.silverlink.Entidades;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
-
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Carta {
 
-    PDDocument documentoPDF;
+//    PDDocument documentoPDF;
     String texto;
     int nroCarta;
     String correoDestinatario;
     LocalDate fechaEntrega;
 
-    public Carta (PDDocument pdf, String texto) {
-        this.documentoPDF = pdf;
+    public Carta (String texto) {
+//        this.documentoPDF = pdf;
         this.texto = texto;
         obtenerNroCarta();
         obtenerCorreo();
         obtenerFecha();
     }
-
-//    private String getTexto() {
-//        try {
-//            PDFTextStripper stripper = new PDFTextStripper();
-//            return stripper.getText(documentoPDF);
-//        } catch (IOException ioe) {
-//            System.out.println(ioe.getMessage());
-//        }
-//        return null;
-//    }
 
     private void obtenerNroCarta() {
         Pattern emailPattern = Pattern.compile("(?!0)\\d{9}"); //Matches a consecutive 9-digit, but it doesn't start with 0
