@@ -18,7 +18,7 @@ import static com.silverlink.Utils.Querier.*;
 public class Main {
 
     public static boolean isDriverOpen = false;
-    public static boolean listadoEncarpetado;
+    public static boolean listadoEncarpetado = false;
 
     static {
         Datasource.open();
@@ -38,6 +38,7 @@ public class Main {
     public static final String rootFolder = "Z:\\Servicios ENEL\\002 - Correspondencia digital\\";
     public static final String tempPath = rootFolder + "temp\\";
     public static Scanner scanner = new Scanner(System.in);
+    public static String nuevaCarpeta;
 
     public static void main(String[] args) throws InterruptedException {
 
@@ -60,10 +61,10 @@ public class Main {
     private static void imprimirMenuPrincipal() {
         //1a. Elimina "all" lo que existe en la carpeta "Temp"
         //1b. Crea una carpeta con el nro. de OS
-        //1c. Descarga el listado de casos y los registra en estado "Pendiente" a la BD.
+        //1c. Después guarda el archivo .xls original en la carpeta de la OS
+        //1d. Descarga el listado de casos y los registra en estado "Pendiente" a la BD.
         //Consultar y descartar "id. de actividad" duplicados
         //Todos los casos se registran con un nro. de OS y con estado 1 - "Pendiente"
-        //1d. Después guarda el archivo .xls original en la carpeta de la OS
         //HECHO
 
         //2a. Debe consultar todos los casos "pendientes" en la BD y almacenarlos en un ArrayList
@@ -109,16 +110,17 @@ public class Main {
 
         //Consultar cual sería el nuevo número de OS
         int anio = LocalDateTime.now().getYear()-2000;
-        String nroOS = String.format("%04d", Querier.queryUltNroOS(anio) + 1);
+        int nroOS = Querier.queryUltNroOS(anio) + 1;
 
         //Crea una nueva carpeta con el nro. de OS que corresponde
-        String nuevaCarpeta = rootFolder + anio + "\\" + nroOS;
+        nuevaCarpeta = rootFolder + anio + "\\" + String.format("%04d", nroOS);
         try {
             Files.createDirectories(Path.of(nuevaCarpeta));
         } catch (IOException ioe) {
             System.out.println("No se pudo crear la carpeta en " + nuevaCarpeta);
         }
 
+        //1d. Descarga el listado de casos
         Navegador nav = new Navegador();
         if(!isDriverOpen) {
             nav.abrirSesionSalesforce();
@@ -148,6 +150,15 @@ public class Main {
                 ioe.printStackTrace();
             }
         }
+
+        //Consultar y descartar "id. de actividad" duplicados
+//        ArrayList<String> idCasos = queryIdCasos();
+        RegistradorDeCasos registrador = new RegistradorDeCasos();
+        registrador.registrarCasos(anio, nroOS);
+
+        //1d. Descarga el listado de casos y los registra en estado "Pendiente" a la BD.
+        //Todos los casos se registran con un nro. de OS y con estado 1 - "Pendiente"
+
 
     }
 

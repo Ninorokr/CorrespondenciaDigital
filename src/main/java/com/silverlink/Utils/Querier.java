@@ -175,13 +175,20 @@ public class Querier {
         return 0;
     }
 
-//    public static void insertCasos() {
-//        String insertCasosQuery = ""
-//    }
-//
-//    public static ArrayList<Caso> queryCasosPendientes() {
-//        String casos = "SELECT ";
-//    }
+    public static ArrayList<String> queryIdCasos() {
+        String idCasosQuery = "SELECT idActividad FROM [digi].[casosCorrespondenciaDigital]";
+        ArrayList<String> ids = new ArrayList<>();
+
+        try (PreparedStatement ps = conn.prepareStatement(idCasosQuery)) {
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                ids.add(rs.getString(1));
+            }
+        } catch (SQLException sqle) {
+            System.out.println("No se pudieron consultar los números de id.");
+        }
+        return ids;
+    }
 
 
 }

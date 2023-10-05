@@ -1,7 +1,11 @@
 package com.silverlink.Utils;
 
+import com.silverlink.Entidades.Caso;
+
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 import static com.silverlink.Main.*;
 import static com.silverlink.Utils.Querier.*;
@@ -201,6 +205,51 @@ public class Commander {
         System.out.println("Se actualizó el código de usuario: " + codUsuario + " | " + nomUsuario);
 
         usuarios = queryUsuarios();
+    }
+
+    public static void insertCasoABD(Caso caso) {
+
+        // TODO : El excel tendrá campos vacíos, cuando lleguen acá, cada campo vacío lanzará una excepción :O!
+
+        String insertCasoQuery = "INSERT INTO [digi].[casosCorrespondenciaDigital] ([anio], [nroOS], [idCasoCorrespondenciaDigital], " +
+                "[idTipoAtencion], [idTipoRegCaso], [idActividad], [idTipoCarta], [nroCaso], [idEstadoCaso], [fechaCreacionCaso], " +
+                "[correlativoCarta], [nroSuministro], [idCanalNotificacion], [idProvincia], [idPrioridad], [idEstado], " +
+                "[fecCreacion], [fecNotificacionCarta], [fecUltimaModificacion], [fecha], [fecVencimientoLegal], [idCreadoPor], " +
+                "[canalRegistro], [idPropietarioCaso], [diasVencidosPorVencer]) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement ps = conn.prepareStatement(insertCasoQuery)) {
+            ps.setShort(1, caso.getAnio());
+            ps.setShort(2, caso.getNroOS());
+            ps.setShort(3, caso.getIdCorrelativoCaso());
+            ps.setShort(4, caso.getTipoAtencion().getIdTipoAtencion());
+            ps.setShort(5, caso.getTipoRegCaso().getIdTipoRegCaso());
+            ps.setString(6, caso.getIdActividad());
+            ps.setShort(7, caso.getTipoCarta().getIdTipoCarta());
+            ps.setInt(8, caso.getNroCaso());
+            ps.setShort(9, caso.getEstadoCaso().getIdEstadoCaso());
+            ps.setDate(10, Date.valueOf(caso.getFecCreacionCaso()));
+            ps.setShort(11, caso.getCorrelativoCarta());
+            ps.setInt(12, caso.getNroSuministro());
+            ps.setInt(13, caso.getCanalNotificacion().getIdCanalNotificacion());
+            ps.setShort(14, caso.getProvincia().getIdProvincia());
+            ps.setShort(15, caso.getPrioridad().getIdPrioridad());
+            ps.setShort(16, caso.getEstado().getIdEstado());
+            ps.setDate(17, Date.valueOf(caso.getFecCreacion()));
+            ps.setTimestamp(18, Timestamp.valueOf(caso.getFecNotificacionCarta()));
+            ps.setDate(19, Date.valueOf(caso.getFecUltimaModificacion()));
+            ps.setDate(20, Date.valueOf(caso.getFecha()));
+            ps.setTimestamp(21, Timestamp.valueOf(caso.getFecVencimientoLegal()));
+            ps.setShort(22, caso.getCreadoPor().getIdUsuario());
+            ps.setShort(23, caso.getCanalRegistro().getIdCanalRegistro());
+            ps.setShort(24, caso.getPropietarioCaso().getIdUsuario());
+            ps.setInt(25, caso.getDiasVencidosPorVencer());
+            ps.execute();
+            System.out.println("Se insertó caso: OS: " + caso.getNroOS() + "-" + caso.getIdCorrelativoCaso() +
+                    " | " + caso.getIdActividad() + " | " + caso.getNroCaso());
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
     }
 
 

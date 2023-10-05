@@ -8,6 +8,9 @@ import static com.silverlink.Utils.Commander.*;
 
 public class Caso {
 
+    private short anio;
+    private short nroOS;
+    private short idCorrelativoCaso;
     private TipoAtencion tipoAtencion;
     private TipoRegCaso tipoRegCaso;
     private String idActividad;
@@ -28,7 +31,7 @@ public class Caso {
     private LocalDateTime fecNotificacionCarta;
     private LocalDate fecUltimaModificacion;
     private LocalDate fecha;
-    private LocalDate fecVencimientoLegal;
+    private LocalDateTime fecVencimientoLegal;
     private LocalDate fecDescarga;
     private Usuario creadoPor;
     private CanalRegistro canalRegistro;
@@ -43,6 +46,30 @@ public class Caso {
 
     public Caso(){
 
+    }
+
+    public short getAnio() {
+        return anio;
+    }
+
+    public void setAnio(short anio) {
+        this.anio = anio;
+    }
+
+    public short getNroOS() {
+        return nroOS;
+    }
+
+    public void setNroOS(short nroOS) {
+        this.nroOS = nroOS;
+    }
+
+    public short getIdCorrelativoCaso() {
+        return idCorrelativoCaso;
+    }
+
+    public void setIdCorrelativoCaso(short idCorrelativoCaso) {
+        this.idCorrelativoCaso = idCorrelativoCaso;
     }
 
     public TipoAtencion getTipoAtencion() {
@@ -321,11 +348,11 @@ public class Caso {
         this.fecha = fecha;
     }
 
-    public LocalDate getFecVencimientoLegal() {
+    public LocalDateTime getFecVencimientoLegal() {
         return fecVencimientoLegal;
     }
 
-    public void setFecVencimientoLegal(LocalDate fecVencimientoLegal) {
+    public void setFecVencimientoLegal(LocalDateTime fecVencimientoLegal) {
         this.fecVencimientoLegal = fecVencimientoLegal;
     }
 

@@ -15,45 +15,39 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.Scanner;
 
-import static com.silverlink.Main.scanner;
-import static com.silverlink.Main.tempPath;
+import static com.silverlink.Main.*;
+import static com.silverlink.Utils.Commander.insertCasoABD;
 
 public class RegistradorDeCasos {
 
-//    String tempPath = "Z:\\Servicios ENEL\\002 - Correspondencia digital\\temp";
-//    Scanner scanner = new Scanner(System.in);
-    ArrayList<Caso> casos;
     Path excelFile;
-
     Walker johnnie = new Walker();
 
-    public ArrayList<Caso> registrarCasos() {
+    public void registrarCasos(int anio, int nroOS) {
         System.out.println("IMPORTANTE: ABRIR EL ARCHIVO DESCARGADO Y GUARDARLO COMO .XLSX. (Presiona ENTER para continuar)");
         scanner.nextLine();
 
-        casos = new ArrayList<>();
-
-        //Buscar archivo .xlsx a trabajar
+//        Buscar archivo .xlsx a trabajar
         try {
-            Files.walkFileTree(Path.of(tempPath), johnnie);
+            Files.walkFileTree(excelFile, johnnie);
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
 
-        leerCasosDesdeExcel(excelFile);
-        //TODO Ingresar casos a la BD
+        ArrayList<Caso> casos = leerCasosDesdeExcel(excelFile.toString(), anio, nroOS);
 
-        return casos;
+        //TODO Ingresar casos a la BD
+        for (Caso caso : casos) {
+            insertCasoABD(caso);
+        }
     }
 
     //Abrir Excel, leer cada registro y almacenar en una lista
-    public void leerCasosDesdeExcel(Path rutaArchivo) {
-        //TODO obtener archivo de carpeta temp, mover archivo a carpeta de OS,
-        // a su vez dentro de OTRA carpeta 'listas' con su nombre y correlativo
+    public ArrayList<Caso> leerCasosDesdeExcel(String rutaArchivo, int anio, int nroOS) {
+        ArrayList<Caso> casos = new ArrayList<>();
 
-        try(FileInputStream fis = new FileInputStream(rutaArchivo.toFile());
+        try(FileInputStream fis = new FileInputStream(rutaArchivo);
             XSSFWorkbook wb = new XSSFWorkbook(fis)) {
 
             XSSFSheet sheet = wb.getSheetAt(0);
@@ -67,6 +61,9 @@ public class RegistradorDeCasos {
                 }
 
                 Caso caso = new Caso();
+                caso.setAnio((short) anio);
+                caso.setNroOS((short) nroOS);
+                caso.setIdCorrelativoCaso((short) i);
                 for (int j = 0; j < row.getLastCellNum(); j++) { //0-based cell index; 0 es la primera columna
                     XSSFCell cell = row.getCell(j, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
                     switch(j) {
@@ -88,7 +85,7 @@ public class RegistradorDeCasos {
                         case 19: caso.setFecNotificacionCarta(cell.getLocalDateTimeCellValue()); break;
                         case 20: caso.setFecUltimaModificacion(cell.getLocalDateTimeCellValue().toLocalDate()); break;
                         case 21: caso.setFecha(cell.getLocalDateTimeCellValue().toLocalDate()); break;
-                        case 22: caso.setFecVencimientoLegal(cell.getLocalDateTimeCellValue().toLocalDate()); break;
+                        case 22: caso.setFecVencimientoLegal(cell.getLocalDateTimeCellValue()); break;
 //                        case 20: caso.setCreadoPor(cell.getStringCellValue()); break;
                         case 24: caso.setCanalRegistro(cell.getStringCellValue()); break;
                         case 26: caso.setPropietarioCaso(cell.getStringCellValue(),
@@ -103,13 +100,13 @@ public class RegistradorDeCasos {
         } catch(IOException ioe) {
             ioe.printStackTrace();
         }
+        return casos;
     }
 
     class Walker extends SimpleFileVisitor<Path> {
 
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-            //TODO Encontrar archivo excel y moverlo a la carpeta de la OS
             if(file.toString().endsWith(".xlsx")){
                 excelFile = file;
             }
