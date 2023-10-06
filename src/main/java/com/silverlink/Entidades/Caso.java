@@ -281,9 +281,9 @@ public class Caso {
     public void setEstado(String nomEstado) {
         boolean flag = true;
         Estado estado = null;
-        while(flag) {
+        while (flag) {
             estado = Estado.existeEstado(nomEstado);
-            if(estado == null){
+            if (estado == null) {
                 insertEstado(nomEstado);
             } else {
                 flag = false;

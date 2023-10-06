@@ -95,6 +95,7 @@ public class Main {
 
     // Menú op. 1
     public static void descargarCasosNuevos(){
+        scanner.nextLine(); //Line handler
         //Elimina "all" en la carpeta "Temp" antes de empezar
         try {
             Files.walkFileTree(Path.of(tempPath), new SimpleFileVisitor<>() {
@@ -106,6 +107,7 @@ public class Main {
             });
         } catch (IOException ioe) {
             System.out.println("No se pudo acceder a la carpeta Temp");
+            return;
         }
 
         //Consultar cual sería el nuevo número de OS
@@ -118,6 +120,7 @@ public class Main {
             Files.createDirectories(Path.of(nuevaCarpeta));
         } catch (IOException ioe) {
             System.out.println("No se pudo crear la carpeta en " + nuevaCarpeta);
+            return;
         }
 
         //1d. Descarga el listado de casos
@@ -153,9 +156,8 @@ public class Main {
 
         //Consultar y descartar "id. de actividad" duplicados
 //        ArrayList<String> idCasos = queryIdCasos();
-        RegistradorDeCasos registrador = new RegistradorDeCasos();
+        RegistradorDeCasos registrador = new RegistradorDeCasos(nuevaCarpeta);
         registrador.registrarCasos(anio, nroOS);
-
         //1d. Descarga el listado de casos y los registra en estado "Pendiente" a la BD.
         //Todos los casos se registran con un nro. de OS y con estado 1 - "Pendiente"
 

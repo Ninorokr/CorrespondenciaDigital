@@ -37,6 +37,7 @@ public class Navegador {
     }
 
     public void abrirSesionSalesforce() {
+        System.out.println("Abriendo Salesforce.com");
         driver.get("https://enelsud.my.salesforce.com/console");
 //        driver.get("https://enelsud.my.salesforce.com/?ec=302&startURL=%2Fconsole");
 
@@ -46,6 +47,7 @@ public class Navegador {
 
         usernameField.sendKeys("mensajeria@enel.com");
         passwordField.sendKeys("25*Jul*2023*");
+        System.out.println("Logueandose a Salesforce.com como mensajeria@enel.com");
         loginButton.click();
         Main.isDriverOpen = true;
     }
@@ -56,23 +58,31 @@ public class Navegador {
         driver.get("https://enelsud.my.salesforce.com/console");
 
         try {
-            List<WebElement> anyOpenTab = driver.findElements(By.xpath("/html/body/div[4]/div/div[2]/div[2]/ul/li"));
-
-            if(anyOpenTab.size() > 0) {
-                if(!(anyOpenTab.get(0).getText().equals("Correspondencia Digital (pendiente)"))){
+//            List<WebElement> anyOpenTab = driver.findElements(By.xpath("/html/body/div[4]/div/div[2]/div[2]/ul/li"));
+//
+//            if(anyOpenTab.size() > 0) {
+//                if(!(anyOpenTab.get(0).getText().equals("Correspondencia Digital (pendiente)"))){
                 //Si no hay ninguna pestaña abierta, no ejecutar este código
-                WebElement ddMenu = driver.findElement(By.xpath("/html/body/div[4]/div/div[2]/div[1]"));
+//                WebElement ddMenu = driver.findElement(By.xpath("/html/body/div[4]/div/div[2]/div[1]"));
+                WebElement ddMenu = driver.findElement(By.xpath("//div[@class='x-tab-tabmenu-right']"));
                 ddMenu.click();
+
+//                List<WebElement> openTabs = driver.findElements(By.xpath("/html/body/div[4]/div/div[2]"));
+//                List<WebElement> openTabs = driver.findElements(By.xpath("/html/body/div[4]/div/div[2]"));
+//                openTabs.get(openTabs.size()-1).click();
                 WebElement menuCerrarFichas = driver.findElement(By.xpath("//span[text()='Cerrar todas las fichas principales']"));
                 menuCerrarFichas.click();
+                System.out.println("Cerrando fichas abiertas");
                 try { Thread.sleep(1000); } catch (InterruptedException ie) {} //Tiempo de espera a que reaccione la página
-                }
-            }
+//                }
+//            }
 
             WebElement mainIFrame = driver.findElement(By.xpath("/html/body/div[4]/div/div[3]/div/div/iframe"));
             driver.switchTo().frame(mainIFrame);
             try { WebElement infCorrespondenciaDigital = driver.findElement(By.xpath("//*[@id=\"00O1o000005aVRP_NAME\"]/div[2]/a"));
-            infCorrespondenciaDigital.click(); } catch (NoSuchElementException nsee) { System.out.println("No se ubicó el enlace al Inf. de Correspondencia Digital (pendiente)"); }
+            infCorrespondenciaDigital.click();
+            System.out.println("Abriendo informe de Correspondencia Digital (pendiente)");
+            } catch (NoSuchElementException nsee) { System.out.println("No se ubicó el enlace al Inf. de Correspondencia Digital (pendiente)"); }
 //            Thread.sleep(18000);
 
             driver.switchTo().defaultContent();
@@ -94,6 +104,7 @@ public class Navegador {
             }
             WebElement btnExportar2 = driver.findElement(By.name("export"));
             btnExportar2.click();
+            System.out.println("Exportando listado de casos en .xls");
 
             while(!isArchivoDescargado) {
                 Files.walkFileTree(Path.of(Main.tempPath), new SimpleFileVisitor<>(){

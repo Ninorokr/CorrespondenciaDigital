@@ -18,11 +18,16 @@ import java.util.ArrayList;
 
 import static com.silverlink.Main.*;
 import static com.silverlink.Utils.Commander.insertCasoABD;
+import static com.silverlink.Utils.Querier.queryIdCasos;
 
 public class RegistradorDeCasos {
 
     Path excelFile;
     Walker johnnie = new Walker();
+
+    public RegistradorDeCasos(String ruta) {
+        this.excelFile = Path.of(ruta);
+    }
 
     public void registrarCasos(int anio, int nroOS) {
         System.out.println("IMPORTANTE: ABRIR EL ARCHIVO DESCARGADO Y GUARDARLO COMO .XLSX. (Presiona ENTER para continuar)");
@@ -36,10 +41,18 @@ public class RegistradorDeCasos {
         }
 
         ArrayList<Caso> casos = leerCasosDesdeExcel(excelFile.toString(), anio, nroOS);
+        ArrayList<String> idsCasosYaExistentes = queryIdCasos();
+        int i = 1;
 
-        //TODO Ingresar casos a la BD
+        //Ingresar casos a la BD descartando los casos duplicados primero
         for (Caso caso : casos) {
-            insertCasoABD(caso);
+            if(!idsCasosYaExistentes.contains(caso.getIdActividad())) {
+                caso.setIdCorrelativoCaso((short) i);
+                insertCasoABD(caso);
+                i++;
+            } else {
+                System.out.println("Ya existe el caso de id.: " + caso.getIdActividad());
+            }
         }
     }
 
@@ -63,7 +76,7 @@ public class RegistradorDeCasos {
                 Caso caso = new Caso();
                 caso.setAnio((short) anio);
                 caso.setNroOS((short) nroOS);
-                caso.setIdCorrelativoCaso((short) i);
+
                 for (int j = 0; j < row.getLastCellNum(); j++) { //0-based cell index; 0 es la primera columna
                     XSSFCell cell = row.getCell(j, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
                     switch(j) {

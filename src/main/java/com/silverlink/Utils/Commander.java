@@ -2,10 +2,9 @@ package com.silverlink.Utils;
 
 import com.silverlink.Entidades.Caso;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static com.silverlink.Main.*;
 import static com.silverlink.Utils.Querier.*;
@@ -209,7 +208,8 @@ public class Commander {
 
     public static void insertCasoABD(Caso caso) {
 
-        // TODO : El excel tendrá campos vacíos, cuando lleguen acá, cada campo vacío lanzará una excepción :O!
+        //El excel tendrá campos vacíos, cuando lleguen acá, cada campo vacío lanzará una excepción :O!
+        //Se puede reemplazar con setObject
 
         String insertCasoQuery = "INSERT INTO [digi].[casosCorrespondenciaDigital] ([anio], [nroOS], [idCasoCorrespondenciaDigital], " +
                 "[idTipoAtencion], [idTipoRegCaso], [idActividad], [idTipoCarta], [nroCaso], [idEstadoCaso], [fechaCreacionCaso], " +
@@ -228,28 +228,48 @@ public class Commander {
             ps.setShort(7, caso.getTipoCarta().getIdTipoCarta());
             ps.setInt(8, caso.getNroCaso());
             ps.setShort(9, caso.getEstadoCaso().getIdEstadoCaso());
-            ps.setDate(10, Date.valueOf(caso.getFecCreacionCaso()));
+            ps.setDate(10, getDateValue(caso.getFecCreacionCaso()));
             ps.setShort(11, caso.getCorrelativoCarta());
             ps.setInt(12, caso.getNroSuministro());
             ps.setInt(13, caso.getCanalNotificacion().getIdCanalNotificacion());
             ps.setShort(14, caso.getProvincia().getIdProvincia());
             ps.setShort(15, caso.getPrioridad().getIdPrioridad());
             ps.setShort(16, caso.getEstado().getIdEstado());
-            ps.setDate(17, Date.valueOf(caso.getFecCreacion()));
-            ps.setTimestamp(18, Timestamp.valueOf(caso.getFecNotificacionCarta()));
-            ps.setDate(19, Date.valueOf(caso.getFecUltimaModificacion()));
-            ps.setDate(20, Date.valueOf(caso.getFecha()));
-            ps.setTimestamp(21, Timestamp.valueOf(caso.getFecVencimientoLegal()));
+            ps.setDate(17, getDateValue(caso.getFecCreacion()));
+            ps.setTimestamp(18, getTimeStampValue(caso.getFecNotificacionCarta()));
+            ps.setDate(19, getDateValue(caso.getFecUltimaModificacion()));
+            ps.setDate(20, getDateValue(caso.getFecha()));
+            ps.setTimestamp(21, getTimeStampValue(caso.getFecVencimientoLegal()));
             ps.setShort(22, caso.getCreadoPor().getIdUsuario());
             ps.setShort(23, caso.getCanalRegistro().getIdCanalRegistro());
             ps.setShort(24, caso.getPropietarioCaso().getIdUsuario());
             ps.setInt(25, caso.getDiasVencidosPorVencer());
+//            ps.setObject(26, caso.getPropietarioCaso().getIdUsuario(), JDBCType.INTEGER);
             ps.execute();
-            System.out.println("Se insertó caso: OS: " + caso.getNroOS() + "-" + caso.getIdCorrelativoCaso() +
+            System.out.println("002-23-" + caso.getNroOS() + "-" + caso.getIdCorrelativoCaso() +
                     " | " + caso.getIdActividad() + " | " + caso.getNroCaso());
         } catch (SQLException sqle) {
             sqle.printStackTrace();
         }
+
+    }
+
+        private static Date getDateValue(LocalDate fecha) {
+            if(fecha == null)
+                return null;
+            return Date.valueOf(fecha);
+        }
+
+        private static Timestamp getTimeStampValue(LocalDateTime fechaYHora) {
+            if(fechaYHora == null)
+                return null;
+            return Timestamp.valueOf(fechaYHora);
+        }
+
+
+
+    public static void insertCasoABDMejorado(Caso caso) {
+
     }
 
 
