@@ -190,5 +190,30 @@ public class Querier {
         return ids;
     }
 
+    public static ArrayList<Caso> queryCasosPendientes() {
+        String casosPendientesQuery = "SELECT anio, nroOS, idCasoCorrespondenciaDigital, idActividad, nroCaso, " +
+                "isArchivosDescargados FROM [digi].[casosCorrespondenciaDigital] " +
+                "WHERE idEstado = 1";
+        ArrayList<Caso> casosPendientes = new ArrayList<>();
+
+        try (PreparedStatement ps = conn.prepareStatement(casosPendientesQuery)) {
+            ResultSet rs = ps.executeQuery();
+            Caso caso;
+            while(rs.next()){
+                caso = new Caso();
+                caso.setAnio(rs.getShort(1));
+                caso.setNroOS(rs.getShort(2));
+                caso.setIdCorrelativoCaso(rs.getShort(3));
+                caso.setIdActividad(rs.getString(4));
+                caso.setNroCaso(rs.getInt(5));
+                caso.setArchivosDescargados(rs.getBoolean(6));
+                casosPendientes.add(caso);
+            }
+        } catch (SQLException sqle) {
+            System.out.println("No se pudieron consultar los ids y nros. de los casos");
+        }
+        return casosPendientes;
+    }
+
 
 }

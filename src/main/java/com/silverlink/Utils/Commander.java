@@ -215,8 +215,8 @@ public class Commander {
                 "[idTipoAtencion], [idTipoRegCaso], [idActividad], [idTipoCarta], [nroCaso], [idEstadoCaso], [fechaCreacionCaso], " +
                 "[correlativoCarta], [nroSuministro], [idCanalNotificacion], [idProvincia], [idPrioridad], [idEstado], " +
                 "[fecCreacion], [fecNotificacionCarta], [fecUltimaModificacion], [fecha], [fecVencimientoLegal], [idCreadoPor], " +
-                "[canalRegistro], [idPropietarioCaso], [diasVencidosPorVencer]) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "[canalRegistro], [idPropietarioCaso], [diasVencidosPorVencer], [descargadoEnSalesforce], [isArchivosDescargados]) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement ps = conn.prepareStatement(insertCasoQuery)) {
             ps.setShort(1, caso.getAnio());
@@ -244,6 +244,9 @@ public class Commander {
             ps.setShort(23, caso.getCanalRegistro().getIdCanalRegistro());
             ps.setShort(24, caso.getPropietarioCaso().getIdUsuario());
             ps.setInt(25, caso.getDiasVencidosPorVencer());
+            ps.setBoolean(26, caso.isDescargadoEnSalesforce()); //redundante (DEFAULT en BD al momento de insert)
+            ps.setBoolean(27, caso.isArchivosDescargados()); //redundante (DEFAULT en BD al momento de insert)
+
 //            ps.setObject(26, caso.getPropietarioCaso().getIdUsuario(), JDBCType.INTEGER);
             ps.execute();
             System.out.println("002-23-" + caso.getNroOS() + "-" + caso.getIdCorrelativoCaso() +
@@ -266,10 +269,21 @@ public class Commander {
             return Timestamp.valueOf(fechaYHora);
         }
 
+//    public static void insertCasoABDMejorado(Caso caso) {
+//
+//    }
 
+    public static void updateArchivosDescargados(Caso caso) {
+        String SetArchivosDescargadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET isArchivosDescargados = 1" +
+                "WHERE idActividad = ?";
 
-    public static void insertCasoABDMejorado(Caso caso) {
-
+        try(PreparedStatement ps = conn.prepareStatement(SetArchivosDescargadosQuery)){
+            ps.setString(1, caso.getIdActividad());
+            ps.execute();
+        } catch (SQLException sqle){
+            System.out.println("No se pudo registrar archivos descargados como \"TRUE\"");
+            sqle.printStackTrace();
+        }
     }
 
 

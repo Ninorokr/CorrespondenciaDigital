@@ -42,7 +42,8 @@ public class Caso {
     private boolean errorNroCarta;
     private boolean errorCorreoNotif;
     private boolean errorFechas;
-    private boolean descargadoEnSalesforce;
+    private boolean descargadoEnSalesforce = false;
+    private boolean archivosDescargados = false;
 
     public Caso(){
 
@@ -148,6 +149,10 @@ public class Caso {
 
     public int getNroCaso() {
         return nroCaso;
+    }
+
+    public void setNroCaso(int nroCaso) {
+        this.nroCaso = nroCaso;
     }
 
     public void setNroCaso(String nroCaso) {
@@ -468,6 +473,14 @@ public class Caso {
 
     public void setDescargadoEnSalesforce(boolean descargadoEnSalesforce) {
         this.descargadoEnSalesforce = descargadoEnSalesforce;
+    }
+
+    public boolean isArchivosDescargados() {
+        return archivosDescargados;
+    }
+
+    public void setArchivosDescargados(boolean archivosDescargados) {
+        this.archivosDescargados = archivosDescargados;
     }
 
     @Override

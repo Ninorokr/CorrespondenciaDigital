@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import static com.silverlink.Utils.ProcesadorDatos.encarpetarArchivos;
+import static com.silverlink.Utils.ProcesadorDatos.isArchivosCompletos;
 import static com.silverlink.Utils.Querier.*;
 
 public class Main {
@@ -36,9 +38,10 @@ public class Main {
     public static ArrayList<Usuario> usuarios = queryUsuarios();
 
     public static final String rootFolder = "Z:\\Servicios ENEL\\002 - Correspondencia digital\\";
-    public static final String tempPath = rootFolder + "temp\\";
+    public static final String tempPath = rootFolder + "Temp\\";
     public static Scanner scanner = new Scanner(System.in);
     public static String nuevaCarpeta;
+    public static Navegador nav;
 
     public static void main(String[] args) throws InterruptedException {
 
@@ -84,17 +87,22 @@ public class Main {
             System.out.println("1. Descargar casos nuevos\n" +
                     "2. Procesar casos pendientes\n" +
                     "3. Descargar casos en Salesforce\n" +
-                    "4. Salir");
+                    "9. Salir");
 
             switch (scanner.nextInt()) {
                 case 1: descargarCasosNuevos(); break;
-                case 4: System.exit(0);
+                case 2: procesarCasosPendientes(); break;
+                case 9: System.exit(0);
             }
         }
     }
 
     // Menú op. 1
-    public static void descargarCasosNuevos(){
+    public static void descargarCasosNuevos() {
+        //TODO 1. Si el Chromedriver ya se encuentra abierto, utilizar la instancia actual
+        //TODO 2. En caso haya fallado la descarga, ofrecer skippear la descarga automatica
+        //TODO y leer un archivo descargado manualmente
+
         scanner.nextLine(); //Line handler
         //Elimina "all" en la carpeta "Temp" antes de empezar
         try {
@@ -124,7 +132,7 @@ public class Main {
         }
 
         //1d. Descarga el listado de casos
-        Navegador nav = new Navegador();
+        nav = new Navegador();
         if(!isDriverOpen) {
             nav.abrirSesionSalesforce();
         }
@@ -161,6 +169,47 @@ public class Main {
         //1d. Descarga el listado de casos y los registra en estado "Pendiente" a la BD.
         //Todos los casos se registran con un nro. de OS y con estado 1 - "Pendiente"
 
+    }
+
+    public static void procesarCasosPendientes() {
+        //Jalar casos pendientes de la BD (solo los datos relevantes)
+        ArrayList<Caso> casos = queryCasosPendientes();
+
+        //Recorrer caso por caso, abrir página en salesforce y descargar los archivos
+        for (int i = 0; i < casos.size(); i++) {
+            Caso caso = casos.get(i);
+
+            if(caso.isArchivosDescargados()) //Si ya se descargaron previamente los archivos, continuar con el sgte.
+                continue;
+
+            //Si el navegador está cerrado, abrir nueva instancia y sesión en Salesforce
+            if (nav == null) {
+                nav = new Navegador();
+                nav.abrirSesionSalesforce();
+            }
+
+            int cantArchivos = nav.descargarArchivosCaso(caso.getIdActividad());
+            try {
+                while(true) {
+                    if(isArchivosCompletos(cantArchivos)) {
+                        break;
+                    }
+//                    try {Thread.sleep(5000);} catch (InterruptedException ie) {}
+                }
+                encarpetarArchivos(caso, cantArchivos);
+                caso.setArchivosDescargados(true); //Marcar archivos como descargados
+                Commander.updateArchivosDescargados(caso);
+
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+
+        }
+
+        //TODO agregar constraint DEFAULT a campos descargadoEnSalesforce y isArchivosDescargados en la BD
+        //TODO preguntar por la característica única de los idActividad
+
+        //TODO Cargar los casos pendientes de la BD y almacenarlos en una lista
 
     }
 
