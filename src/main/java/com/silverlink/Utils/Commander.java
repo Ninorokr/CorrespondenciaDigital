@@ -191,10 +191,11 @@ public class Commander {
     }
 
     public static void updateCodUsuario(String codUsuario, String nomUsuario) {
-        String updateUsuarioQuery = "UPDATE [digi].[usuario] SET codUsuario = ? WHERE nomUsuario = " + nomUsuario;
+        String updateUsuarioQuery = "UPDATE [digi].[usuario] SET codUsuario = ? WHERE nomUsuario = ?";
 
         try(PreparedStatement ps = conn.prepareStatement(updateUsuarioQuery)){
             ps.setString(1, codUsuario);
+            ps.setString(2, nomUsuario);
             ps.execute();
         } catch (SQLException sqle){
             System.out.println("No se pudo actualizar el código de usuario para " + nomUsuario);

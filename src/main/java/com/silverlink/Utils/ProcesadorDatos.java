@@ -1,7 +1,6 @@
 package com.silverlink.Utils;
 
 import com.silverlink.Entidades.Caso;
-import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import java.io.IOException;
@@ -10,12 +9,13 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 
 import static com.silverlink.Main.*;
+import static com.silverlink.Utils.AnalistaPDF.reconocerActaOCarta;
 
 public class ProcesadorDatos {
 
 //    String os1Path = "D:\\002\\23\\0001\\";
     static int cuentaArchivos;
-    ArrayList<PDDocument> archivosEnItem;
+//    static ArrayList<PDDocument> archivosEnItem;
 
 //    public void descargarYEncarpetarCasos(ArrayList<Caso> casos) {
 //
@@ -40,21 +40,37 @@ public class ProcesadorDatos {
 //        }
 //    }
 
-    public void recolectarDatosDeArchivos(ArrayList<Caso> casos) {
-        AnalistaPDF analista;
+//    public static void recolectarDatosDeArchivos(ArrayList<Caso> casos) {
+//
+//        for (int i = 0; i < casos.size(); i++) {
+//            archivosEnItem = new ArrayList<>();
+//            Caso caso = casos.get(i);
+//            String nroOS = String.format("%04d", caso.getNroOS());
+//            String item =  String.format("%04d", caso.getIdCorrelativoCaso());
+//            Path rutaItem = Path.of(rootFolder + caso.getAnio() + "\\" + nroOS + "\\" + item);
+//            try {
+//                Files.walkFileTree(rutaItem, new RevisadorArchivos());
+//            } catch (IOException ioe) {
+//                System.out.println(ioe.getMessage());
+//            }
+//            System.out.println((i+1) + ". ");
+////            analista = new AnalistaPDF();
+//            reconocerActaOCarta(archivosEnItem, casos.get(i));
+//        }
+//    }
 
-        for (int i = 0; i < casos.size(); i++) {
-            archivosEnItem = new ArrayList<>();
-            String item =  String.format("%04d", i+1);
-            Path rutaItem = Path.of("D:\\002\\23\\0001\\" + item);
+    public static void recolectarDatosDeArchivos(ArrayList<Caso> casos) {
+
+        for(Caso caso : casos) {
+            String nroOS = String.format("%04d", caso.getNroOS());
+            String item =  String.format("%04d", caso.getIdCorrelativoCaso());
+            Path rutaItem = Path.of(rootFolder + caso.getAnio() + "\\" + nroOS + "\\" + item);
+
             try {
-                Files.walkFileTree(rutaItem, new RevisadorArchivos());
+                Files.walkFileTree(rutaItem, new RevisadorArchivos(caso));
             } catch (IOException ioe) {
                 System.out.println(ioe.getMessage());
             }
-            System.out.println((i+1) + ". ");
-            analista = new AnalistaPDF();
-            analista.reconocerActaOCarta(archivosEnItem, casos.get(i));
         }
     }
 
@@ -105,11 +121,26 @@ public class ProcesadorDatos {
         }
     }
 
-    class RevisadorArchivos extends SimpleFileVisitor<Path> {
+//    static class RevisadorArchivos extends SimpleFileVisitor<Path> {
+//
+//        @Override
+//        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+//            archivosEnItem.add(Loader.loadPDF(file.toFile()));
+//            return super.visitFile(file, attrs);
+//        }
+//    }
+
+    static class RevisadorArchivos extends SimpleFileVisitor<Path> {
+
+        Caso caso;
+
+        public RevisadorArchivos(Caso caso) {
+            this.caso = caso;
+        }
 
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-            archivosEnItem.add(Loader.loadPDF(file.toFile()));
+            reconocerActaOCarta(file.toFile(), caso);
             return super.visitFile(file, attrs);
         }
     }

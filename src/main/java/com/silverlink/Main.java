@@ -4,17 +4,13 @@ import com.silverlink.Entidades.*;
 import com.silverlink.Utils.*;
 
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Scanner;
 
-import static com.silverlink.Utils.ProcesadorDatos.encarpetarArchivos;
-import static com.silverlink.Utils.ProcesadorDatos.isArchivosCompletos;
+import static com.silverlink.Utils.ProcesadorDatos.*;
 import static com.silverlink.Utils.Querier.*;
 
 public class Main {
@@ -98,25 +94,80 @@ public class Main {
     }
 
     // Menú op. 1
-    public static void descargarCasosNuevos() {
-        //TODO 1. Si el Chromedriver ya se encuentra abierto, utilizar la instancia actual
-        //TODO 2. En caso haya fallado la descarga, ofrecer skippear la descarga automatica
-        //TODO y leer un archivo descargado manualmente
+//    private static void descargarCasosNuevos() {
+//        //1. Si el Chromedriver ya se encuentra abierto, utilizar la instancia actual
+//        //TODO 2. En caso haya fallado la descarga, ofrecer skippear la descarga automatica
+//        //TODO y leer un archivo descargado manualmente
+//
+//        scanner.nextLine(); //Line handler
+//        //Elimina "all" en la carpeta "Temp" antes de empezar
+//        try {
+//            Files.walkFileTree(Path.of(tempPath), new SimpleFileVisitor<>() {
+//                @Override
+//                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+//                    Files.delete(file);
+//                    return super.visitFile(file, attrs);
+//                }
+//            });
+//        } catch (IOException ioe) {
+//            System.out.println("No se pudo acceder a la carpeta Temp");
+//            return;
+//        }
+//
+//        //Consultar cual sería el nuevo número de OS
+//        int anio = LocalDateTime.now().getYear()-2000;
+//        int nroOS = Querier.queryUltNroOS(anio) + 1;
+//
+//        //Crea una nueva carpeta con el nro. de OS que corresponde
+//        nuevaCarpeta = rootFolder + anio + "\\" + String.format("%04d", nroOS);
+//        try {
+//            Files.createDirectories(Path.of(nuevaCarpeta));
+//        } catch (IOException ioe) {
+//            System.out.println("No se pudo crear la carpeta en " + nuevaCarpeta);
+//            return;
+//        }
+//
+//        //1d. Descarga el listado de casos
+//        if(!isDriverOpen) {
+//            nav = new Navegador();
+//            nav.abrirSesionSalesforce();
+//        }
+//        nav.descargarReporte();
+//
+//        listadoEncarpetado = false;
+//        //Enviar el archivo de excel a la carpeta con el nro. de OS que le corresponde
+//        while(true){
+//            try { Thread.sleep(3000); } catch (InterruptedException ie) {}
+//            try {
+//                Files.walkFileTree(Path.of(tempPath), new SimpleFileVisitor<>() {
+//                    @Override
+//                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+//                        if(file.toString().endsWith(".xls")){
+//                            listadoEncarpetado = true;
+//                            Files.move(file, Path.of(nuevaCarpeta + "\\" + file.getName(file.getNameCount()-1)));
+//                        }
+//                        return super.visitFile(file, attrs);
+//                    }
+//                });
+//                if(listadoEncarpetado)
+//                    break;
+//            } catch (IOException ioe) {
+//                System.out.println("No se pudo acceder a la carpeta Temp");
+//                System.out.println(ioe.getMessage());
+//                ioe.printStackTrace();
+//            }
+//        }
+//
+//        //Consultar y descartar "id. de actividad" duplicados
+////        ArrayList<String> idCasos = queryIdCasos();
+//        RegistradorDeCasos registrador = new RegistradorDeCasos(nuevaCarpeta);
+//        registrador.registrarCasos(anio, nroOS);
+//        //1d. Descarga el listado de casos y los registra en estado "Pendiente" a la BD.
+//        //Todos los casos se registran con un nro. de OS y con estado 1 - "Pendiente"
+//
+//    }
 
-        scanner.nextLine(); //Line handler
-        //Elimina "all" en la carpeta "Temp" antes de empezar
-        try {
-            Files.walkFileTree(Path.of(tempPath), new SimpleFileVisitor<>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    Files.delete(file);
-                    return super.visitFile(file, attrs);
-                }
-            });
-        } catch (IOException ioe) {
-            System.out.println("No se pudo acceder a la carpeta Temp");
-            return;
-        }
+    private static void descargarCasosNuevos() {
 
         //Consultar cual sería el nuevo número de OS
         int anio = LocalDateTime.now().getYear()-2000;
@@ -124,62 +175,19 @@ public class Main {
 
         //Crea una nueva carpeta con el nro. de OS que corresponde
         nuevaCarpeta = rootFolder + anio + "\\" + String.format("%04d", nroOS);
-        try {
-            Files.createDirectories(Path.of(nuevaCarpeta));
-        } catch (IOException ioe) {
-            System.out.println("No se pudo crear la carpeta en " + nuevaCarpeta);
-            return;
-        }
 
-        //1d. Descarga el listado de casos
-        nav = new Navegador();
-        if(!isDriverOpen) {
-            nav.abrirSesionSalesforce();
-        }
-        nav.descargarReporte();
-
-        listadoEncarpetado = false;
-        //Enviar el archivo de excel a la carpeta con el nro. de OS que le corresponde
-        while(true){
-            try { Thread.sleep(3000); } catch (InterruptedException ie) {}
-            try {
-                Files.walkFileTree(Path.of(tempPath), new SimpleFileVisitor<>() {
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        if(file.toString().endsWith(".xls")){
-                            listadoEncarpetado = true;
-                            Files.move(file, Path.of(nuevaCarpeta + "\\" + file.getName(file.getNameCount()-1)));
-                        }
-                        return super.visitFile(file, attrs);
-                    }
-                });
-                if(listadoEncarpetado)
-                    break;
-            } catch (IOException ioe) {
-                System.out.println("No se pudo acceder a la carpeta Temp");
-                System.out.println(ioe.getMessage());
-                ioe.printStackTrace();
-            }
-        }
-
-        //Consultar y descartar "id. de actividad" duplicados
-//        ArrayList<String> idCasos = queryIdCasos();
         RegistradorDeCasos registrador = new RegistradorDeCasos(nuevaCarpeta);
         registrador.registrarCasos(anio, nroOS);
-        //1d. Descarga el listado de casos y los registra en estado "Pendiente" a la BD.
-        //Todos los casos se registran con un nro. de OS y con estado 1 - "Pendiente"
-
     }
 
-    public static void procesarCasosPendientes() {
+    private static void procesarCasosPendientes() {
         //Jalar casos pendientes de la BD (solo los datos relevantes)
         ArrayList<Caso> casos = queryCasosPendientes();
+        boolean isTempPathEmpty = true;
 
         //Recorrer caso por caso, abrir página en salesforce y descargar los archivos
-        for (int i = 0; i < casos.size(); i++) {
-            Caso caso = casos.get(i);
-
-            if(caso.isArchivosDescargados()) //Si ya se descargaron previamente los archivos, continuar con el sgte.
+        for (Caso caso : casos) {
+            if (caso.isArchivosDescargados()) //Si ya se descargaron previamente los archivos, continuar con el sgte.
                 continue;
 
             //Si el navegador está cerrado, abrir nueva instancia y sesión en Salesforce
@@ -188,13 +196,34 @@ public class Main {
                 nav.abrirSesionSalesforce();
             }
 
+
+            ArrayList<Path> files;
+            //Verificar que la carpeta temp esté vacía antes de continuar
+            //TODO pendiente verificar
+            while (!isTempPathEmpty) {
+                try (DirectoryStream<Path> ds = Files.newDirectoryStream(Path.of(tempPath))) {
+                    Iterator<Path> iterator = ds.iterator();
+                    files = new ArrayList<>();
+                    while (iterator.hasNext()) {
+                        files.add(iterator.next());
+                    }
+                    if (files.size() == 0) {
+                        isTempPathEmpty = true;
+                    }
+                } catch (IOException ioe) {
+                    System.out.println(ioe.getMessage());
+                }
+            }
+
             int cantArchivos = nav.descargarArchivosCaso(caso.getIdActividad());
+            isTempPathEmpty = false;
+
             try {
-                while(true) {
-                    if(isArchivosCompletos(cantArchivos)) {
+                while (true) {
+                    if (isArchivosCompletos(cantArchivos)) {
                         break;
                     }
-//                    try {Thread.sleep(5000);} catch (InterruptedException ie) {}
+//                    try {Thread.sleep(1000);} catch (InterruptedException ie) {}
                 }
                 encarpetarArchivos(caso, cantArchivos);
                 caso.setArchivosDescargados(true); //Marcar archivos como descargados
@@ -203,13 +232,20 @@ public class Main {
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }
-
         }
 
-        //TODO agregar constraint DEFAULT a campos descargadoEnSalesforce y isArchivosDescargados en la BD
-        //TODO preguntar por la característica única de los idActividad
+        //Se consulta otra vez para obtener la lista actualizada después de descargar archivos
+        casos = queryCasosPendientes();
+        recolectarDatosDeArchivos(casos);
+
+        //agregar constraint DEFAULT a campos descargadoEnSalesforce y isArchivosDescargados en la BD
+        //preguntar por la característica única de los idActividad
 
         //TODO Cargar los casos pendientes de la BD y almacenarlos en una lista
+
+    }
+
+    private static void revisarArchivos() {
 
     }
 
