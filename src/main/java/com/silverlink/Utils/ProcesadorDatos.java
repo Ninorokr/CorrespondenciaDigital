@@ -103,7 +103,8 @@ public class ProcesadorDatos {
 
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-            Files.move(file, Path.of(destino + "\\" + file.getName(file.getNameCount()-1)), StandardCopyOption.ATOMIC_MOVE);
+            Files.move(file, Path.of(destino + "\\" + file.getName(file.getNameCount()-1)),
+                    StandardCopyOption.REPLACE_EXISTING);
             return super.visitFile(file, attrs);
         }
     }

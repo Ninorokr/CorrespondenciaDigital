@@ -3,6 +3,7 @@ package com.silverlink;
 import com.silverlink.Entidades.*;
 import com.silverlink.Utils.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.time.LocalDateTime;
@@ -183,7 +184,7 @@ public class Main {
     private static void procesarCasosPendientes() {
         //Jalar casos pendientes de la BD (solo los datos relevantes)
         ArrayList<Caso> casos = queryCasosPendientes();
-        boolean isTempPathEmpty = true;
+        boolean isTempFolderEmpty = true;
 
         //Recorrer caso por caso, abrir página en salesforce y descargar los archivos
         for (Caso caso : casos) {
@@ -196,28 +197,34 @@ public class Main {
                 nav.abrirSesionSalesforce();
             }
 
+//            ArrayList<Path> files;
+//            Verificar que la carpeta temp esté vacía antes de continuar
+//            TODO pendiente verificar
+//            while (!isTempFolderEmpty) {
+//                try (DirectoryStream<Path> ds = Files.newDirectoryStream(Path.of(tempPath))) {
+//                    Iterator<Path> iterator = ds.iterator();
+//                    files = new ArrayList<>();
+//                    while (iterator.hasNext()) {
+//                        files.add(iterator.next());
+//                    }
+//                    if (files.size() == 0) {
+//                        isTempFolderEmpty = true;
+//                    }
+//                } catch (IOException ioe) {
+//                    System.out.println(ioe.getMessage());
+//                }
+//            }
 
-            ArrayList<Path> files;
-            //Verificar que la carpeta temp esté vacía antes de continuar
-            //TODO pendiente verificar
-            while (!isTempPathEmpty) {
-                try (DirectoryStream<Path> ds = Files.newDirectoryStream(Path.of(tempPath))) {
-                    Iterator<Path> iterator = ds.iterator();
-                    files = new ArrayList<>();
-                    while (iterator.hasNext()) {
-                        files.add(iterator.next());
-                    }
-                    if (files.size() == 0) {
-                        isTempPathEmpty = true;
-                    }
-                } catch (IOException ioe) {
-                    System.out.println(ioe.getMessage());
+            File folder = new File(tempPath);
+            while (!isTempFolderEmpty) {
+                if (folder.list().length == 0) {
+                    isTempFolderEmpty = true;
                 }
             }
 
             int cantArchivos = nav.descargarArchivosCaso(caso.getIdActividad());
-            isTempPathEmpty = false;
-
+            isTempFolderEmpty = false;
+//                    try {Thread.sleep(5000);} catch (InterruptedException ie) {}
             try {
                 while (true) {
                     if (isArchivosCompletos(cantArchivos)) {
@@ -236,6 +243,12 @@ public class Main {
 
         //Se consulta otra vez para obtener la lista actualizada después de descargar archivos
         casos = queryCasosPendientes();
+
+        //TODO Anteponer método que rechace la carta si es que no tiene acta de notificación:
+        //TODO Si la lista de documentos en la lista "actas" está vacío, activar un flag de "errorFaltaActa"
+        //TODO Lo mismo si falta la carta "errorFaltaCarta". Registrar estado como "Rechazada" en BD.
+        //TODO Después, proceder sólo con los casos que siguen pendientes
+
         recolectarDatosDeArchivos(casos);
 
         //agregar constraint DEFAULT a campos descargadoEnSalesforce y isArchivosDescargados en la BD
