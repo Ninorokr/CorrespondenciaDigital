@@ -29,13 +29,12 @@ public class Carta {
     }
 
     private void obtenerCorreo() {
-        try {
-            Pattern emailPattern = Pattern.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}");
-            Matcher matcher = emailPattern.matcher(texto);
-            matcher.find();
+        Pattern emailPattern = Pattern.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}");
+        Matcher matcher = emailPattern.matcher(texto);
+        if(matcher.find()){
             this.correoDestinatario = matcher.group();
             System.out.println("Carta | correoDes: " + this.correoDestinatario);
-        } catch (IllegalStateException ise) {
+        } else {
             System.out.println("Carta no tiene correo");
         }
     }

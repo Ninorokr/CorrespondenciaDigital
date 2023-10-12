@@ -23,8 +23,16 @@ public class Acta {
     }
 
     private int obtenerNroCarta() {
+        Pattern palabraConstancia = Pattern.compile("Constancia");
+        Matcher matcher = palabraConstancia.matcher(texto);
+        if(!matcher.find()){
+            palabraConstancia = Pattern.compile("Documentos");
+            matcher = palabraConstancia.matcher(texto);
+        }
+        int searchLimit = matcher.start();
+
         Pattern emailPattern = Pattern.compile("(?!0)\\d{9}"); //Matches a consecutive 9-digit, but it doesn't start with 0
-        Matcher matcher = emailPattern.matcher(texto);
+        matcher = emailPattern.matcher(texto.substring(0, searchLimit));
         matcher.find();
         this.nroCarta = Integer.parseInt(matcher.group());
         System.out.println("Acta | nroCarta: " + this.nroCarta);
