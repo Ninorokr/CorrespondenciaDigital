@@ -42,6 +42,8 @@ public class Caso {
     private boolean errorNroCarta;
     private boolean errorCorreoNotif;
     private boolean errorFechas;
+    private boolean errorFaltaCartas;
+    private boolean errorFaltaActas;
     private boolean descargadoEnSalesforce = false;
     private boolean archivosDescargados = false;
 
@@ -481,6 +483,22 @@ public class Caso {
 
     public void setArchivosDescargados(boolean archivosDescargados) {
         this.archivosDescargados = archivosDescargados;
+    }
+
+    public boolean isErrorFaltaCartas() {
+        return errorFaltaCartas;
+    }
+
+    public void setErrorFaltaCartas(boolean errorFaltaCartas) {
+        this.errorFaltaCartas = errorFaltaCartas;
+    }
+
+    public boolean isErrorFaltaActas() {
+        return errorFaltaActas;
+    }
+
+    public void setErrorFaltaActas(boolean errorFaltaActas) {
+        this.errorFaltaActas = errorFaltaActas;
     }
 
     @Override

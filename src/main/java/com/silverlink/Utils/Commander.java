@@ -274,12 +274,35 @@ public class Commander {
 //
 //    }
 
-    public static void updateArchivosDescargados(Caso caso) {
-        String SetArchivosDescargadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET isArchivosDescargados = 1" +
+    public static void setArchivosDescargadosToTrue(Caso caso) {
+        String setArchivosDescargadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET isArchivosDescargados = 1 " +
                 "WHERE idActividad = ?";
 
-        try(PreparedStatement ps = conn.prepareStatement(SetArchivosDescargadosQuery)){
+//        setArchivosDescargadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET isArchivosDescargados = 1" +
+//                "WHERE idActividad = ?";
+
+        try(PreparedStatement ps = conn.prepareStatement(setArchivosDescargadosQuery)){
             ps.setString(1, caso.getIdActividad());
+            ps.execute();
+        } catch (SQLException sqle){
+            System.out.println("No se pudo registrar archivos descargados como \"TRUE\"");
+            sqle.printStackTrace();
+        }
+    }
+
+    public static void updateCasosRevisados(Caso caso) {
+        String setArchivosDescargadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET " +
+                "errorFaltaCarta = ?, errorFaltaActa = ?, idEstado = ? " +
+                "WHERE idActividad = ?";
+
+//        setArchivosDescargadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET isArchivosDescargados = 1" +
+//                "WHERE idActividad = ?";
+
+        try(PreparedStatement ps = conn.prepareStatement(setArchivosDescargadosQuery)){
+            ps.setBoolean(1, caso.isErrorFaltaCartas());
+            ps.setBoolean(2, caso.isErrorFaltaActas());
+            ps.setShort(3, caso.getEstado().getIdEstado());
+            ps.setString(4, caso.getIdActividad());
             ps.execute();
         } catch (SQLException sqle){
             System.out.println("No se pudo registrar archivos descargados como \"TRUE\"");

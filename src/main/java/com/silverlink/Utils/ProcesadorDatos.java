@@ -71,6 +71,17 @@ public class ProcesadorDatos {
             } catch (IOException ioe) {
                 System.out.println(ioe.getMessage());
             }
+
+            caso.setErrorFaltaCartas(caso.getCartas().size() == 0); //Activar flag si faltan cartas
+            caso.setErrorFaltaActas(caso.getActas().size() == 0); //Activar flag si faltan actas
+
+            if(caso.isErrorFaltaCartas() || caso.isErrorFaltaActas()){
+                caso.getEstado().setIdEstado((short) 5); //RECHAZADO
+            }
+
+            //TODO Colocar aqui el comparador de datos entre cartas y actas
+
+            Commander.updateCasosRevisados(caso);
         }
     }
 

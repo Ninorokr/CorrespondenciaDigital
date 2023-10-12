@@ -7,6 +7,10 @@ public class Estado {
     private short idEstado;
     private String nomEstado;
 
+    public Estado(short idEstado) {
+        this.idEstado = idEstado;
+    }
+
     public Estado(short idEstado, String nomEstado) {
         this.idEstado = idEstado;
         this.nomEstado = nomEstado;
@@ -18,6 +22,10 @@ public class Estado {
 
     public String getNomEstado() {
         return nomEstado;
+    }
+
+    public void setIdEstado(short idEstado) {
+        this.idEstado = idEstado;
     }
 
     public static Estado existeEstado(String nomEstado) {

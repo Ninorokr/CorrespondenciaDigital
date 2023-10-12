@@ -1,5 +1,6 @@
 package com.silverlink.Utils;
 
+import com.silverlink.Entidades.Caso;
 import com.silverlink.Main;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -141,10 +142,10 @@ public class Navegador {
         }
     }
 
-    public int descargarArchivosCaso(String idActividad) {
+    public int descargarArchivosCaso(Caso caso) {
         int cantArchivos;
 
-        driver.get("https://enelsud.my.salesforce.com/" + idActividad);
+        driver.get("https://enelsud.my.salesforce.com/" + caso.getIdActividad());
 
         WebElement archivoLink;
         for (int i = 2; true; i++) {
@@ -153,7 +154,7 @@ public class Navegador {
             archivoLink.click();
             } catch (NoSuchElementException nsee) {
                 cantArchivos = i-2;
-                System.out.println(nroDoc + ". Nro. de archivos en " + idActividad + " : " + cantArchivos);
+                System.out.println(nroDoc + ". Nro. de archivos en " + caso.getIdActividad() + " : " + cantArchivos);
                 break;
             }
         }

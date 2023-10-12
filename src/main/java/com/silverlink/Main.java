@@ -222,7 +222,9 @@ public class Main {
                 }
             }
 
-            int cantArchivos = nav.descargarArchivosCaso(caso.getIdActividad());
+            int cantArchivos = nav.descargarArchivosCaso(caso);
+
+
             isTempFolderEmpty = false;
 //                    try {Thread.sleep(5000);} catch (InterruptedException ie) {}
             try {
@@ -234,27 +236,17 @@ public class Main {
                 }
                 encarpetarArchivos(caso, cantArchivos);
                 caso.setArchivosDescargados(true); //Marcar archivos como descargados
-                Commander.updateArchivosDescargados(caso);
+                Commander.setArchivosDescargadosToTrue(caso);
 
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }
-        }
 
+        }
         //Se consulta otra vez para obtener la lista actualizada después de descargar archivos
         casos = queryCasosPendientes();
 
-        //TODO Anteponer método que rechace la carta si es que no tiene acta de notificación:
-        //TODO Si la lista de documentos en la lista "actas" está vacío, activar un flag de "errorFaltaActa"
-        //TODO Lo mismo si falta la carta "errorFaltaCarta". Registrar estado como "Rechazada" en BD.
-        //TODO Después, proceder sólo con los casos que siguen pendientes
-
         recolectarDatosDeArchivos(casos);
-
-        //agregar constraint DEFAULT a campos descargadoEnSalesforce y isArchivosDescargados en la BD
-        //preguntar por la característica única de los idActividad
-
-        //TODO Cargar los casos pendientes de la BD y almacenarlos en una lista
 
     }
 
