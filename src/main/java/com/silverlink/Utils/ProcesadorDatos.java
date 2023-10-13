@@ -1,7 +1,8 @@
 package com.silverlink.Utils;
 
+import com.silverlink.Entidades.Acta;
+import com.silverlink.Entidades.Carta;
 import com.silverlink.Entidades.Caso;
-import org.apache.pdfbox.pdmodel.PDDocument;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -59,8 +60,39 @@ public class ProcesadorDatos {
 //        }
 //    }
 
-    public static void recolectarDatosDeArchivos(ArrayList<Caso> casos) {
+//    public static void recolectarDatosDeArchivos(ArrayList<Caso> casos) {
+//
+//        for(Caso caso : casos) {
+//            String nroOS = String.format("%04d", caso.getNroOS());
+//            String item =  String.format("%04d", caso.getIdCorrelativoCaso());
+//            Path rutaItem = Path.of(rootFolder + caso.getAnio() + "\\" + nroOS + "\\" + item);
+//
+//            try {
+//                Files.walkFileTree(rutaItem, new RevisadorArchivos(caso));
+//            } catch (IOException ioe) {
+//                System.out.println(ioe.getMessage());
+//            }
+//
+//            //VERIFICADOR: Archivos completos
+//            caso.setErrorFaltaCartas(caso.getCartas().size() == 0); //Activar flag si faltan cartas
+//            caso.setErrorFaltaActas(caso.getActas().size() == 0); //Activar flag si faltan actas
+//
+//            if(caso.isErrorFaltaCartas() || caso.isErrorFaltaActas()){
+//                caso.getEstado().setIdEstado((short) 5); //RECHAZADO
+//            }
+//
+//            //TODO Colocar aqui el comparador de datos entre cartas y actas
+//            //VERIFICADOR: Nro. de carta
+//            caso.setErrorNroCarta(!nroCartaOK(caso));
+//
+//            //TODO Separar los revisadores en 2 o más métodos distintos, actualizando la lista de casos
+//            //TODO para trabajar sólo con los casos pendientes y no los rechazados
+//
+//            Commander.updateCasosRevisados(caso);
+//        }
+//    }
 
+    public static void recolectarDatosDeArchivos(ArrayList<Caso> casos) {
         for(Caso caso : casos) {
             String nroOS = String.format("%04d", caso.getNroOS());
             String item =  String.format("%04d", caso.getIdCorrelativoCaso());
@@ -71,21 +103,46 @@ public class ProcesadorDatos {
             } catch (IOException ioe) {
                 System.out.println(ioe.getMessage());
             }
+            verificarDocumentosCompletos(caso);
+        }
+    }
 
+    public static void verificarDocumentosCompletos(Caso caso) {
+        //VERIFICADOR: Archivos completos
             caso.setErrorFaltaCartas(caso.getCartas().size() == 0); //Activar flag si faltan cartas
             caso.setErrorFaltaActas(caso.getActas().size() == 0); //Activar flag si faltan actas
 
             if(caso.isErrorFaltaCartas() || caso.isErrorFaltaActas()){
                 caso.getEstado().setIdEstado((short) 5); //RECHAZADO
             }
+            Commander.updateCasosRevisados(caso);
+    }
 
-            //TODO Colocar aqui el comparador de datos entre cartas y actas
-
+    public static void verificarNrosDeCartaCorrectos(ArrayList<Caso> casos) {
+        //VERIFICADOR: Nro. de carta
+        //TODO Verificar porque todo bota false "0" en la BD
+        for(Caso caso : casos) {
+            caso.setErrorNroCarta(!nroCartaOK(caso));
             Commander.updateCasosRevisados(caso);
         }
     }
 
-    public static boolean isArchivosCompletos(int cantArchivos) throws IOException {
+    public static boolean nroCartaOK(Caso caso) {
+        for (Carta carta : caso.getCartas()) {
+            for(Acta acta : caso.getActas()) {
+                if(carta.getNroCarta() != acta.getNroActa()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+//    public static boolean correoNotificacionOK(Caso caso) {
+//
+//    }
+
+    public static boolean isDescargaArchivosCompletada(int cantArchivos) throws IOException {
         //Debe dar OK si cantArchivos = nroArchivos en carpeta
         cuentaArchivos = 0;
         Files.walkFileTree(Path.of(tempPath), new ContadorArchivos());

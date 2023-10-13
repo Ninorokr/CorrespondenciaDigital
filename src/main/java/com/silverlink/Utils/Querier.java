@@ -192,7 +192,9 @@ public class Querier {
 
     public static ArrayList<Caso> queryCasosPendientes() {
         String casosPendientesQuery = "SELECT anio, nroOS, idCasoCorrespondenciaDigital, idActividad, nroCaso, " +
-                "idEstado, isArchivosDescargados FROM [digi].[casosCorrespondenciaDigital] " +
+                "idEstado, errorNroCarta, errorCorreoNotif, errorFechas, isArchivosDescargados, errorFaltaCarta, " +
+                "errorFaltaActa " +
+                "FROM [digi].[casosCorrespondenciaDigital] " +
                 "WHERE idEstado = 1";
         ArrayList<Caso> casosPendientes = new ArrayList<>();
 
@@ -207,7 +209,12 @@ public class Querier {
                 caso.setIdActividad(rs.getString(4));
                 caso.setNroCaso(rs.getInt(5));
                 caso.setEstado(new Estado(rs.getShort(6)));
-                caso.setArchivosDescargados(rs.getBoolean(7));
+                caso.setErrorNroCarta(rs.getBoolean(7));
+                caso.setErrorCorreoNotif(rs.getBoolean(8));
+                caso.setErrorFechas(rs.getBoolean(9));
+                caso.setArchivosDescargados(rs.getBoolean(10));
+                caso.setErrorFaltaCartas(rs.getBoolean(11));
+                caso.setErrorFaltaActas(rs.getBoolean(12));
                 casosPendientes.add(caso);
             }
         } catch (SQLException sqle) {

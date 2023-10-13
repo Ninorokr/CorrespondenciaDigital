@@ -10,7 +10,7 @@ public class Acta {
 
 //    PDDocument documentoPDF;
     String texto;
-    int nroCarta;
+    int nroActa;
     String correoDestinatario;
     LocalDateTime fechaEntrega;
 
@@ -22,7 +22,7 @@ public class Acta {
         obtenerFecha();
     }
 
-    private int obtenerNroCarta() {
+    private void obtenerNroCarta() {
         Pattern palabraConstancia = Pattern.compile("Constancia");
         Matcher matcher = palabraConstancia.matcher(texto);
         if(!matcher.find()){
@@ -34,27 +34,27 @@ public class Acta {
         Pattern emailPattern = Pattern.compile("(?!0)\\d{9}"); //Matches a consecutive 9-digit, but it doesn't start with 0
         matcher = emailPattern.matcher(texto.substring(0, searchLimit));
         matcher.find();
-        this.nroCarta = Integer.parseInt(matcher.group());
-        System.out.println("Acta | nroCarta: " + this.nroCarta);
-        return this.nroCarta;
+        this.nroActa = Integer.parseInt(matcher.group());
+        System.out.println("Acta | nroCarta: " + this.nroActa);
+//        return this.nroCarta;
     }
 
-    private String obtenerCorreo() {
+    private void obtenerCorreo() {
         Pattern emailPattern = Pattern.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}");
         Matcher matcher = emailPattern.matcher(texto);
         matcher.find(); matcher.find(); //Para ubicar la segunda coincidencia
         this.correoDestinatario = matcher.group();
         System.out.println("Acta | correoDes: " + this.correoDestinatario);
-        return this.correoDestinatario;
+//        return this.correoDestinatario;
     }
 
-    private LocalDateTime obtenerFecha() {
+    private void obtenerFecha() {
         Pattern fechaPattern = Pattern.compile("[0-9]{4}-[a-z]{3}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}");
         Matcher matcher = fechaPattern.matcher(texto);
         matcher.find(); matcher.find(); //Para ubicar la segunda coincidencia
         this.fechaEntrega =  descifrarFechaHora(matcher.group());
         System.out.println("Acta | fecha: " + this.fechaEntrega);
-        return this.fechaEntrega;
+//        return this.fechaEntrega;
     }
 
     private LocalDateTime descifrarFechaHora(String texto) {
@@ -71,6 +71,15 @@ public class Acta {
         return LocalDateTime.of(date, time);
     }
 
+    public int getNroActa() {
+        return nroActa;
+    }
 
+    public String getCorreoDestinatario() {
+        return correoDestinatario;
+    }
 
+    public LocalDateTime getFechaEntrega() {
+        return fechaEntrega;
+    }
 }

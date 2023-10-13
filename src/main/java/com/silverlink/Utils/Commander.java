@@ -292,7 +292,7 @@ public class Commander {
 
     public static void updateCasosRevisados(Caso caso) {
         String setArchivosDescargadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET " +
-                "errorFaltaCarta = ?, errorFaltaActa = ?, idEstado = ? " +
+                "errorFaltaCarta = ?, errorFaltaActa = ?, idEstado = ?, errorNroCarta = ? " +
                 "WHERE idActividad = ?";
 
 //        setArchivosDescargadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET isArchivosDescargados = 1" +
@@ -302,13 +302,34 @@ public class Commander {
             ps.setBoolean(1, caso.isErrorFaltaCartas());
             ps.setBoolean(2, caso.isErrorFaltaActas());
             ps.setShort(3, caso.getEstado().getIdEstado());
-            ps.setString(4, caso.getIdActividad());
+            ps.setBoolean(4, caso.isErrorNroCarta());
+            ps.setString(5, caso.getIdActividad());
             ps.execute();
         } catch (SQLException sqle){
             System.out.println("No se pudo registrar archivos descargados como \"TRUE\"");
             sqle.printStackTrace();
         }
     }
+
+//    public static void updateCasosRevisados(Caso caso) {
+//        String setArchivosDescargadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET " +
+//                "errorFaltaCarta = ?, errorFaltaActa = ?, idEstado = ? " +
+//                "WHERE idActividad = ?";
+//
+////        setArchivosDescargadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET isArchivosDescargados = 1" +
+////                "WHERE idActividad = ?";
+//
+//        try(PreparedStatement ps = conn.prepareStatement(setArchivosDescargadosQuery)){
+//            ps.setBoolean(1, caso.isErrorFaltaCartas());
+//            ps.setBoolean(2, caso.isErrorFaltaActas());
+//            ps.setShort(3, caso.getEstado().getIdEstado());
+//            ps.setString(4, caso.getIdActividad());
+//            ps.execute();
+//        } catch (SQLException sqle){
+//            System.out.println("No se pudo registrar archivos descargados como \"TRUE\"");
+//            sqle.printStackTrace();
+//        }
+//    }
 
 
 

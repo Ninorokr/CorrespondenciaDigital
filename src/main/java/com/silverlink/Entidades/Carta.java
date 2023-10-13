@@ -76,7 +76,15 @@ public class Carta {
         return LocalDate.of(year, month, day);
     }
 
-    public void getFirmaSize(String textoCarta) {
+    public int getNroCarta() {
+        return nroCarta;
+    }
 
+    public String getCorreoDestinatario() {
+        return correoDestinatario;
+    }
+
+    public LocalDate getFechaEntrega() {
+        return fechaEntrega;
     }
 }

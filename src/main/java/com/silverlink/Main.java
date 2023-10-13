@@ -5,10 +5,8 @@ import com.silverlink.Utils.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Scanner;
 
 import static com.silverlink.Utils.ProcesadorDatos.*;
@@ -229,7 +227,7 @@ public class Main {
 //                    try {Thread.sleep(5000);} catch (InterruptedException ie) {}
             try {
                 while (true) {
-                    if (isArchivosCompletos(cantArchivos)) {
+                    if (isDescargaArchivosCompletada(cantArchivos)) {
                         break;
                     }
 //                    try {Thread.sleep(1000);} catch (InterruptedException ie) {}
@@ -244,9 +242,12 @@ public class Main {
 
         }
         //Se consulta otra vez para obtener la lista actualizada después de descargar archivos
-        casos = queryCasosPendientes();
+//        casos = queryCasosPendientes();
+        //TODO si fuera necesario, hacer que el método queryCasosPendientes() consulte más datos
+        //TODO los necesarios para que cada verificador
 
-        recolectarDatosDeArchivos(casos);
+        recolectarDatosDeArchivos(queryCasosPendientes());
+        verificarNrosDeCartaCorrectos(queryCasosPendientes());
 
     }
 
