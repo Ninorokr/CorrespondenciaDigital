@@ -104,6 +104,7 @@ public class ProcesadorDatos {
                 System.out.println(ioe.getMessage());
             }
             verificarDocumentosCompletos(caso);
+            verificarNrosDeCartaCorrectos(caso);
         }
     }
 
@@ -118,19 +119,17 @@ public class ProcesadorDatos {
             Commander.updateCasosRevisados(caso);
     }
 
-    public static void verificarNrosDeCartaCorrectos(ArrayList<Caso> casos) {
+    public static void verificarNrosDeCartaCorrectos(Caso caso) {
         //VERIFICADOR: Nro. de carta
-        //TODO Verificar porque todo bota false "0" en la BD
-        for(Caso caso : casos) {
             caso.setErrorNroCarta(!nroCartaOK(caso));
             Commander.updateCasosRevisados(caso);
-        }
     }
 
     public static boolean nroCartaOK(Caso caso) {
         for (Carta carta : caso.getCartas()) {
             for(Acta acta : caso.getActas()) {
                 if(carta.getNroCarta() != acta.getNroActa()) {
+                    caso.getEstado().setIdEstado((short) 5); //RECHAZADO
                     return false;
                 }
             }

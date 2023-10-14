@@ -17,6 +17,9 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.silverlink.Main.scanner;
+import static com.silverlink.Main.tempPath;
+
 public class Navegador {
 
     public static ChromeDriver driver;
@@ -29,10 +32,11 @@ public class Navegador {
         options.addArguments("--window-size=1920,1080","--ignore-certificate-errors","--disable-extensions","--no-sandbox","--disable-dev-shm-usage", "--remote-allow-origins=*");
 //        options.addArguments("--headless=new", "--disable-gpu", "--window-size=1920,1080","--ignore-certificate-errors","--disable-extensions","--no-sandbox","--disable-dev-shm-usage", "--remote-allow-origins=*");
 
-        String downloadFilepath = "Z:\\Servicios ENEL\\002 - Correspondencia digital\\Temp";
+//        String downloadFilepath = "Z:\\Servicios ENEL\\002 - Correspondencia digital\\Temp";
+//        String downloadFilepath = "D:\\Servicios ENEL\\002 - Correspondencia digital\\Temp";
         HashMap<String, Object> chromePrefs = new HashMap<>();
         chromePrefs.put("profile.default_content_settings.popups", 0);
-        chromePrefs.put("download.default_directory", downloadFilepath);
+        chromePrefs.put("download.default_directory", tempPath);
         options.setExperimentalOption("prefs", chromePrefs);
         driver = new ChromeDriver(options);
     }
@@ -50,6 +54,8 @@ public class Navegador {
         passwordField.sendKeys("25*Jul*2023*");
         System.out.println("Logueandose a Salesforce.com como mensajeria@enel.com");
         loginButton.click();
+        System.out.println("Ingresar código de verificación");
+        scanner.nextLine();
         Main.isDriverOpen = true;
     }
 
@@ -108,7 +114,7 @@ public class Navegador {
             System.out.println("Exportando listado de casos en .xls");
 
             while(!isArchivoDescargado) {
-                Files.walkFileTree(Path.of(Main.tempPath), new SimpleFileVisitor<>(){
+                Files.walkFileTree(Path.of(tempPath), new SimpleFileVisitor<>(){
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                         isArchivoDescargado = true;
