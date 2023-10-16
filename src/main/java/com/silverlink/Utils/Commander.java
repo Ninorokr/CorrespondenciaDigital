@@ -292,7 +292,8 @@ public class Commander {
 
     public static void updateCasosRevisados(Caso caso) {
         String setArchivosDescargadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET " +
-                "errorFaltaCarta = ?, errorFaltaActa = ?, idEstado = ?, errorNroCarta = ? " +
+                "errorFaltaCarta = ?, errorFaltaActa = ?, idEstado = ?, errorNroCarta = ?, " +
+                "errorCorreoNotif = ?, errorFechas = ? " +
                 "WHERE idActividad = ?";
 
 //        setArchivosDescargadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET isArchivosDescargados = 1" +
@@ -303,7 +304,9 @@ public class Commander {
             ps.setBoolean(2, caso.isErrorFaltaActas());
             ps.setShort(3, caso.getEstado().getIdEstado());
             ps.setBoolean(4, caso.isErrorNroCarta());
-            ps.setString(5, caso.getIdActividad());
+            ps.setBoolean(5, caso.isErrorCorreoNotif());
+            ps.setBoolean(6, caso.isErrorFechas());
+            ps.setString(7, caso.getIdActividad());
             ps.execute();
         } catch (SQLException sqle){
             System.out.println("No se pudo registrar archivos descargados como \"TRUE\"");

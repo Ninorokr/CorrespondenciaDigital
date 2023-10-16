@@ -3,11 +3,22 @@ package com.silverlink.Utils;
 import com.silverlink.Entidades.Acta;
 import com.silverlink.Entidades.Carta;
 import com.silverlink.Entidades.Caso;
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
+import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.silverlink.Main.*;
 import static com.silverlink.Utils.AnalistaPDF.reconocerActaOCarta;
@@ -93,7 +104,7 @@ public class ProcesadorDatos {
 //    }
 
     public static void recolectarDatosDeArchivos(ArrayList<Caso> casos) {
-        for(Caso caso : casos) {
+        for (Caso caso : casos) {
             String nroOS = String.format("%04d", caso.getNroOS());
             String item =  String.format("%04d", caso.getIdCorrelativoCaso());
             Path rutaItem = Path.of(rootFolder + caso.getAnio() + "\\" + nroOS + "\\" + item);
@@ -103,32 +114,63 @@ public class ProcesadorDatos {
             } catch (IOException ioe) {
                 System.out.println(ioe.getMessage());
             }
-            verificarDocumentosCompletos(caso);
-            verificarNrosDeCartaCorrectos(caso);
+
+            if (docsOK(caso)) {
+                boolean nroCartaOK = nroCartaOK(caso);
+                boolean correoOK = correoOK(caso);
+                boolean fechasOK = fechasOK(caso);
+                if (!(nroCartaOK || correoOK || fechasOK))
+                    caso.getEstado().setIdEstado((short) 5); //RECHAZADO
+            } else {
+                caso.getEstado().setIdEstado((short) 5); //RECHAZADO
+            }
+
+            Commander.updateCasosRevisados(caso);
         }
     }
 
-    public static void verificarDocumentosCompletos(Caso caso) {
+    public static boolean docsOK(Caso caso) {
         //VERIFICADOR: Archivos completos
             caso.setErrorFaltaCartas(caso.getCartas().size() == 0); //Activar flag si faltan cartas
             caso.setErrorFaltaActas(caso.getActas().size() == 0); //Activar flag si faltan actas
 
-            if(caso.isErrorFaltaCartas() || caso.isErrorFaltaActas()){
-                caso.getEstado().setIdEstado((short) 5); //RECHAZADO
-            }
-            Commander.updateCasosRevisados(caso);
+        //                caso.getEstado().setIdEstado((short) 5); //RECHAZADO
+        return !caso.isErrorFaltaCartas() && !caso.isErrorFaltaActas();
+//            Commander.updateCasosRevisados(caso);
     }
 
-    public static void verificarNrosDeCartaCorrectos(Caso caso) {
-        //VERIFICADOR: Nro. de carta
-            caso.setErrorNroCarta(!nroCartaOK(caso));
-            Commander.updateCasosRevisados(caso);
-    }
+//    public static void verificarNrosDeCartaCorrectos(Caso caso) {
+//        //VERIFICADOR: Nro. de carta
+//            caso.setErrorNroCarta(!nroCartaOK(caso));
+////            Commander.updateCasosRevisados(caso);
+//    }
 
     public static boolean nroCartaOK(Caso caso) {
+        //VERIFICADOR: Nro. de carta
+        ArrayList<Acta> actas = caso.getActas();
         for (Carta carta : caso.getCartas()) {
-            for(Acta acta : caso.getActas()) {
-                if(carta.getNroCarta() != acta.getNroActa()) {
+            for (Acta acta : actas) {
+                if (carta.getNroCarta() != acta.getNroActa()) {
+                    caso.setErrorNroCarta(true);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+//    public static void verificarCorreoNotificacion(Caso caso) {
+//        caso.setErrorCorreoNotif(!correoNotificacionOK(caso));
+//        Commander.updateCasosRevisados(caso);
+//    }
+
+    public static boolean correoOK(Caso caso) {
+        //VERIFICADOR: Correo de notificación
+        ArrayList<Carta> cartas = caso.getCartas();
+        for (Acta acta : caso.getActas()) {
+            for (Carta carta : cartas) {
+                if (!acta.getCorreoDestinatario().equalsIgnoreCase(carta.getCorreoDestinatario())) {
+                    caso.setErrorCorreoNotif(true);
                     caso.getEstado().setIdEstado((short) 5); //RECHAZADO
                     return false;
                 }
@@ -137,9 +179,21 @@ public class ProcesadorDatos {
         return true;
     }
 
-//    public static boolean correoNotificacionOK(Caso caso) {
-//
-//    }
+    public static boolean fechasOK(Caso caso) {
+        //VERIFICADOR: Fechas
+        ArrayList<Acta> actas = caso.getActas();
+        for (Carta carta : caso.getCartas()) {
+            for (Acta acta : actas) {
+                if (carta.getFechaEmision().isAfter(acta.getFechaEntrega().toLocalDate()) ||
+                    acta.getFechaEntrega().toLocalDate().minusDays(7).isEqual(carta.getFechaEmision()) ||
+                    acta.getFechaEntrega().toLocalDate().minusDays(7).isAfter(carta.getFechaEmision())) {
+                    caso.setErrorFechas(true);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
     public static boolean isDescargaArchivosCompletada(int cantArchivos) throws IOException {
         //Debe dar OK si cantArchivos = nroArchivos en carpeta
@@ -210,6 +264,54 @@ public class ProcesadorDatos {
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
             reconocerActaOCarta(file.toFile(), caso);
             return super.visitFile(file, attrs);
+        }
+    }
+
+    static class SaveImagesInPdf extends PDFStreamEngine {
+
+        public int docNum;
+        public int pageNum;
+        public int imageNumber = 1;
+        Caso caso;
+
+        SaveImagesInPdf (int docNum, int pageNum, Caso caso) {
+            this.docNum = docNum;
+            this.pageNum = pageNum;
+            this.caso = caso;
+        }
+
+        @Override
+        public void processOperator(Operator operator, List<COSBase> operands) throws IOException {
+            String operation = operator.getName();
+            if("Do".equals(operation))
+            {
+                COSName objectName = (COSName) operands.get(0);
+                PDXObject xobject = getResources().getXObject(objectName);
+                if(xobject instanceof PDImageXObject)
+                {
+                    PDImageXObject image = (PDImageXObject)xobject;
+
+                    // same image to local
+                    BufferedImage bImage = image.getImage();
+                    String nroOS = String.format("%04d", caso.getNroOS());
+                    String nroID = String.format("%04d", caso.getIdCorrelativoCaso());
+                    String exportPath = rootFolder + caso.getAnio() + "\\" + nroOS + "\\" + nroID + "\\firmas\\" +
+
+                    ImageIO.write(bImage,"PNG", new File(exportPath + "image_"+docNum+"_"+pageNum+"_"+imageNumber+".png"));
+//                System.out.println("Image saved.");
+                    imageNumber++;
+
+                }
+                else if(xobject instanceof PDFormXObject)
+                {
+                    PDFormXObject form = (PDFormXObject)xobject;
+                    showForm(form);
+                }
+            }
+            else
+            {
+                super.processOperator( operator, operands);
+            }
         }
     }
 

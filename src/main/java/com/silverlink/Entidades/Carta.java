@@ -10,7 +10,7 @@ public class Carta {
     String texto;
     int nroCarta;
     String correoDestinatario;
-    LocalDate fechaEntrega;
+    LocalDate fechaEmision;
 
     public Carta (String texto) {
 //        this.documentoPDF = pdf;
@@ -46,8 +46,8 @@ public class Carta {
         Matcher matcher = fechaPattern.matcher(texto);
         matcher.find();
         System.out.println(matcher.group());
-        this.fechaEntrega = descifrarFecha(matcher.group());
-        System.out.println("Carta | fecha: " + this.fechaEntrega);
+        this.fechaEmision = descifrarFecha(matcher.group());
+        System.out.println("Carta | fecha: " + this.fechaEmision);
     }
 
     private LocalDate descifrarFecha(String textoFecEmision) {
@@ -84,7 +84,7 @@ public class Carta {
         return correoDestinatario;
     }
 
-    public LocalDate getFechaEntrega() {
-        return fechaEntrega;
+    public LocalDate getFechaEmision() {
+        return fechaEmision;
     }
 }
