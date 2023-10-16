@@ -7,12 +7,15 @@ import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
@@ -103,7 +106,7 @@ public class ProcesadorDatos {
 //        }
 //    }
 
-    public static void recolectarDatosDeArchivos(ArrayList<Caso> casos) {
+    public void recolectarYVerificarDatos(ArrayList<Caso> casos) {
         for (Caso caso : casos) {
             String nroOS = String.format("%04d", caso.getNroOS());
             String item =  String.format("%04d", caso.getIdCorrelativoCaso());
@@ -121,11 +124,13 @@ public class ProcesadorDatos {
                 boolean fechasOK = fechasOK(caso);
                 if (!(nroCartaOK || correoOK || fechasOK))
                     caso.getEstado().setIdEstado((short) 5); //RECHAZADO
+
             } else {
                 caso.getEstado().setIdEstado((short) 5); //RECHAZADO
             }
 
             Commander.updateCasosRevisados(caso);
+//            SaveImagesInPdf printer = new SaveImagesInPdf(caso);
         }
     }
 
@@ -267,53 +272,60 @@ public class ProcesadorDatos {
         }
     }
 
-    static class SaveImagesInPdf extends PDFStreamEngine {
-
-        public int docNum;
-        public int pageNum;
-        public int imageNumber = 1;
-        Caso caso;
-
-        SaveImagesInPdf (int docNum, int pageNum, Caso caso) {
-            this.docNum = docNum;
-            this.pageNum = pageNum;
-            this.caso = caso;
-        }
-
-        @Override
-        public void processOperator(Operator operator, List<COSBase> operands) throws IOException {
-            String operation = operator.getName();
-            if("Do".equals(operation))
-            {
-                COSName objectName = (COSName) operands.get(0);
-                PDXObject xobject = getResources().getXObject(objectName);
-                if(xobject instanceof PDImageXObject)
-                {
-                    PDImageXObject image = (PDImageXObject)xobject;
-
-                    // same image to local
-                    BufferedImage bImage = image.getImage();
-                    String nroOS = String.format("%04d", caso.getNroOS());
-                    String nroID = String.format("%04d", caso.getIdCorrelativoCaso());
-                    String exportPath = rootFolder + caso.getAnio() + "\\" + nroOS + "\\" + nroID + "\\firmas\\" +
-
-                    ImageIO.write(bImage,"PNG", new File(exportPath + "image_"+docNum+"_"+pageNum+"_"+imageNumber+".png"));
-//                System.out.println("Image saved.");
-                    imageNumber++;
-
-                }
-                else if(xobject instanceof PDFormXObject)
-                {
-                    PDFormXObject form = (PDFormXObject)xobject;
-                    showForm(form);
-                }
-            }
-            else
-            {
-                super.processOperator( operator, operands);
-            }
-        }
-    }
+//    class SaveImagesInPdf extends PDFStreamEngine {
+//
+////        public int docNum;
+////        public int pageNum;
+//        public int imageNumber = 1;
+//        Caso caso;
+//
+//        SaveImagesInPdf (Caso caso) {
+////            this.docNum = docNum;
+////            this.pageNum = pageNum;
+//            this.caso = caso;
+//        }
+//
+//        @Override
+//        public void processOperator(Operator operator, List<COSBase> operands) throws IOException {
+//            String operation = operator.getName();
+//            if ("Do".equals(operation)) {
+//                COSName objectName = (COSName) operands.get(0);
+//                PDXObject xobject = getResources().getXObject(objectName);
+//                if (xobject instanceof PDImageXObject) {
+//                    PDImageXObject image = (PDImageXObject) xobject;
+//
+//                    // same image to local
+//                    BufferedImage bImage = image.getImage();
+//                    String nroOS = String.format("%04d", caso.getNroOS());
+//                    String nroID = String.format("%04d", caso.getIdCorrelativoCaso());
+//                    String exportPath = rootFolder + caso.getAnio() + "\\" + nroOS + "\\" + nroID + "\\";
+//
+////                        DataBuffer dataBuffer = bImage.getData().getDataBuffer();
+////
+////                        // Each bank element in the data buffer is a 32-bit integer
+////                        long sizeBytes = ((long) dataBuffer.getSize()) * 4L;
+////                        long sizeMB = sizeBytes / (1024L * 1024L);
+//
+////                        System.out.println(imageNumber + ", size in: ");
+////                        System.out.println("Bytes: " + sizeBytes + " bytes");
+////                        System.out.println("MBytes: " + sizeMB + " MBs");
+//
+//                ImageIO.write(bImage,"PNG", new File(exportPath + "firma_" + caso.getNroCaso() +
+//                        "_" + imageNumber + ".png"));
+////                System.out.println("Image saved.");
+//                imageNumber++;
+//                }
+//                else if(xobject instanceof PDFormXObject) {
+//                    PDFormXObject form = (PDFormXObject)xobject;
+//                    showForm(form);
+//                }
+//            }
+//            else {
+//                super.processOperator(operator, operands);
+//            }
+//
+//        }
+//    }
 
 
 }

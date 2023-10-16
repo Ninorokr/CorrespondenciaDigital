@@ -1,5 +1,7 @@
 package com.silverlink.Entidades;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -8,18 +10,22 @@ import java.util.regex.Pattern;
 
 public class Acta {
 
-//    PDDocument documentoPDF;
+    PDDocument documentoPDF;
     String texto;
     int nroActa;
     String correoDestinatario;
     LocalDateTime fechaEntrega;
 
-    public Acta (String texto) {
-//        this.documentoPDF = pdf;
+    public Acta (PDDocument doc, String texto) {
+        this.documentoPDF = doc;
         this.texto = texto;
         obtenerNroCarta();
         obtenerCorreo();
         obtenerFecha();
+    }
+
+    public PDDocument getDocumentoPDF() {
+        return documentoPDF;
     }
 
     private void obtenerNroCarta() {

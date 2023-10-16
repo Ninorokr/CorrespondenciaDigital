@@ -54,8 +54,8 @@ public class Navegador {
         passwordField.sendKeys("25*Jul*2023*");
         System.out.println("Logueandose a Salesforce.com como mensajeria@enel.com");
         loginButton.click();
-        System.out.println("Ingresar código de verificación");
-        scanner.nextLine();
+//        System.out.println("Ingresar código de verificación");
+//        scanner.nextLine();
         Main.isDriverOpen = true;
     }
 
