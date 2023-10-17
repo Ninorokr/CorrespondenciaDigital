@@ -3,114 +3,28 @@ package com.silverlink.Utils;
 import com.silverlink.Entidades.Acta;
 import com.silverlink.Entidades.Carta;
 import com.silverlink.Entidades.Caso;
-import org.apache.pdfbox.contentstream.PDFStreamEngine;
-import org.apache.pdfbox.contentstream.operator.Operator;
-import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.graphics.PDXObject;
-import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
-import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.silverlink.Main.*;
 import static com.silverlink.Utils.AnalistaPDF.reconocerActaOCarta;
 
 public class ProcesadorDatos {
 
-//    String os1Path = "D:\\002\\23\\0001\\";
     static int cuentaArchivos;
-//    static ArrayList<PDDocument> archivosEnItem;
-
-//    public void descargarYEncarpetarCasos(ArrayList<Caso> casos) {
-//
-//        if(!isDriverOpen) {
-//            nav = new Navegador();
-//            nav.abrirSesionSalesforce();
-//        }
-//
-//        for (int i = 0; i < casos.size(); i++) {
-//            Caso caso = casos.get(i);
-//            int cantArchivos = nav.descargarArchivosCaso(caso.getIdActividad());
-//            try {
-//                while(true) {
-//                    if(isArchivosCompletos(cantArchivos))
-//                        break;
-//                }
-//                encarpetarArchivos(i, cantArchivos);
-//
-//            } catch (IOException ioe) {
-//                ioe.printStackTrace();
-//            }
-//        }
-//    }
-
-//    public static void recolectarDatosDeArchivos(ArrayList<Caso> casos) {
-//
-//        for (int i = 0; i < casos.size(); i++) {
-//            archivosEnItem = new ArrayList<>();
-//            Caso caso = casos.get(i);
-//            String nroOS = String.format("%04d", caso.getNroOS());
-//            String item =  String.format("%04d", caso.getIdCorrelativoCaso());
-//            Path rutaItem = Path.of(rootFolder + caso.getAnio() + "\\" + nroOS + "\\" + item);
-//            try {
-//                Files.walkFileTree(rutaItem, new RevisadorArchivos());
-//            } catch (IOException ioe) {
-//                System.out.println(ioe.getMessage());
-//            }
-//            System.out.println((i+1) + ". ");
-////            analista = new AnalistaPDF();
-//            reconocerActaOCarta(archivosEnItem, casos.get(i));
-//        }
-//    }
-
-//    public static void recolectarDatosDeArchivos(ArrayList<Caso> casos) {
-//
-//        for(Caso caso : casos) {
-//            String nroOS = String.format("%04d", caso.getNroOS());
-//            String item =  String.format("%04d", caso.getIdCorrelativoCaso());
-//            Path rutaItem = Path.of(rootFolder + caso.getAnio() + "\\" + nroOS + "\\" + item);
-//
-//            try {
-//                Files.walkFileTree(rutaItem, new RevisadorArchivos(caso));
-//            } catch (IOException ioe) {
-//                System.out.println(ioe.getMessage());
-//            }
-//
-//            //VERIFICADOR: Archivos completos
-//            caso.setErrorFaltaCartas(caso.getCartas().size() == 0); //Activar flag si faltan cartas
-//            caso.setErrorFaltaActas(caso.getActas().size() == 0); //Activar flag si faltan actas
-//
-//            if(caso.isErrorFaltaCartas() || caso.isErrorFaltaActas()){
-//                caso.getEstado().setIdEstado((short) 5); //RECHAZADO
-//            }
-//
-//            //TODO Colocar aqui el comparador de datos entre cartas y actas
-//            //VERIFICADOR: Nro. de carta
-//            caso.setErrorNroCarta(!nroCartaOK(caso));
-//
-//            //TODO Separar los revisadores en 2 o más métodos distintos, actualizando la lista de casos
-//            //TODO para trabajar sólo con los casos pendientes y no los rechazados
-//
-//            Commander.updateCasosRevisados(caso);
-//        }
-//    }
+    static String correosCarta;
+    static String correosActa;
 
     public void recolectarYVerificarDatos(ArrayList<Caso> casos) {
+
         for (Caso caso : casos) {
             String nroOS = String.format("%04d", caso.getNroOS());
-            String item =  String.format("%04d", caso.getIdCorrelativoCaso());
+            String item =  String.format("%04d", caso.getIdCaso());
             Path rutaItem = Path.of(rootFolder + caso.getAnio() + "\\" + nroOS + "\\" + item);
+            System.out.println("\n002-23-" + nroOS + "-" + item);
 
             try {
                 Files.walkFileTree(rutaItem, new RevisadorArchivos(caso));
@@ -122,14 +36,16 @@ public class ProcesadorDatos {
                 boolean nroCartaOK = nroCartaOK(caso);
                 boolean correoOK = correoOK(caso);
                 boolean fechasOK = fechasOK(caso);
-                if (!(nroCartaOK || correoOK || fechasOK))
-                    caso.getEstado().setIdEstado((short) 5); //RECHAZADO
-
+                if (!nroCartaOK || !correoOK || !fechasOK) {
+                    caso.getEstado().setIdEstado((short) 5); //RECHAZADA
+                } else {
+                    caso.getEstado().setIdEstado((short) 4); //DESCARGADA
+                }
+                Commander.updateCasosRevisadosCompletos(caso);
             } else {
-                caso.getEstado().setIdEstado((short) 5); //RECHAZADO
+                Commander.updateCasosRevisadosIncompletos(caso);
+                caso.getEstado().setIdEstado((short) 5); //RECHAZADA
             }
-
-            Commander.updateCasosRevisados(caso);
 //            SaveImagesInPdf printer = new SaveImagesInPdf(caso);
         }
     }
@@ -139,16 +55,8 @@ public class ProcesadorDatos {
             caso.setErrorFaltaCartas(caso.getCartas().size() == 0); //Activar flag si faltan cartas
             caso.setErrorFaltaActas(caso.getActas().size() == 0); //Activar flag si faltan actas
 
-        //                caso.getEstado().setIdEstado((short) 5); //RECHAZADO
         return !caso.isErrorFaltaCartas() && !caso.isErrorFaltaActas();
-//            Commander.updateCasosRevisados(caso);
     }
-
-//    public static void verificarNrosDeCartaCorrectos(Caso caso) {
-//        //VERIFICADOR: Nro. de carta
-//            caso.setErrorNroCarta(!nroCartaOK(caso));
-////            Commander.updateCasosRevisados(caso);
-//    }
 
     public static boolean nroCartaOK(Caso caso) {
         //VERIFICADOR: Nro. de carta
@@ -164,31 +72,53 @@ public class ProcesadorDatos {
         return true;
     }
 
-//    public static void verificarCorreoNotificacion(Caso caso) {
-//        caso.setErrorCorreoNotif(!correoNotificacionOK(caso));
-//        Commander.updateCasosRevisados(caso);
-//    }
-
     public static boolean correoOK(Caso caso) {
         //VERIFICADOR: Correo de notificación
+        correosCarta = null;
+        correosActa = null;
+        boolean ok = true;
+
         ArrayList<Carta> cartas = caso.getCartas();
         for (Acta acta : caso.getActas()) {
+            if(!caso.getCorreosActas().contains(acta.getCorreoDestinatario())){
+                caso.getCorreosActas().add(acta.getCorreoDestinatario());
+            }
+//            if (caso.getCorreosActas() != null) {
+//                if (caso.getCorreosActas().contains(acta.getCorreoDestinatario()))
+//                    caso.getCorreosActas().add(acta.getCorreoDestinatario());
+//            } else {
+//                caso.getCorreosActas().add(acta.getCorreoDestinatario());
+//            }
+
             for (Carta carta : cartas) {
+                if(!caso.getCorreosCartas().contains(carta.getCorreoDestinatario())){
+                    caso.getCorreosCartas().add(carta.getCorreoDestinatario());
+                }
+//                if (caso.getCorreosCartas() != null) {
+//                    if (caso.getCorreosCartas().contains(acta.getCorreoDestinatario()))
+//                        caso.getCorreosCartas().add(acta.getCorreoDestinatario());
+//                } else {
+//                    caso.getCorreosCartas().add(acta.getCorreoDestinatario());
+//                }
+
                 if (!acta.getCorreoDestinatario().equalsIgnoreCase(carta.getCorreoDestinatario())) {
                     caso.setErrorCorreoNotif(true);
-                    caso.getEstado().setIdEstado((short) 5); //RECHAZADO
-                    return false;
+//                    caso.getEstado().setIdEstado((short) 5); //RECHAZADO
+                    ok = false;
                 }
             }
         }
-        return true;
+        return ok;
     }
 
     public static boolean fechasOK(Caso caso) {
         //VERIFICADOR: Fechas
         ArrayList<Acta> actas = caso.getActas();
         for (Carta carta : caso.getCartas()) {
+            caso.setFecEmision(carta.getFechaEmision());
             for (Acta acta : actas) {
+                caso.setFecDespacho(acta.getFechaEntrega());
+                caso.setFecNotificiacion(acta.getFechaEntrega());
                 if (carta.getFechaEmision().isAfter(acta.getFechaEntrega().toLocalDate()) ||
                     acta.getFechaEntrega().toLocalDate().minusDays(7).isEqual(carta.getFechaEmision()) ||
                     acta.getFechaEntrega().toLocalDate().minusDays(7).isAfter(carta.getFechaEmision())) {
@@ -210,10 +140,8 @@ public class ProcesadorDatos {
     public static void encarpetarArchivos(Caso caso, int cantArchivos) throws IOException {
         //Encarpetar archivos en "temp" a la carpeta de su respectivo item
         String nroOS = String.format("%04d", caso.getNroOS());
-        String item =  String.format("%04d", caso.getIdCorrelativoCaso());
+        String item =  String.format("%04d", caso.getIdCaso());
         Path destino = Files.createDirectories(Path.of(rootFolder + caso.getAnio() + "\\" + nroOS + "\\" + item));
-//        Encarpetador encarpetador = new Encarpetador(destino.toString(), cantArchivos);
-//        Files.walkFileTree(Path.of(tempPath), encarpetador);
         Files.walkFileTree(Path.of(tempPath), new Encarpetador(destino, cantArchivos));
     }
 

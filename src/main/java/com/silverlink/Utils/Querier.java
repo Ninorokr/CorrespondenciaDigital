@@ -205,7 +205,7 @@ public class Querier {
                 caso = new Caso();
                 caso.setAnio(rs.getShort(1));
                 caso.setNroOS(rs.getShort(2));
-                caso.setIdCorrelativoCaso(rs.getShort(3));
+                caso.setIdCaso(rs.getShort(3));
                 caso.setIdActividad(rs.getString(4));
                 caso.setNroCaso(rs.getInt(5));
                 caso.setEstado(new Estado(rs.getShort(6)));

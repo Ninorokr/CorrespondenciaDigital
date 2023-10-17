@@ -49,7 +49,7 @@ public class RegistradorDeCasos {
         //Ingresar casos a la BD descartando los casos duplicados primero
         for (Caso caso : casos) {
             if(!idsCasosYaExistentes.contains(caso.getIdActividad())) {
-                caso.setIdCorrelativoCaso((short) i);
+                caso.setIdCaso((short) i);
                 insertCasoABD(caso);
                 i++;
             } else {

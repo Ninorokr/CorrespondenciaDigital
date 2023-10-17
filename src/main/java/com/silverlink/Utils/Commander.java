@@ -211,7 +211,7 @@ public class Commander {
 
         //El excel tendrá campos vacíos, cuando lleguen acá, cada campo vacío lanzará una excepción :O!
         //Se puede reemplazar con setObject
-
+        //TODO cambiar nombre de idCaso a "idCaso"
         String insertCasoQuery = "INSERT INTO [digi].[casosCorrespondenciaDigital] ([anio], [nroOS], [idCasoCorrespondenciaDigital], " +
                 "[idTipoAtencion], [idTipoRegCaso], [idActividad], [idTipoCarta], [nroCaso], [idEstadoCaso], [fechaCreacionCaso], " +
                 "[correlativoCarta], [nroSuministro], [idCanalNotificacion], [idProvincia], [idPrioridad], [idEstado], " +
@@ -222,7 +222,7 @@ public class Commander {
         try (PreparedStatement ps = conn.prepareStatement(insertCasoQuery)) {
             ps.setShort(1, caso.getAnio());
             ps.setShort(2, caso.getNroOS());
-            ps.setShort(3, caso.getIdCorrelativoCaso());
+            ps.setShort(3, caso.getIdCaso());
             ps.setShort(4, caso.getTipoAtencion().getIdTipoAtencion());
             ps.setShort(5, caso.getTipoRegCaso().getIdTipoRegCaso());
             ps.setString(6, caso.getIdActividad());
@@ -250,7 +250,7 @@ public class Commander {
 
 //            ps.setObject(26, caso.getPropietarioCaso().getIdUsuario(), JDBCType.INTEGER);
             ps.execute();
-            System.out.println("002-23-" + caso.getNroOS() + "-" + caso.getIdCorrelativoCaso() +
+            System.out.println("002-23-" + caso.getNroOS() + "-" + caso.getIdCaso() +
                     " | " + caso.getIdActividad() + " | " + caso.getNroCaso());
         } catch (SQLException sqle) {
             sqle.printStackTrace();
@@ -290,29 +290,74 @@ public class Commander {
         }
     }
 
-    public static void updateCasosRevisados(Caso caso) {
-        String setArchivosDescargadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET " +
-                "errorFaltaCarta = ?, errorFaltaActa = ?, idEstado = ?, errorNroCarta = ?, " +
-                "errorCorreoNotif = ?, errorFechas = ? " +
+    public static void updateCasosRevisadosIncompletos(Caso caso) {
+        String updateCasosRevisadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET " +
+                "errorFaltaCarta = ?, errorFaltaActa = ?, idEstado = ?, " +
                 "WHERE idActividad = ?";
 
-//        setArchivosDescargadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET isArchivosDescargados = 1" +
-//                "WHERE idActividad = ?";
+        try(PreparedStatement ps = conn.prepareStatement(updateCasosRevisadosQuery)){
+            ps.setBoolean(1, caso.isErrorFaltaCartas());
+            ps.setBoolean(2, caso.isErrorFaltaActas());
+            ps.setShort(3, caso.getEstado().getIdEstado());
+            ps.setString(4, caso.getIdActividad());
+            ps.execute();
+        } catch (SQLException sqle){
+            System.out.println("No se pudo registrar casos con archivos incompletos");
+            sqle.printStackTrace();
+        }
+    }
 
-        try(PreparedStatement ps = conn.prepareStatement(setArchivosDescargadosQuery)){
+    public static void updateCasosRevisadosCompletos(Caso caso) {
+        String updateCasosRevisadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET " +
+                "errorFaltaCarta = ?, errorFaltaActa = ?, idEstado = ?, errorNroCarta = ?, " +
+                "errorCorreoNotif = ?, errorFechas = ?, dirCorreoCarta = ?, dirCorreoActa = ?," +
+                "fecEmision = ?, fecDespacho = ?, fecNotificacion = ? " +
+                "WHERE idActividad = ?";
+
+        try(PreparedStatement ps = conn.prepareStatement(updateCasosRevisadosQuery)){
             ps.setBoolean(1, caso.isErrorFaltaCartas());
             ps.setBoolean(2, caso.isErrorFaltaActas());
             ps.setShort(3, caso.getEstado().getIdEstado());
             ps.setBoolean(4, caso.isErrorNroCarta());
             ps.setBoolean(5, caso.isErrorCorreoNotif());
             ps.setBoolean(6, caso.isErrorFechas());
-            ps.setString(7, caso.getIdActividad());
+            ps.setString(7, caso.getCorreosCartasString());
+            ps.setString(8, caso.getCorreosActasString());
+            ps.setTimestamp(9, Timestamp.valueOf(LocalDateTime.of(caso.getFecEmision(),
+                                                        caso.getFecNotificiacion().toLocalTime())));
+            ps.setTimestamp(10, Timestamp.valueOf(caso.getFecDespacho()));
+            ps.setTimestamp(11, Timestamp.valueOf(caso.getFecNotificiacion()));
+            ps.setString(12, caso.getIdActividad());
             ps.execute();
         } catch (SQLException sqle){
-            System.out.println("No se pudo registrar archivos descargados como \"TRUE\"");
+            System.out.println("No se pudo registrar casos revisados");
             sqle.printStackTrace();
         }
     }
+
+//    public static void updateCasosRevisados(Caso caso) {
+//        String setArchivosDescargadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET " +
+//                "errorFaltaCarta = ?, errorFaltaActa = ?, idEstado = ?, errorNroCarta = ?, " +
+//                "errorCorreoNotif = ?, errorFechas = ? " +
+//                "WHERE idActividad = ?";
+//
+////        setArchivosDescargadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET isArchivosDescargados = 1" +
+////                "WHERE idActividad = ?";
+//
+//        try(PreparedStatement ps = conn.prepareStatement(setArchivosDescargadosQuery)){
+//            ps.setBoolean(1, caso.isErrorFaltaCartas());
+//            ps.setBoolean(2, caso.isErrorFaltaActas());
+//            ps.setShort(3, caso.getEstado().getIdEstado());
+//            ps.setBoolean(4, caso.isErrorNroCarta());
+//            ps.setBoolean(5, caso.isErrorCorreoNotif());
+//            ps.setBoolean(6, caso.isErrorFechas());
+//            ps.setString(7, caso.getIdActividad());
+//            ps.execute();
+//        } catch (SQLException sqle){
+//            System.out.println("No se pudo registrar archivos descargados como \"TRUE\"");
+//            sqle.printStackTrace();
+//        }
+//    }
 
 //    public static void updateCasosRevisados(Caso caso) {
 //        String setArchivosDescargadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET " +

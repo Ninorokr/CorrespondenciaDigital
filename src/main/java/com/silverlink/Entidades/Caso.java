@@ -10,7 +10,7 @@ public class Caso {
 
     private short anio;
     private short nroOS;
-    private short idCorrelativoCaso;
+    private short idCaso;
     private TipoAtencion tipoAtencion;
     private TipoRegCaso tipoRegCaso;
     private String idActividad;
@@ -39,6 +39,8 @@ public class Caso {
     private short diasVencidosPorVencer;
     private ArrayList<Carta> cartas = new ArrayList<>();
     private ArrayList<Acta> actas = new ArrayList<>();
+    private ArrayList<String> correosCartas = new ArrayList<>();
+    private ArrayList<String> correosActas = new ArrayList<>();
     private boolean errorNroCarta;
     private boolean errorCorreoNotif;
     private boolean errorFechas;
@@ -67,12 +69,12 @@ public class Caso {
         this.nroOS = nroOS;
     }
 
-    public short getIdCorrelativoCaso() {
-        return idCorrelativoCaso;
+    public short getIdCaso() {
+        return idCaso;
     }
 
-    public void setIdCorrelativoCaso(short idCorrelativoCaso) {
-        this.idCorrelativoCaso = idCorrelativoCaso;
+    public void setIdCaso(short idCaso) {
+        this.idCaso = idCaso;
     }
 
     public TipoAtencion getTipoAtencion() {
@@ -443,6 +445,38 @@ public class Caso {
 
     public ArrayList<Acta> getActas() {
         return actas;
+    }
+
+    public ArrayList<String> getCorreosCartas() {
+        return correosCartas;
+    }
+
+    public String getCorreosCartasString() {
+        StringBuilder sb = new StringBuilder();
+        for(String correo : correosCartas) {
+            sb.append(correo).append(";");
+        }
+        return sb.toString();
+    }
+
+    public String getCorreosActasString() {
+        StringBuilder sb = new StringBuilder();
+        for(String correo : correosActas) {
+            sb.append(correo).append(";");
+        }
+        return sb.toString();
+    }
+
+    public void setCorreosCartas(ArrayList<String> correosCartas) {
+        this.correosCartas = correosCartas;
+    }
+
+    public ArrayList<String> getCorreosActas() {
+        return correosActas;
+    }
+
+    public void setCorreosActas(ArrayList<String> correosActas) {
+        this.correosActas = correosActas;
     }
 
     public boolean isErrorNroCarta() {

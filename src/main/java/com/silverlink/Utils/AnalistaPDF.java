@@ -20,8 +20,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -81,7 +79,7 @@ public class AnalistaPDF {
 class SaveImagesInPdf extends PDFStreamEngine {
 
     //        public int docNum;
-//        public int pageNum;
+    //        public int pageNum;
     public int imageNumber = 1;
     Caso caso;
 
@@ -103,7 +101,7 @@ class SaveImagesInPdf extends PDFStreamEngine {
                 // same image to local
                 BufferedImage bImage = image.getImage();
                 String nroOS = String.format("%04d", caso.getNroOS());
-                String nroID = String.format("%04d", caso.getIdCorrelativoCaso());
+                String nroID = String.format("%04d", caso.getIdCaso());
                 String exportPath = rootFolder + caso.getAnio() + "\\" + nroOS + "\\" + nroID + "\\";
 
                 DataBuffer dataBuffer = bImage.getData().getDataBuffer();
@@ -116,9 +114,9 @@ class SaveImagesInPdf extends PDFStreamEngine {
 //                System.out.println(imageNumber + ", size in: ");
 //                System.out.println("Bytes: " + sizeBytes + " bytes");
 //                System.out.println("MBytes: " + sizeKB + " KBs");
-                //TAMAÑO MÍNIMO: 9KB
+                //TAMAÑO MÍNIMO: 7KB
                 //TAMAÑO MÁXIMO: 120KB
-                ImageIO.write(bImage,"PNG", new File(exportPath + "firma_" + caso.getIdCorrelativoCaso() +
+                ImageIO.write(bImage,"PNG", new File(exportPath + "firma_" + caso.getIdCaso() +
                         "_" + imageNumber + ".png"));
 //                System.out.println("Image saved.");
                 imageNumber++;
