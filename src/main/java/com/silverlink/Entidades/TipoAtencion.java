@@ -28,4 +28,13 @@ public class TipoAtencion {
         }
         return null;
     }
+
+    public static TipoAtencion getTipoAtencion(short idTipoAtencion) {
+        for (TipoAtencion tipoAtencion : tiposAtencion) {
+            if(tipoAtencion.getIdTipoAtencion() == idTipoAtencion) {
+                return tipoAtencion;
+            }
+        }
+        return null;
+    }
 }

@@ -84,15 +84,19 @@ public class Main {
 
         //3. Navega caso por caso en Salesforce y descarga según los datos recogidos.
         //
+
+        //TODO Implementar una opción para cambiar un dato de un caso que aún no haya sido descargado en Salesforce
         while(true){
             System.out.println("1. Descargar casos nuevos\n" +
                     "2. Procesar casos pendientes\n" +
-                    "3. Descargar casos en Salesforce\n" +
+                    "3. Exportar casos pendientes de descarga en Salesforce\n" +
+//                    "4. Descargar casos en Salesforce\n" +
                     "9. Salir");
 
             switch (scanner.nextInt()) {
                 case 1: descargarCasosNuevos(); break;
                 case 2: procesarCasosPendientes(); break;
+                case 3: exportarCasosPendientesDescarga(); break;
                 case 9: System.exit(0);
             }
         }
@@ -185,6 +189,7 @@ public class Main {
 //        registrador.registrarCasos(anio, nroOS);
 //    }
 
+    //Menú op. 2
     private static void procesarCasosPendientes() {
         //Jalar casos pendientes de la BD (solo los datos relevantes)
         ArrayList<Caso> casos = queryCasosPendientes();
@@ -255,6 +260,13 @@ public class Main {
         ProcesadorDatos pro = new ProcesadorDatos();
         pro.recolectarYVerificarDatos(queryCasosPendientes());
 
+    }
+
+    //Menú op. 3
+
+    private static void exportarCasosPendientesDescarga() {
+        Reportero reportero = new Reportero();
+        reportero.exportarCasosPorOS(queryCasosPendientesDescargaSalesforce());
     }
 
     private static void revisarArchivos() {

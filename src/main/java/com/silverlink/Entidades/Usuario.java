@@ -64,6 +64,15 @@ public class Usuario {
         return null;
     }
 
+    public static Usuario getUsuario(short idUsuario) {
+        for (Usuario usuario : usuarios) {
+            if(usuario.getIdUsuario() == idUsuario) {
+                return usuario;
+            }
+        }
+        return null;
+    }
+
     @Override
     public String toString() {
         return codUsuario + " | " + nomUsuario;

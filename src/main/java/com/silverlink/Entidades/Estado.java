@@ -37,4 +37,12 @@ public class Estado {
         return null;
     }
 
+    public static Estado getEstado(short idEstado) {
+        for (Estado estado : estados) {
+            if(estado.getIdEstado() == idEstado) {
+                return estado;
+            }
+        }
+        return null;
+    }
 }

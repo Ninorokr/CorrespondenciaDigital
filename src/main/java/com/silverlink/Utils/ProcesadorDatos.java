@@ -58,12 +58,28 @@ public class ProcesadorDatos {
         return !caso.isErrorFaltaCartas() && !caso.isErrorFaltaActas();
     }
 
+//    public static boolean nroCartaOK(Caso caso) {
+//        //VERIFICADOR: Nro. de carta
+//        ArrayList<Acta> actas = caso.getActas();
+//        for (Carta carta : caso.getCartas()) {
+//            for (Acta acta : actas) {
+//                if (carta.getNroCarta() != acta.getNroActa()) {
+//                    caso.setErrorNroCarta(true);
+//                    return false;
+//                }
+//            }
+//        }
+//        return true;
+//    }
+
     public static boolean nroCartaOK(Caso caso) {
         //VERIFICADOR: Nro. de carta
         ArrayList<Acta> actas = caso.getActas();
         for (Carta carta : caso.getCartas()) {
             for (Acta acta : actas) {
-                if (carta.getNroCarta() != acta.getNroActa()) {
+                if (carta.getNroCarta() != acta.getNroActa() ||
+                    carta.getNroCarta() != caso.getNroCaso() ||
+                    acta.getNroActa() != caso.getNroCaso()) {
                     caso.setErrorNroCarta(true);
                     return false;
                 }

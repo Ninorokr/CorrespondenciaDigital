@@ -41,6 +41,8 @@ public class Caso {
     private ArrayList<Acta> actas = new ArrayList<>();
     private ArrayList<String> correosCartas = new ArrayList<>();
     private ArrayList<String> correosActas = new ArrayList<>();
+    private String correosCartasString;
+    private String correosActasString;
     private boolean errorNroCarta;
     private boolean errorCorreoNotif;
     private boolean errorFechas;
@@ -48,6 +50,7 @@ public class Caso {
     private boolean errorFaltaActas;
     private boolean descargadoEnSalesforce = false;
     private boolean archivosDescargados = false;
+    private boolean errorFaltaFirma = false;
 
     public Caso(){
 
@@ -479,6 +482,14 @@ public class Caso {
         this.correosActas = correosActas;
     }
 
+    public void setCorreosCartasString(String correosCartasString) {
+        this.correosCartasString = correosCartasString;
+    }
+
+    public void setCorreosActasString(String correosActasString) {
+        this.correosActasString = correosActasString;
+    }
+
     public boolean isErrorNroCarta() {
         return errorNroCarta;
     }
@@ -533,6 +544,14 @@ public class Caso {
 
     public void setErrorFaltaActas(boolean errorFaltaActas) {
         this.errorFaltaActas = errorFaltaActas;
+    }
+
+    public boolean isErrorFaltaFirma() {
+        return errorFaltaFirma;
+    }
+
+    public void setErrorFaltaFirma(boolean errorFaltaFirma) {
+        this.errorFaltaFirma = errorFaltaFirma;
     }
 
     @Override

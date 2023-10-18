@@ -2,9 +2,11 @@ package com.silverlink.Utils;
 
 import com.silverlink.Entidades.*;
 
+import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import static com.silverlink.Utils.Datasource.conn;
@@ -223,5 +225,66 @@ public class Querier {
         return casosPendientes;
     }
 
+    public static ArrayList<Caso> queryCasosPendientesDescargaSalesforce() {
+        ArrayList<Caso> casos = new ArrayList<>();
 
+        String casosPendientesDescargaSalesforceQuery = "SELECT [anio], [nroOS], [idCasoCorrespondenciaDigital], " +
+                "[idTipoAtencion], [idTipoRegCaso], [idActividad], [idTipoCarta], [nroCaso], [idEstadoCaso], " +
+                "[fechaCreacionCaso], [correlativoCarta], [nroSuministro], [idCanalNotificacion], [idProvincia], " +
+                "[idPrioridad], [idEstado], [fecCreacion], [fecEmision], [fecDespacho], [fecNotificacion], " +
+                "[fecNotificacionCarta], [fecUltimaModificacion], [fecha], [fecVencimientoLegal], [idCreadoPor], " +
+                "[canalRegistro], [idPropietarioCaso], [diasVencidosPorVencer], [dirCorreoCarta], [dirCorreoActa], " +
+                "[errorNroCarta], [errorCorreoNotif], [errorFechas], " +
+                "[errorFaltaCarta], [errorFaltaActa], [errorFaltaFirma] " +
+                "FROM [digi].[casosCorrespondenciaDigital] " +
+                "WHERE descargadoEnSalesforce = 0";
+
+        try (PreparedStatement ps = conn.prepareStatement(casosPendientesDescargaSalesforceQuery)) {
+            Caso caso;
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                caso = new Caso();
+                caso.setAnio(rs.getShort(1));
+                caso.setNroOS(rs.getShort(2));
+                caso.setIdCaso(rs.getShort(3));
+                caso.setTipoAtencion(TipoAtencion.getTipoAtencion(rs.getShort(4)));
+                caso.setTipoRegCaso(TipoRegCaso.getTipoRegCaso(rs.getShort(5)));
+                caso.setIdActividad(rs.getString(6));
+                caso.setTipoCarta(TipoCarta.getTipoCarta(rs.getShort(7)));
+                caso.setNroCaso(rs.getInt(8));
+                caso.setEstadoCaso(EstadoCaso.getEstadoCaso(rs.getShort(9)));
+                caso.setFecCreacionCaso(rs.getDate(10).toLocalDate());
+                caso.setCorrelativoCarta(rs.getShort(11));
+                caso.setNroSuministro(rs.getString(12));
+                caso.setCanalNotificacion(CanalNotificacion.getCanalNotificacion(rs.getShort(13)));
+                caso.setProvincia(Provincia.getProvincia(rs.getShort(14)));
+                caso.setPrioridad(Prioridad.getPrioridad(rs.getShort(15)));
+                caso.setEstado(Estado.getEstado(rs.getShort(16)));
+                caso.setFecCreacion(rs.getDate(17).toLocalDate());
+                caso.setFecEmision(rs.getDate(18).toLocalDate());
+                caso.setFecDespacho(rs.getTimestamp(19).toLocalDateTime());
+                caso.setFecNotificiacion(rs.getTimestamp(20).toLocalDateTime());
+                caso.setFecNotificacionCarta(rs.getTimestamp(21).toLocalDateTime());
+                caso.setFecUltimaModificacion(rs.getDate(22).toLocalDate()); //TODO bota error aqui, por NULL
+                caso.setFecha(rs.getDate(23).toLocalDate());
+                caso.setFecVencimientoLegal(rs.getTimestamp(24).toLocalDateTime());
+                caso.setCreadoPor(Usuario.getUsuario(rs.getShort(25)));
+                caso.setCanalRegistro(CanalRegistro.getCanalRegistro(rs.getShort(26)));
+                caso.setPropietarioCaso(Usuario.getUsuario(rs.getShort(27)));
+                caso.setDiasVencidosPorVencer(rs.getShort(28));
+                caso.setCorreosCartasString(rs.getString(29));
+                caso.setCorreosActasString(rs.getString(30));
+                caso.setErrorNroCarta(rs.getBoolean(31));
+                caso.setErrorCorreoNotif(rs.getBoolean(32));
+                caso.setErrorFechas(rs.getBoolean(33));
+                caso.setErrorFaltaCartas(rs.getBoolean(34));
+                caso.setErrorFaltaActas(rs.getBoolean(35));
+                caso.setErrorFaltaFirma(rs.getBoolean(36));
+                casos.add(caso);
+            }
+        } catch (SQLException sqle) {
+            System.out.println("No se pudo consultar el caso pendiente de descarga en Salesforce.");
+        }
+        return casos;
+    }
 }

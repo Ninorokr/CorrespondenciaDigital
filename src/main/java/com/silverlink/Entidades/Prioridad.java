@@ -28,4 +28,13 @@ public class Prioridad {
         }
         return null;
     }
+
+    public static Prioridad getPrioridad(short idPrioridad) {
+        for (Prioridad prioridad : prioridades) {
+            if(prioridad.getIdPrioridad() == idPrioridad) {
+                return prioridad;
+            }
+        }
+        return null;
+    }
 }

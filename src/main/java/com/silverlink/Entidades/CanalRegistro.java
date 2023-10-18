@@ -28,4 +28,13 @@ public class CanalRegistro {
         }
         return null;
     }
+
+    public static CanalRegistro getCanalRegistro(short idCanalRegistro) {
+        for (CanalRegistro cr : canalesRegistro) {
+            if(cr.getIdCanalRegistro() == idCanalRegistro) {
+                return cr;
+            }
+        }
+        return null;
+    }
 }

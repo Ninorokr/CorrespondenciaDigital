@@ -292,7 +292,7 @@ public class Commander {
 
     public static void updateCasosRevisadosIncompletos(Caso caso) {
         String updateCasosRevisadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET " +
-                "errorFaltaCarta = ?, errorFaltaActa = ?, idEstado = ?, " +
+                "errorFaltaCarta = ?, errorFaltaActa = ?, idEstado = ? " +
                 "WHERE idActividad = ?";
 
         try(PreparedStatement ps = conn.prepareStatement(updateCasosRevisadosQuery)){

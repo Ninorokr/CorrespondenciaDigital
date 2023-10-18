@@ -28,4 +28,13 @@ public class CanalNotificacion {
         }
         return null;
     }
+
+    public static CanalNotificacion getCanalNotificacion(short idCanalNotificacion) {
+        for (CanalNotificacion cn : canalesNotificacion) {
+            if(cn.getIdCanalNotificacion() == idCanalNotificacion) {
+                return cn;
+            }
+        }
+        return null;
+    }
 }

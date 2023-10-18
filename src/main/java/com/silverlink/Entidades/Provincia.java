@@ -28,4 +28,13 @@ public class Provincia {
         }
         return null;
     }
+
+    public static Provincia getProvincia(short idProvincia) {
+        for (Provincia provincia : provincias) {
+            if(provincia.getIdProvincia() == idProvincia) {
+                return provincia;
+            }
+        }
+        return null;
+    }
 }

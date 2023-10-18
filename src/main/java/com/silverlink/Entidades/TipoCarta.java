@@ -23,7 +23,16 @@ public class TipoCarta {
 
     public static TipoCarta existeTipoCarta(String nomTipoCarta) {
         for (TipoCarta tipoCarta : tiposCarta) {
-            if(tipoCarta.getNomTipoCarta().equals(nomTipoCarta)) {
+            if (tipoCarta.getNomTipoCarta().equals(nomTipoCarta)) {
+                return tipoCarta;
+            }
+        }
+        return null;
+    }
+
+    public static TipoCarta getTipoCarta(short idTipoCarta){
+        for (TipoCarta tipoCarta : tiposCarta) {
+            if (tipoCarta.getIdTipoCarta() == idTipoCarta) {
                 return tipoCarta;
             }
         }

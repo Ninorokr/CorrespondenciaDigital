@@ -28,4 +28,13 @@ public class EstadoCaso {
         }
         return null;
     }
+
+    public static EstadoCaso getEstadoCaso(short idEstadoCaso) {
+        for (EstadoCaso estadoCaso : estadosCaso) {
+            if(estadoCaso.getIdEstadoCaso() == idEstadoCaso) {
+                return estadoCaso;
+            }
+        }
+        return null;
+    }
 }

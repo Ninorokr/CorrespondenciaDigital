@@ -29,4 +29,13 @@ public class TipoRegCaso {
         }
         return null;
     }
+
+    public static TipoRegCaso getTipoRegCaso(short idTipoRegCaso) {
+        for (TipoRegCaso tipoRegCaso : tiposRegCaso) {
+            if(tipoRegCaso.getIdTipoRegCaso() == idTipoRegCaso) {
+                return tipoRegCaso;
+            }
+        }
+        return null;
+    }
 }
