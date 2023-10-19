@@ -88,18 +88,18 @@ public class RegistradorDeCasos {
                         case 3: caso.setTipoCarta(cell.getStringCellValue()); break;
                         case 4: caso.setNroCaso(cell.getStringCellValue()); break; //Número almacenado como texto
                         case 5: caso.setEstadoCaso(cell.getStringCellValue()); break;
-                        case 6: caso.setFecCreacionCaso(getLocalDate(cell.getLocalDateTimeCellValue())); break;
+                        case 6: caso.setFecCreacionCaso(datetimeToLocalDate(cell.getLocalDateTimeCellValue())); break;
                         case 7: caso.setCorrelativoCarta((short) cell.getNumericCellValue()); break;
                         case 8: caso.setNroSuministro(cell.getStringCellValue()); break; //Número almacenado como texto
                         case 10: caso.setCanalNotificacion(cell.getStringCellValue()); break;
                         case 12: caso.setProvincia(cell.getStringCellValue()); break;
                         case 13: caso.setPrioridad(cell.getStringCellValue()); break;
                         case 14: caso.setEstado(cell.getStringCellValue()); break;
-                        case 15: caso.setFecCreacion(getLocalDate(cell.getLocalDateTimeCellValue())); break;
+                        case 15: caso.setFecCreacion(datetimeToLocalDate(cell.getLocalDateTimeCellValue())); break;
                         //16, 17, 18 son las fechas a obtener de los documentos a revisar.
                         case 19: caso.setFecNotificacionCarta(cell.getLocalDateTimeCellValue()); break;
-                        case 20: caso.setFecUltimaModificacion(getLocalDate(cell.getLocalDateTimeCellValue())); break;
-                        case 21: caso.setFecha(getLocalDate(cell.getLocalDateTimeCellValue())); break;
+                        case 20: caso.setFecUltimaModificacion(datetimeToLocalDate(cell.getLocalDateTimeCellValue())); break;
+                        case 21: caso.setFecha(datetimeToLocalDate(cell.getLocalDateTimeCellValue())); break;
                         case 22: caso.setFecVencimientoLegal(cell.getLocalDateTimeCellValue()); break;
 //                        case 20: caso.setCreadoPor(cell.getStringCellValue()); break;
                         case 24: caso.setCanalRegistro(cell.getStringCellValue()); break;
@@ -118,7 +118,7 @@ public class RegistradorDeCasos {
         return casos;
     }
 
-    private LocalDate getLocalDate(LocalDateTime datetime) {
+    private LocalDate datetimeToLocalDate(LocalDateTime datetime) {
         if (datetime == null)
             return null;
         return datetime.toLocalDate();

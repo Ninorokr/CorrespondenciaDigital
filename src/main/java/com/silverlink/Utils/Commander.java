@@ -290,31 +290,31 @@ public class Commander {
         }
     }
 
-    public static void updateCasosRevisadosIncompletos(Caso caso) {
-        String updateCasosRevisadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET " +
+    public static void updateCasosVerificadosIncompletos(Caso caso) {
+        String updateCasosVerificadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET " +
                 "errorFaltaCarta = ?, errorFaltaActa = ?, idEstado = ? " +
                 "WHERE idActividad = ?";
 
-        try(PreparedStatement ps = conn.prepareStatement(updateCasosRevisadosQuery)){
+        try(PreparedStatement ps = conn.prepareStatement(updateCasosVerificadosQuery)){
             ps.setBoolean(1, caso.isErrorFaltaCartas());
             ps.setBoolean(2, caso.isErrorFaltaActas());
             ps.setShort(3, caso.getEstado().getIdEstado());
             ps.setString(4, caso.getIdActividad());
             ps.execute();
         } catch (SQLException sqle){
-            System.out.println("No se pudo registrar casos con archivos incompletos");
+            System.out.println("No se pudo registrar caso con archivos incompletos");
             sqle.printStackTrace();
         }
     }
 
-    public static void updateCasosRevisadosCompletos(Caso caso) {
-        String updateCasosRevisadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET " +
+    public static void updateCasosVerificadosCompletos(Caso caso) {
+        String updateCasosVerificadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET " +
                 "errorFaltaCarta = ?, errorFaltaActa = ?, idEstado = ?, errorNroCarta = ?, " +
                 "errorCorreoNotif = ?, errorFechas = ?, dirCorreoCarta = ?, dirCorreoActa = ?," +
                 "fecEmision = ?, fecDespacho = ?, fecNotificacion = ? " +
                 "WHERE idActividad = ?";
 
-        try(PreparedStatement ps = conn.prepareStatement(updateCasosRevisadosQuery)){
+        try(PreparedStatement ps = conn.prepareStatement(updateCasosVerificadosQuery)){
             ps.setBoolean(1, caso.isErrorFaltaCartas());
             ps.setBoolean(2, caso.isErrorFaltaActas());
             ps.setShort(3, caso.getEstado().getIdEstado());
@@ -330,8 +330,38 @@ public class Commander {
             ps.setString(12, caso.getIdActividad());
             ps.execute();
         } catch (SQLException sqle){
-            System.out.println("No se pudo registrar casos revisados");
+            System.out.println("No se pudo registrar caso verificado");
             sqle.printStackTrace();
+        }
+    }
+
+    public static void updateCasosRevisados(Caso caso) {
+        String updateCasosRevisadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET " +
+                "idEstado = ?, fecEmision = ?, fecDespacho = ?, fecNotificacion = ?, dirCorreoCarta = ?, " +
+                "dirCorreoActa = ?, errorNroCarta = ?, errorCorreoNotif = ?, errorFechas = ?, errorFaltaFirma = ?, " +
+                "errorFaltaCarta = ?, errorFaltaActa = ?, revisado = ? " +
+                "WHERE anio = ? AND nroOS = ? AND idCasoCorrespondenciaDigital = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(updateCasosRevisadosQuery)) {
+            ps.setShort(1, caso.getEstado().getIdEstado());
+            ps.setTimestamp(2, Timestamp.valueOf(caso.getFecEmisionDateTime()));
+            ps.setTimestamp(3, Timestamp.valueOf(caso.getFecDespacho()));
+            ps.setTimestamp(4, Timestamp.valueOf(caso.getFecNotificiacion()));
+            ps.setString(5, caso.getCorreosCartasString());
+            ps.setString(6, caso.getCorreosActasString());
+            ps.setBoolean(7, caso.isErrorNroCarta());
+            ps.setBoolean(8, caso.isErrorCorreoNotif());
+            ps.setBoolean(9, caso.isErrorFechas());
+            ps.setBoolean(10, caso.isErrorFaltaFirma());
+            ps.setBoolean(11, caso.isErrorFaltaCartas());
+            ps.setBoolean(12, caso.isErrorFaltaActas());
+            ps.setBoolean(13, true);
+            ps.setShort(14, caso.getAnio());
+            ps.setShort(15, caso.getNroOS());
+            ps.setShort(16, caso.getIdCaso());
+            ps.execute();
+        } catch (SQLException sqle) {
+            System.out.println("No se pudo actualizar caso revisado");
         }
     }
 

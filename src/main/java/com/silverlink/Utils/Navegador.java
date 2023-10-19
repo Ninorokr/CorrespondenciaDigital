@@ -7,6 +7,7 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.Select;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -14,10 +15,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
-import static com.silverlink.Main.scanner;
 import static com.silverlink.Main.tempPath;
 
 public class Navegador {
@@ -32,7 +37,7 @@ public class Navegador {
         options.addArguments("--window-size=1920,1080","--ignore-certificate-errors","--disable-extensions","--no-sandbox","--disable-dev-shm-usage", "--remote-allow-origins=*");
 //        options.addArguments("--headless=new", "--disable-gpu", "--window-size=1920,1080","--ignore-certificate-errors","--disable-extensions","--no-sandbox","--disable-dev-shm-usage", "--remote-allow-origins=*");
 
-//        String downloadFilepath = "Z:\\Servicios ENEL\\002 - Correspondencia digital\\Temp";
+        String downloadFilepath = "Z:\\Servicios ENEL\\002 - Correspondencia digital\\Temp";
 //        String downloadFilepath = "D:\\Servicios ENEL\\002 - Correspondencia digital\\Temp";
         HashMap<String, Object> chromePrefs = new HashMap<>();
         chromePrefs.put("profile.default_content_settings.popups", 0);
@@ -86,7 +91,7 @@ public class Navegador {
 
             WebElement mainIFrame = driver.findElement(By.xpath("/html/body/div[4]/div/div[3]/div/div/iframe"));
             driver.switchTo().frame(mainIFrame);
-            try { WebElement infCorrespondenciaDigital = driver.findElement(By.xpath("//*[@id=\"00O1o000005aVRP_NAME\"]/div[2]/a"));
+            try { WebElement infCorrespondenciaDigital = driver.findElement(By.xpath("//button[text()='Modificar']"));
             infCorrespondenciaDigital.click();
             System.out.println("Abriendo informe de Correspondencia Digital (pendiente)");
             } catch (NoSuchElementException nsee) { System.out.println("No se ubicó el enlace al Inf. de Correspondencia Digital (pendiente)"); }
@@ -166,6 +171,40 @@ public class Navegador {
         }
         nroDoc++;
         return cantArchivos;
+    }
+
+    public void descargarCasoEnSalesforce(Caso caso) {
+        driver.get("https://enelsud.my.salesforce.com/" + caso.getIdActividad());
+
+        switch(caso.getEstado().getIdEstado()) {
+            case 4: descargarCasoNormal(caso); break;
+            case 5: descargarCasoRechazado(caso); break;
+        }
+
+    }
+
+    private void descargarCasoNormal(Caso caso) {
+        WebElement btnModificar = driver.findElement(By.xpath("//input[@title='Modificar' and @name='edit']"));
+        btnModificar.click();
+
+        Select cboBoxEstado = new Select(driver.findElement(By.id("tsk12")));
+        cboBoxEstado.selectByValue("Notificada");
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+        String formattedDate = dateFormat.format(caso.getFecEmisionDateTime());
+        System.out.println(formattedDate);
+
+        WebElement txtfecEmision = driver.findElement(By.id("00N3600000RPuD5"));
+        txtfecEmision.sendKeys();
+
+    }
+
+    private void descargarCasoRechazado(Caso caso) {
+        WebElement btnModificar = driver.findElement(By.xpath("//input[@title='Modificar' and @name='edit']"));
+        btnModificar.click();
+
+        Select cboBoxEstado = new Select(driver.findElement(By.id("tsk12")));
+        cboBoxEstado.selectByValue("Revisión ENEL");
     }
 
 }

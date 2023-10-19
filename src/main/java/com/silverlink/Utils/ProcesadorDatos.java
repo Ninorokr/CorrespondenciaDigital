@@ -3,7 +3,13 @@ package com.silverlink.Utils;
 import com.silverlink.Entidades.Acta;
 import com.silverlink.Entidades.Carta;
 import com.silverlink.Entidades.Caso;
+import com.silverlink.Entidades.Estado;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -27,7 +33,7 @@ public class ProcesadorDatos {
             System.out.println("\n002-23-" + nroOS + "-" + item);
 
             try {
-                Files.walkFileTree(rutaItem, new RevisadorArchivos(caso));
+                Files.walkFileTree(rutaItem, new VerificadorArchivos(caso));
             } catch (IOException ioe) {
                 System.out.println(ioe.getMessage());
             }
@@ -41,10 +47,10 @@ public class ProcesadorDatos {
                 } else {
                     caso.getEstado().setIdEstado((short) 4); //DESCARGADA
                 }
-                Commander.updateCasosRevisadosCompletos(caso);
+                Commander.updateCasosVerificadosCompletos(caso);
             } else {
                 caso.getEstado().setIdEstado((short) 5); //RECHAZADA
-                Commander.updateCasosRevisadosIncompletos(caso);
+                Commander.updateCasosVerificadosIncompletos(caso);
             }
 //            SaveImagesInPdf printer = new SaveImagesInPdf(caso);
         }
@@ -146,6 +152,39 @@ public class ProcesadorDatos {
         return true;
     }
 
+    public static ArrayList<Caso> procesarCasosRevisados(String inputPath) {
+        ArrayList<Caso> casos = new ArrayList<>();
+        try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(inputPath));
+                XSSFWorkbook wb = new XSSFWorkbook(bis)) {
+            XSSFSheet sheet = wb.getSheetAt(0);
+            Caso caso;
+            for(int i = 1; i <= sheet.getLastRowNum(); i++) {
+                caso = new Caso();
+                XSSFRow row = sheet.getRow(i);
+                caso.setAnio((short) row.getCell(0).getNumericCellValue());
+                caso.setNroOS((short) row.getCell(1).getNumericCellValue());
+                caso.setIdCaso((short) row.getCell(2).getNumericCellValue());
+                caso.setEstado(Estado.getEstado(row.getCell(17).getStringCellValue()));
+                caso.setFecEmisionDateTime(row.getCell(19).getLocalDateTimeCellValue());
+                caso.setFecDespacho(row.getCell(20).getLocalDateTimeCellValue());
+                caso.setFecNotificiacion(row.getCell(21).getLocalDateTimeCellValue());
+                caso.setCorreosCartasString(row.getCell(22).getStringCellValue());
+                caso.setCorreosActasString(row.getCell(23).getStringCellValue());
+                caso.setErrorNroCarta(row.getCell(24).getBooleanCellValue());
+                caso.setErrorCorreoNotif(row.getCell(25).getBooleanCellValue());
+                caso.setErrorFechas(row.getCell(26).getBooleanCellValue());
+                caso.setErrorFaltaFirma(row.getCell(27).getBooleanCellValue());
+                caso.setErrorFaltaCartas(row.getCell(28).getBooleanCellValue());
+                caso.setErrorFaltaActas(row.getCell(29).getBooleanCellValue());
+                casos.add(caso);
+            }
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+
+        return casos;
+    }
+
     public static boolean isDescargaArchivosCompletada(int cantArchivos) throws IOException {
         //Debe dar OK si cantArchivos = nroArchivos en carpeta
         cuentaArchivos = 0;
@@ -192,7 +231,7 @@ public class ProcesadorDatos {
         }
     }
 
-//    static class RevisadorArchivos extends SimpleFileVisitor<Path> {
+//    static class VerificadorArchivos extends SimpleFileVisitor<Path> {
 //
 //        @Override
 //        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -201,11 +240,11 @@ public class ProcesadorDatos {
 //        }
 //    }
 
-    static class RevisadorArchivos extends SimpleFileVisitor<Path> {
+    static class VerificadorArchivos extends SimpleFileVisitor<Path> {
 
         Caso caso;
 
-        public RevisadorArchivos(Caso caso) {
+        public VerificadorArchivos(Caso caso) {
             this.caso = caso;
         }
 

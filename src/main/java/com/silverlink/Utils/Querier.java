@@ -259,7 +259,7 @@ public class Querier {
                 caso.setPrioridad(Prioridad.getPrioridad(rs.getShort(15)));
                 caso.setEstado(Estado.getEstado(rs.getShort(16)));
                 caso.setFecCreacion(dateToLocalDate(rs.getDate(17)));
-                caso.setFecEmision(dateToLocalDate(rs.getDate(18)));
+                caso.setFecEmisionDateTime(timestampToLocalDateTime(rs.getTimestamp(18)));
                 caso.setFecDespacho(timestampToLocalDateTime(rs.getTimestamp(19)));
                 caso.setFecNotificiacion(timestampToLocalDateTime(rs.getTimestamp(20)));
                 caso.setFecNotificacionCarta(timestampToLocalDateTime(rs.getTimestamp(21)));

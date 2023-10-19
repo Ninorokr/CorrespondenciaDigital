@@ -26,6 +26,7 @@ public class Caso {
     private Estado estado;
     private LocalDate fecCreacion;
     private LocalDate fecEmision;
+    private LocalDateTime fecEmisionDateTime;
     private LocalDateTime fecDespacho;
     private LocalDateTime fecNotificiacion;
     private LocalDateTime fecNotificacionCarta;
@@ -51,6 +52,7 @@ public class Caso {
     private boolean descargadoEnSalesforce = false;
     private boolean archivosDescargados = false;
     private boolean errorFaltaFirma = false;
+    private boolean isRevisado;
 
     public Caso(){
 
@@ -294,7 +296,7 @@ public class Caso {
         boolean flag = true;
         Estado estado = null;
         while (flag) {
-            estado = Estado.existeEstado(nomEstado);
+            estado = Estado.getEstado(nomEstado);
             if (estado == null) {
                 insertEstado(nomEstado);
             } else {
@@ -318,6 +320,14 @@ public class Caso {
 
     public void setFecEmision(LocalDate fecEmision) {
         this.fecEmision = fecEmision;
+    }
+
+    public LocalDateTime getFecEmisionDateTime() {
+        return fecEmisionDateTime;
+    }
+
+    public void setFecEmisionDateTime(LocalDateTime dateTime) {
+        this.fecEmisionDateTime = dateTime;
     }
 
     public LocalDateTime getFecDespacho() {
@@ -560,6 +570,14 @@ public class Caso {
 
     public void setErrorFaltaFirma(boolean errorFaltaFirma) {
         this.errorFaltaFirma = errorFaltaFirma;
+    }
+
+    public boolean isRevisado() {
+        return isRevisado;
+    }
+
+    public void setRevisado(boolean revisado) {
+        isRevisado = revisado;
     }
 
     @Override

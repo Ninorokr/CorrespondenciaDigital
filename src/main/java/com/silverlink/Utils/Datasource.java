@@ -6,19 +6,19 @@ import java.sql.SQLException;
 
 public class Datasource {
 
-//    public static String connURL = "jdbc:sqlserver://192.168.1.2\\SQLS19;" +
-//            "database=TEST;" +
-//            "user=sa;" +
-//            "password=Usuari0LSF;" + //Añadir contraseña para loguearse
-//            "encrypt=true;" +
-//            "trustServerCertificate=true;";
-
-    public static String connURL = "jdbc:sqlserver://SILVERLINK\\SQLEXPRESS;" +
+    public static String connURL = "jdbc:sqlserver://192.168.1.2\\SQLS19;" +
             "database=TEST;" +
-            "user=ninorokr;" +
-            "password=vecomamak;" + //Añadir contraseña para loguearse vcmk
+            "user=sa;" +
+            "password=Usuari0LSF;" + //Añadir contraseña para loguearse
             "encrypt=true;" +
             "trustServerCertificate=true;";
+
+//    public static String connURL = "jdbc:sqlserver://SILVERLINK\\SQLEXPRESS;" +
+//            "database=TEST;" +
+//            "user=ninorokr;" +
+//            "password=vecomamak;" + //Añadir contraseña para loguearse vcmk
+//            "encrypt=true;" +
+//            "trustServerCertificate=true;";
 
     public static Connection conn;
 

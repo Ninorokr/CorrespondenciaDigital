@@ -28,7 +28,7 @@ public class Estado {
         this.idEstado = idEstado;
     }
 
-    public static Estado existeEstado(String nomEstado) {
+    public static Estado getEstado(String nomEstado) {
         for (Estado estado : estados) {
             if(estado.getNomEstado().equals(nomEstado)) {
                 return estado;
@@ -45,4 +45,5 @@ public class Estado {
         }
         return null;
     }
+
 }

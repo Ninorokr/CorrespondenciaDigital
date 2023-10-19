@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,27 +14,27 @@ public class Prueba2 {
 
     public static void main(String[] args) {
 
-        String text1 = "18 de septiembre del 2023";
-        String text2 = "18 septiembre 2023";
-        String text3 = "1 Lima, 18 de septiembre del 2023";
-        String regex = "\\b\\d{1,2}(?:\\s+de\\s+)?[a-zA-Z]+(?:\\s+del\\s+\\d{4})?\\b|\\b\\d{1,2}\\s+[a-zA-Z]+\\s+\\d{4}\\b";
-
-        Pattern pattern = Pattern.compile(regex);
-
-        Matcher matcher1 = pattern.matcher(text1);
-        while (matcher1.find()) {
-            System.out.println("Match in text1: " + matcher1.group());
-        }
-
-        Matcher matcher2 = pattern.matcher(text2);
-        while (matcher2.find()) {
-            System.out.println("Match in text2: " + matcher2.group());
-        }
-
-        Matcher matcher3 = pattern.matcher(text3);
-        while (matcher3.find()) {
-            System.out.println("Match in text3: " + matcher3.group());
-        }
+//        String text1 = "18 de septiembre del 2023";
+//        String text2 = "18 septiembre 2023";
+//        String text3 = "1 Lima, 18 de septiembre del 2023";
+//        String regex = "\\b\\d{1,2}(?:\\s+de\\s+)?[a-zA-Z]+(?:\\s+del\\s+\\d{4})?\\b|\\b\\d{1,2}\\s+[a-zA-Z]+\\s+\\d{4}\\b";
+//
+//        Pattern pattern = Pattern.compile(regex);
+//
+//        Matcher matcher1 = pattern.matcher(text1);
+//        while (matcher1.find()) {
+//            System.out.println("Match in text1: " + matcher1.group());
+//        }
+//
+//        Matcher matcher2 = pattern.matcher(text2);
+//        while (matcher2.find()) {
+//            System.out.println("Match in text2: " + matcher2.group());
+//        }
+//
+//        Matcher matcher3 = pattern.matcher(text3);
+//        while (matcher3.find()) {
+//            System.out.println("Match in text3: " + matcher3.group());
+//        }
 
 //        String sDate1="31/12/1998";
 //        String sDate2 = "31-Dec-1998";
@@ -60,15 +61,16 @@ public class Prueba2 {
 //        System.out.println(sDate5+"\t"+date5);
 //        System.out.println(sDate6+"\t"+date6);
 
-//        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("EEE, MMM dd yyyy");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("EEE, MMM dd yyyy");
 //        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-//        String sDate5 = "Jue, Dic 31 1998";
-//        String sTime5 = "23:37:50";
-//        LocalDate date = LocalDate.of(2023, 5, 12);
-//        LocalTime time = LocalTime.parse(sTime5, timeFormatter);
-//        LocalDateTime dateTime = date.atTime(time);
-//
-//        System.out.println(dateTime);
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm ");
+        String sDate5 = "Jue, Dic 31 1998";
+        String sTime5 = "23:37:50";
+        LocalDate date = LocalDate.parse(sDate5, dateFormatter);
+        LocalTime time = LocalTime.parse(sTime5, timeFormatter);
+        LocalDateTime dateTime = date.atTime(time);
+
+        System.out.println(dateTime);
 
 //        String fechaYHoraEnTexto = "2023-sep-22 21:38:04";
 //        System.out.println(descifrarFechaHora(fechaYHoraEnTexto));

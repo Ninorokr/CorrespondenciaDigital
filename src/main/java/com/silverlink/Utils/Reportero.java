@@ -12,21 +12,23 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.silverlink.Main.rootFolder;
+import static com.silverlink.Main.scanner;
 
 public class Reportero {
 
-    public void exportarCasosPorOS(ArrayList<Caso> casos) {
+    public String exportarCasosPorOS(ArrayList<Caso> casos) {
         //Reporte para revisar PREVIO a la descarga automática en salesforce
         //exportar todos los casos que sean descargadoEnSalesforce = FALSE
 
-        String[] titulosEncabezado = {"Tipo de atención", "Tipo de registro del caso", "Id. de actividad",
-                "Tipo de carta", "Número del caso", "Estado del caso", "Caso: Fecha de creación",
+        String outputPath = null;
+        String[] titulosEncabezado = {"Año", "OS", "Id", "Tipo de atención", "Tipo de registro del caso",
+                "Id. de actividad", "Tipo de carta", "Número del caso", "Estado del caso", "Caso: Fecha de creación",
                 "Correlativo de carta", "Número Suministro", "Asunto", "Canal de notificación", "Asignado",
                 "Provincia", "Prioridad", "Estado", "Fecha de creación", "Fecha de emisión", "Fecha de despacho",
                 "Fecha de notificación", "Correo Carta", "Correo Acta", "errorNroCarta", "errorCorreoNotif",
-                "errorFechas", "ErrorFaltaFirma", "ErrorFaltaCarta", "ErrorFaltaActa", "Fecha de notificación de la carta", "Fecha de la última modificación",
-                "Fecha", "Fecha de vencimiento legal", "Creado por", "Canal de registro", "Propietario del caso",
-                "Propietario del caso", "Días Vencidos / Por Vencer", "Enlace web", "Mensaje"};
+                "errorFechas", "ErrorFaltaFirma", "ErrorFaltaCarta", "ErrorFaltaActa", "Fecha de notificación de la carta",
+                "Fecha de la última modificación", "Fecha", "Fecha de vencimiento legal", "Creado por", "Canal de registro",
+                "Propietario del caso", "Propietario del caso", "Días Vencidos / Por Vencer", "Enlace web", "Mensaje"};
 
             XSSFWorkbook wb = new XSSFWorkbook();
             XSSFSheet sheet = wb.createSheet();
@@ -42,53 +44,56 @@ public class Reportero {
                 for (int j = 0; j < titulosEncabezado.length; j++) {
                     XSSFCell cellDato = rowCaso.createCell(j, CellType.STRING);
                     switch (j) {
-                        case 0: cellDato.setCellValue(caso.getTipoAtencion().getNomTipoAtencion()); break;
-                        case 1: cellDato.setCellValue(caso.getTipoRegCaso().getNomTipoRegCaso()); break;
-                        case 2: cellDato.setCellValue(caso.getIdActividad()); break;
-                        case 3: cellDato.setCellValue(caso.getTipoCarta().getNomTipoCarta()); break;
-                        case 4: cellDato.setCellValue(caso.getNroCaso()); break;
-                        case 5: cellDato.setCellValue(caso.getEstadoCaso().getNomEstadoCaso()); break;
-                        case 6: cellDato.setCellType(CellType.NUMERIC);
+                        case 0: cellDato.setCellValue(caso.getAnio()); break;
+                        case 1: cellDato.setCellValue(caso.getNroOS()); break;
+                        case 2: cellDato.setCellValue(caso.getIdCaso()); break;
+                        case 3: cellDato.setCellValue(caso.getTipoAtencion().getNomTipoAtencion()); break;
+                        case 4: cellDato.setCellValue(caso.getTipoRegCaso().getNomTipoRegCaso()); break;
+                        case 5: cellDato.setCellValue(caso.getIdActividad()); break;
+                        case 6: cellDato.setCellValue(caso.getTipoCarta().getNomTipoCarta()); break;
+                        case 7: cellDato.setCellValue(caso.getNroCaso()); break;
+                        case 8: cellDato.setCellValue(caso.getEstadoCaso().getNomEstadoCaso()); break;
+                        case 9: cellDato.setCellType(CellType.NUMERIC);
                             cellDato.setCellValue(caso.getFecCreacionCaso()); break;
-                        case 7: cellDato.setCellValue(caso.getCorrelativoCarta()); break;
-                        case 8: cellDato.setCellValue(caso.getNroSuministro()); break;
-                        case 9: cellDato.setCellValue("Correspondencia Digital"); break;
-                        case 10: cellDato.setCellValue(caso.getCanalNotificacion().getNomCanalNotificacion()); break;
-                        case 11: cellDato.setCellValue("Proveedor Mensajeria"); break;
-                        case 12: cellDato.setCellValue(caso.getProvincia().getNomProvincia()); break;
-                        case 13: cellDato.setCellValue(caso.getPrioridad().getNomPrioridad()); break;
-                        case 14: cellDato.setCellValue(caso.getEstado().getNomEstado()); break;
-                        case 15: cellDato.setCellType(CellType.NUMERIC);
-                            cellDato.setCellValue(caso.getFecCreacion()); break;
-                        case 16: cellDato.setCellType(CellType.NUMERIC);
-                            cellDato.setCellValue(caso.getFecEmision()); break;
-                        case 17: cellDato.setCellType(CellType.NUMERIC);
-                            cellDato.setCellValue(caso.getFecDespacho()); break;
+                        case 10: cellDato.setCellValue(caso.getCorrelativoCarta()); break;
+                        case 11: cellDato.setCellValue(caso.getNroSuministro()); break;
+                        case 12: cellDato.setCellValue("Correspondencia Digital"); break;
+                        case 13: cellDato.setCellValue(caso.getCanalNotificacion().getNomCanalNotificacion()); break;
+                        case 14: cellDato.setCellValue("Proveedor Mensajeria"); break;
+                        case 15: cellDato.setCellValue(caso.getProvincia().getNomProvincia()); break;
+                        case 16: cellDato.setCellValue(caso.getPrioridad().getNomPrioridad()); break;
+                        case 17: cellDato.setCellValue(caso.getEstado().getNomEstado()); break;
                         case 18: cellDato.setCellType(CellType.NUMERIC);
+                            cellDato.setCellValue(caso.getFecCreacion()); break;
+                        case 19: cellDato.setCellType(CellType.NUMERIC);
+                            cellDato.setCellValue(caso.getFecEmisionDateTime()); break;
+                        case 20: cellDato.setCellType(CellType.NUMERIC);
+                            cellDato.setCellValue(caso.getFecDespacho()); break;
+                        case 21: cellDato.setCellType(CellType.NUMERIC);
                             cellDato.setCellValue(caso.getFecNotificiacion()); break;
-                        case 19: cellDato.setCellValue(caso.getCorreosCartasString()); break;
-                        case 20: cellDato.setCellValue(caso.getCorreosActasString()); break;
-                        case 21: cellDato.setCellValue(caso.isErrorNroCarta()); break;
-                        case 22: cellDato.setCellValue(caso.isErrorCorreoNotif()); break;
-                        case 23: cellDato.setCellValue(caso.isErrorFechas()); break;
-                        case 24: cellDato.setCellValue(caso.isErrorFaltaFirma()); break;
-                        case 25: cellDato.setCellValue(caso.isErrorFaltaCartas()); break;
-                        case 26: cellDato.setCellValue(caso.isErrorFaltaActas()); break;
-                        case 27: cellDato.setCellType(CellType.NUMERIC);
-                            cellDato.setCellValue(caso.getFecNotificacionCarta()); break;
-                        case 28: cellDato.setCellType(CellType.NUMERIC);
-                            cellDato.setCellValue(caso.getFecUltimaModificacion()); break;
-                        case 29: cellDato.setCellType(CellType.NUMERIC);
-                            cellDato.setCellValue(caso.getFecha()); break;
+                        case 22: cellDato.setCellValue(caso.getCorreosCartasString()); break;
+                        case 23: cellDato.setCellValue(caso.getCorreosActasString()); break;
+                        case 24: cellDato.setCellValue(caso.isErrorNroCarta()); break;
+                        case 25: cellDato.setCellValue(caso.isErrorCorreoNotif()); break;
+                        case 26: cellDato.setCellValue(caso.isErrorFechas()); break;
+                        case 27: cellDato.setCellValue(caso.isErrorFaltaFirma()); break;
+                        case 28: cellDato.setCellValue(caso.isErrorFaltaCartas()); break;
+                        case 29: cellDato.setCellValue(caso.isErrorFaltaActas()); break;
                         case 30: cellDato.setCellType(CellType.NUMERIC);
+                            cellDato.setCellValue(caso.getFecNotificacionCarta()); break;
+                        case 31: cellDato.setCellType(CellType.NUMERIC);
+                            cellDato.setCellValue(caso.getFecUltimaModificacion()); break;
+                        case 32: cellDato.setCellType(CellType.NUMERIC);
+                            cellDato.setCellValue(caso.getFecha()); break;
+                        case 33: cellDato.setCellType(CellType.NUMERIC);
                             cellDato.setCellValue(caso.getFecVencimientoLegal()); break;
-                        case 31: cellDato.setCellValue(caso.getCreadoPor().getNomUsuario()); break;
-                        case 32: cellDato.setCellValue(caso.getCanalRegistro().getNomCanalRegistro()); break;
-                        case 33: cellDato.setCellValue(caso.getPropietarioCaso().getNomUsuario()); break;
-                        case 34: cellDato.setCellValue(caso.getPropietarioCaso().getCodUsuario()); break;
-                        case 35: cellDato.setCellType(CellType.NUMERIC);
+                        case 34: cellDato.setCellValue(caso.getCreadoPor().getNomUsuario()); break;
+                        case 35: cellDato.setCellValue(caso.getCanalRegistro().getNomCanalRegistro()); break;
+                        case 36: cellDato.setCellValue(caso.getPropietarioCaso().getNomUsuario()); break;
+                        case 37: cellDato.setCellValue(caso.getPropietarioCaso().getCodUsuario()); break;
+                        case 38: cellDato.setCellType(CellType.NUMERIC);
                          cellDato.setCellValue(caso.getDiasVencidosPorVencer()); break;
-                        case 36: cellDato.setCellValue("https://enelsud.my.salesforce.com/" + caso.getIdActividad());
+                        case 39: cellDato.setCellValue("https://enelsud.my.salesforce.com/" + caso.getIdActividad());
 //                        case 37: cellDato.setCellValue(getMensajeRechazo(caso)); break;
                     }
                 }
@@ -96,13 +101,18 @@ public class Reportero {
         try {
 //            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(rootFolder + "revision.xlsx"));
 //            wb.write(bos);
-            FileOutputStream fos = new FileOutputStream(rootFolder + "revision.xlsx");
-            wb.write(fos);
-            System.out.println("Se creó el archivo en " + rootFolder + "revision.xlsx");
+            String nroOS = String.format("%04d", casos.get(0).getNroOS());
+            outputPath = rootFolder + casos.get(0).getAnio() + "\\" + nroOS + "\\revision.xlsx";
+
+            try(FileOutputStream fos = new FileOutputStream(outputPath)) {
+                wb.write(fos);
+                scanner.nextLine();
+                System.out.println("Se creó el archivo en " + outputPath);
+            }
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
-
+        return outputPath;
     }
 
     private String getMensajeRechazo(Caso caso) {
