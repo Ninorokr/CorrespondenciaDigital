@@ -43,8 +43,8 @@ public class ProcesadorDatos {
                 }
                 Commander.updateCasosRevisadosCompletos(caso);
             } else {
-                Commander.updateCasosRevisadosIncompletos(caso);
                 caso.getEstado().setIdEstado((short) 5); //RECHAZADA
+                Commander.updateCasosRevisadosIncompletos(caso);
             }
 //            SaveImagesInPdf printer = new SaveImagesInPdf(caso);
         }

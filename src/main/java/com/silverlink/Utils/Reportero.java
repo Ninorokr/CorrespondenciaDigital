@@ -7,10 +7,8 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 
 import static com.silverlink.Main.rootFolder;
@@ -30,7 +28,7 @@ public class Reportero {
                 "Fecha", "Fecha de vencimiento legal", "Creado por", "Canal de registro", "Propietario del caso",
                 "Propietario del caso", "Días Vencidos / Por Vencer", "Enlace web", "Mensaje"};
 
-        try (XSSFWorkbook wb = new XSSFWorkbook()) {
+            XSSFWorkbook wb = new XSSFWorkbook();
             XSSFSheet sheet = wb.createSheet();
             XSSFRow encabezado = sheet.createRow(0);
             for (int i = 0; i < titulosEncabezado.length; i++) {
@@ -38,7 +36,7 @@ public class Reportero {
                 cell.setCellValue(titulosEncabezado[i]);
             }
 
-            for (int i = 0; i <= casos.size(); i++) {
+            for (int i = 0; i < casos.size(); i++) {
                 Caso caso = casos.get(i);
                 XSSFRow rowCaso = sheet.createRow(i+1);
                 for (int j = 0; j < titulosEncabezado.length; j++) {
@@ -90,19 +88,20 @@ public class Reportero {
                         case 34: cellDato.setCellValue(caso.getPropietarioCaso().getCodUsuario()); break;
                         case 35: cellDato.setCellType(CellType.NUMERIC);
                          cellDato.setCellValue(caso.getDiasVencidosPorVencer()); break;
-                        case 36: cellDato.setCellValue("https://www.salesforce.com/" + caso.getIdActividad());
+                        case 36: cellDato.setCellValue("https://enelsud.my.salesforce.com/" + caso.getIdActividad());
 //                        case 37: cellDato.setCellValue(getMensajeRechazo(caso)); break;
                     }
                 }
             }
-
-            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(rootFolder + "revision.xlsx"));
-            wb.write(bos);
+        try {
+//            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(rootFolder + "revision.xlsx"));
+//            wb.write(bos);
+            FileOutputStream fos = new FileOutputStream(rootFolder + "revision.xlsx");
+            wb.write(fos);
             System.out.println("Se creó el archivo en " + rootFolder + "revision.xlsx");
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
-
 
     }
 

@@ -454,7 +454,7 @@ public class Caso {
         return correosCartas;
     }
 
-    public String getCorreosCartasString() {
+    public String concatCorreosCartasString() {
         StringBuilder sb = new StringBuilder();
         for(String correo : correosCartas) {
             sb.append(correo).append(";");
@@ -462,7 +462,7 @@ public class Caso {
         return sb.toString();
     }
 
-    public String getCorreosActasString() {
+    public String concatCorreosActasString() {
         StringBuilder sb = new StringBuilder();
         for(String correo : correosActas) {
             sb.append(correo).append(";");
@@ -482,8 +482,16 @@ public class Caso {
         this.correosActas = correosActas;
     }
 
+    public String getCorreosCartasString() {
+        return correosCartasString;
+    }
+
     public void setCorreosCartasString(String correosCartasString) {
         this.correosCartasString = correosCartasString;
+    }
+
+    public String getCorreosActasString() {
+        return correosActasString;
     }
 
     public void setCorreosActasString(String correosActasString) {

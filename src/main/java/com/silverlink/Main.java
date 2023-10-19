@@ -37,8 +37,8 @@ public class Main {
     public static ArrayList<TipoRegCaso> tiposRegCaso = queryTiposRegCaso();
     public static ArrayList<Usuario> usuarios = queryUsuarios();
 
-    public static final String rootFolder = "Z:\\Servicios ENEL\\002 - Correspondencia digital\\";
-//    public static final String rootFolder = "D:\\Servicios ENEL\\002 - Correspondencia digital\\";
+//    public static final String rootFolder = "Z:\\Servicios ENEL\\002 - Correspondencia digital\\";
+    public static final String rootFolder = "D:\\Servicios ENEL\\002 - Correspondencia digital\\";
     public static final String tempPath = rootFolder + "Temp\\";
     public static Scanner scanner = new Scanner(System.in);
     public static String nuevaCarpeta;

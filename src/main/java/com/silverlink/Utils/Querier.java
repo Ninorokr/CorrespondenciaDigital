@@ -2,11 +2,9 @@ package com.silverlink.Utils;
 
 import com.silverlink.Entidades.*;
 
-import java.sql.Array;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static com.silverlink.Utils.Datasource.conn;
@@ -253,21 +251,21 @@ public class Querier {
                 caso.setTipoCarta(TipoCarta.getTipoCarta(rs.getShort(7)));
                 caso.setNroCaso(rs.getInt(8));
                 caso.setEstadoCaso(EstadoCaso.getEstadoCaso(rs.getShort(9)));
-                caso.setFecCreacionCaso(rs.getDate(10).toLocalDate());
+                caso.setFecCreacionCaso(dateToLocalDate(rs.getDate(10)));
                 caso.setCorrelativoCarta(rs.getShort(11));
                 caso.setNroSuministro(rs.getString(12));
                 caso.setCanalNotificacion(CanalNotificacion.getCanalNotificacion(rs.getShort(13)));
                 caso.setProvincia(Provincia.getProvincia(rs.getShort(14)));
                 caso.setPrioridad(Prioridad.getPrioridad(rs.getShort(15)));
                 caso.setEstado(Estado.getEstado(rs.getShort(16)));
-                caso.setFecCreacion(rs.getDate(17).toLocalDate());
-                caso.setFecEmision(rs.getDate(18).toLocalDate());
-                caso.setFecDespacho(rs.getTimestamp(19).toLocalDateTime());
-                caso.setFecNotificiacion(rs.getTimestamp(20).toLocalDateTime());
-                caso.setFecNotificacionCarta(rs.getTimestamp(21).toLocalDateTime());
-                caso.setFecUltimaModificacion(rs.getDate(22).toLocalDate()); //TODO bota error aqui, por NULL
-                caso.setFecha(rs.getDate(23).toLocalDate());
-                caso.setFecVencimientoLegal(rs.getTimestamp(24).toLocalDateTime());
+                caso.setFecCreacion(dateToLocalDate(rs.getDate(17)));
+                caso.setFecEmision(dateToLocalDate(rs.getDate(18)));
+                caso.setFecDespacho(timestampToLocalDateTime(rs.getTimestamp(19)));
+                caso.setFecNotificiacion(timestampToLocalDateTime(rs.getTimestamp(20)));
+                caso.setFecNotificacionCarta(timestampToLocalDateTime(rs.getTimestamp(21)));
+                caso.setFecUltimaModificacion(dateToLocalDate(rs.getDate(22))); //TODO bota error aqui, por NULL
+                caso.setFecha(dateToLocalDate(rs.getDate(23)));
+                caso.setFecVencimientoLegal(timestampToLocalDateTime(rs.getTimestamp(24)));
                 caso.setCreadoPor(Usuario.getUsuario(rs.getShort(25)));
                 caso.setCanalRegistro(CanalRegistro.getCanalRegistro(rs.getShort(26)));
                 caso.setPropietarioCaso(Usuario.getUsuario(rs.getShort(27)));
@@ -286,5 +284,19 @@ public class Querier {
             System.out.println("No se pudo consultar el caso pendiente de descarga en Salesforce.");
         }
         return casos;
+    }
+
+    static public LocalDate dateToLocalDate(Date date) {
+        if (date == null) {
+            return null;
+        }
+        return date.toLocalDate();
+    }
+
+    static public LocalDateTime timestampToLocalDateTime(Timestamp timestamp) {
+        if(timestamp == null) {
+            return null;
+        }
+        return timestamp.toLocalDateTime();
     }
 }

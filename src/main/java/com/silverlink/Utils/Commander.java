@@ -284,7 +284,7 @@ public class Commander {
         try(PreparedStatement ps = conn.prepareStatement(setArchivosDescargadosQuery)){
             ps.setString(1, caso.getIdActividad());
             ps.execute();
-        } catch (SQLException sqle){
+        } catch (SQLException sqle) {
             System.out.println("No se pudo registrar archivos descargados como \"TRUE\"");
             sqle.printStackTrace();
         }
@@ -321,8 +321,8 @@ public class Commander {
             ps.setBoolean(4, caso.isErrorNroCarta());
             ps.setBoolean(5, caso.isErrorCorreoNotif());
             ps.setBoolean(6, caso.isErrorFechas());
-            ps.setString(7, caso.getCorreosCartasString());
-            ps.setString(8, caso.getCorreosActasString());
+            ps.setString(7, caso.concatCorreosCartasString());
+            ps.setString(8, caso.concatCorreosActasString());
             ps.setTimestamp(9, Timestamp.valueOf(LocalDateTime.of(caso.getFecEmision(),
                                                         caso.getFecNotificiacion().toLocalTime())));
             ps.setTimestamp(10, Timestamp.valueOf(caso.getFecDespacho()));
