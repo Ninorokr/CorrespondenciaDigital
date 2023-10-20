@@ -28,7 +28,7 @@ public class Caso {
     private LocalDate fecEmision;
     private LocalDateTime fecEmisionDateTime;
     private LocalDateTime fecDespacho;
-    private LocalDateTime fecNotificiacion;
+    private LocalDateTime fecNotificacion;
     private LocalDateTime fecNotificacionCarta;
     private LocalDate fecUltimaModificacion;
     private LocalDate fecha;
@@ -52,6 +52,7 @@ public class Caso {
     private boolean descargadoEnSalesforce = false;
     private boolean archivosDescargados = false;
     private boolean errorFaltaFirma = false;
+    private String mensajeError;
     private boolean isRevisado;
 
     public Caso(){
@@ -338,12 +339,12 @@ public class Caso {
         this.fecDespacho = fecDespacho;
     }
 
-    public LocalDateTime getFecNotificiacion() {
-        return fecNotificiacion;
+    public LocalDateTime getFecNotificacion() {
+        return fecNotificacion;
     }
 
-    public void setFecNotificiacion(LocalDateTime fecNotificiacion) {
-        this.fecNotificiacion = fecNotificiacion;
+    public void setFecNotificacion(LocalDateTime fecNotificacion) {
+        this.fecNotificacion = fecNotificacion;
     }
 
     public LocalDateTime getFecNotificacionCarta() {
@@ -572,6 +573,14 @@ public class Caso {
         this.errorFaltaFirma = errorFaltaFirma;
     }
 
+    public String getMensajeError() {
+        return mensajeError;
+    }
+
+    public void setMensajeError(String mensajeError) {
+        this.mensajeError = mensajeError;
+    }
+
     public boolean isRevisado() {
         return isRevisado;
     }
@@ -597,7 +606,7 @@ public class Caso {
                 "Fecha Creación: " + fecCreacion + "\n" +
                 "Fecha Emisión: " + fecEmision + "\n" +
                 "Fecha Despacho: " + fecDespacho + "\n" +
-                "Fecha Notif.: " + fecNotificiacion + "\n" +
+                "Fecha Notif.: " + fecNotificacion + "\n" +
                 "Fecha fec. Notif. Carta: " + fecNotificacionCarta + "\n" +
                 "Fecha Ult. Modificacion: " + fecUltimaModificacion + "\n" +
                 "Fecha: " + fecha + "\n" +

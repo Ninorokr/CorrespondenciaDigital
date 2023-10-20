@@ -105,80 +105,37 @@ public class Main {
     }
 
     // Menú op. 1
-//    private static void descargarCasosNuevos() {
-//        //1. Si el Chromedriver ya se encuentra abierto, utilizar la instancia actual
-//        //TODO 2. En caso haya fallado la descarga, ofrecer skippear la descarga automatica
-//        //TODO y leer un archivo descargado manualmente
-//
-//        scanner.nextLine(); //Line handler
-//        //Elimina "all" en la carpeta "Temp" antes de empezar
-//        try {
-//            Files.walkFileTree(Path.of(tempPath), new SimpleFileVisitor<>() {
-//                @Override
-//                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-//                    Files.delete(file);
-//                    return super.visitFile(file, attrs);
-//                }
-//            });
-//        } catch (IOException ioe) {
-//            System.out.println("No se pudo acceder a la carpeta Temp");
-//            return;
-//        }
-//
-//        //Consultar cual sería el nuevo número de OS
-//        int anio = LocalDateTime.now().getYear()-2000;
-//        int nroOS = Querier.queryUltNroOS(anio) + 1;
-//
-//        //Crea una nueva carpeta con el nro. de OS que corresponde
-//        nuevaCarpeta = rootFolder + anio + "\\" + String.format("%04d", nroOS);
-//        try {
-//            Files.createDirectories(Path.of(nuevaCarpeta));
-//        } catch (IOException ioe) {
-//            System.out.println("No se pudo crear la carpeta en " + nuevaCarpeta);
-//            return;
-//        }
-//
-//        //1d. Descarga el listado de casos
-//        if(!isDriverOpen) {
-//            nav = new Navegador();
-//            nav.abrirSesionSalesforce();
-//        }
-//        nav.descargarReporte();
-//
-//        listadoEncarpetado = false;
-//        //Enviar el archivo de excel a la carpeta con el nro. de OS que le corresponde
-//        while(true){
-//            try { Thread.sleep(3000); } catch (InterruptedException ie) {}
-//            try {
-//                Files.walkFileTree(Path.of(tempPath), new SimpleFileVisitor<>() {
-//                    @Override
-//                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-//                        if(file.toString().endsWith(".xls")){
-//                            listadoEncarpetado = true;
-//                            Files.move(file, Path.of(nuevaCarpeta + "\\" + file.getName(file.getNameCount()-1)));
-//                        }
-//                        return super.visitFile(file, attrs);
-//                    }
-//                });
-//                if(listadoEncarpetado)
-//                    break;
-//            } catch (IOException ioe) {
-//                System.out.println("No se pudo acceder a la carpeta Temp");
-//                System.out.println(ioe.getMessage());
-//                ioe.printStackTrace();
-//            }
-//        }
-//
-//        //Consultar y descartar "id. de actividad" duplicados
-////        ArrayList<String> idCasos = queryIdCasos();
-//        RegistradorDeCasos registrador = new RegistradorDeCasos(nuevaCarpeta);
-//        registrador.registrarCasos(anio, nroOS);
-//        //1d. Descarga el listado de casos y los registra en estado "Pendiente" a la BD.
-//        //Todos los casos se registran con un nro. de OS y con estado 1 - "Pendiente"
-//
-//    }
 
     private static void descargarCasosNuevos() {
+        scanner.nextLine(); //Line handler
+        boolean flag = true;
+        while(flag) {
+            System.out.println("¿Descargar reporte de casos automáticamente? (s/n)");
+            switch (scanner.nextLine().toLowerCase()) {
+                case "s": descargarCasosNuevosAutomaticamente(); flag = false; break;
+                case "n": descargarCasosNuevosManualmente(); flag = false; break;
+            }
+        }
+    }
+
+    private static void descargarCasosNuevosAutomaticamente() {
+        //1. Si el Chromedriver ya se encuentra abierto, utilizar la instancia actual
+        //TODO 2. En caso haya fallado la descarga, ofrecer skippear la descarga automatica
+        //TODO y leer un archivo descargado manualmente
+
+        //Elimina "all" en la carpeta "Temp" antes de empezar
+        try {
+            Files.walkFileTree(Path.of(tempPath), new SimpleFileVisitor<>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    Files.delete(file);
+                    return super.visitFile(file, attrs);
+                }
+            });
+        } catch (IOException ioe) {
+            System.out.println("No se pudo acceder a la carpeta Temp");
+            return;
+        }
 
         //Consultar cual sería el nuevo número de OS
         int anio = LocalDateTime.now().getYear()-2000;
@@ -186,6 +143,80 @@ public class Main {
 
         //Crea una nueva carpeta con el nro. de OS que corresponde
         nuevaCarpeta = rootFolder + anio + "\\" + String.format("%04d", nroOS);
+        try {
+            Files.createDirectories(Path.of(nuevaCarpeta));
+        } catch (IOException ioe) {
+            System.out.println("No se pudo crear la carpeta en " + nuevaCarpeta);
+            return;
+        }
+
+        //1d. Descarga el listado de casos
+        if(!isDriverOpen) {
+            nav = new Navegador();
+            nav.abrirSesionSalesforce();
+        }
+        nav.descargarReporte();
+
+        listadoEncarpetado = false;
+        //Enviar el archivo de excel a la carpeta con el nro. de OS que le corresponde
+        while(true){
+            try { Thread.sleep(3000); } catch (InterruptedException ie) {}
+            try {
+                Files.walkFileTree(Path.of(tempPath), new SimpleFileVisitor<>() {
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        if(file.toString().endsWith(".xls")){
+                            listadoEncarpetado = true;
+                            Files.move(file, Path.of(nuevaCarpeta + "\\" + file.getName(file.getNameCount()-1)));
+                        }
+                        return super.visitFile(file, attrs);
+                    }
+                });
+                if(listadoEncarpetado)
+                    break;
+            } catch (IOException ioe) {
+                System.out.println("No se pudo acceder a la carpeta Temp");
+                System.out.println(ioe.getMessage());
+                ioe.printStackTrace();
+            }
+        }
+
+        //Consultar y descartar "id. de actividad" duplicados
+//        ArrayList<String> idCasos = queryIdCasos();
+        RegistradorDeCasos registrador = new RegistradorDeCasos(nuevaCarpeta);
+        registrador.registrarCasos(anio, nroOS);
+        //1d. Descarga el listado de casos y los registra en estado "Pendiente" a la BD.
+        //Todos los casos se registran con un nro. de OS y con estado 1 - "Pendiente"
+
+    }
+
+    private static void descargarCasosNuevosManualmente() {
+
+        try {
+            Files.walkFileTree(Path.of(tempPath), new SimpleFileVisitor<>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    Files.delete(file);
+                    return super.visitFile(file, attrs);
+                }
+            });
+        } catch (IOException ioe) {
+            System.out.println("No se pudo acceder a la carpeta Temp");
+            return;
+        }
+
+        //Consultar cual sería el nuevo número de OS
+        int anio = LocalDateTime.now().getYear()-2000;
+        int nroOS = Querier.queryUltNroOS(anio) + 1;
+
+        //Crea una nueva carpeta con el nro. de OS que corresponde
+        nuevaCarpeta = rootFolder + anio + "\\" + String.format("%04d", nroOS);
+        try {
+            Files.createDirectories(Path.of(nuevaCarpeta));
+        } catch (IOException ioe) {
+            System.out.println("No se pudo crear la carpeta en " + nuevaCarpeta);
+            return;
+        }
 
         RegistradorDeCasos registrador = new RegistradorDeCasos(nuevaCarpeta);
         registrador.registrarCasos(anio, nroOS);
@@ -292,9 +323,15 @@ public class Main {
             }
         }
 
-//        for(Caso caso : casos) {
-//            nav.descargarCasoEnSalesforce(Caso caso);
-//        }
+        //Obtener todos los casos revisadosEnSalesforce y descargar uno por uno en Salesforce
+        for(Caso caso : queryCasosPorDescargarSalesforce()) {
+            if (nav == null) {
+                nav = new Navegador();
+                nav.abrirSesionSalesforce();
+            }
+            nav.descargarCasoEnSalesforce(caso);
+            System.out.println("Se descargó el caso: " + caso.getIdCaso() + ". " + caso.getIdActividad() + " | " + caso.getNroCaso());
+        }
     }
 
 }

@@ -70,7 +70,7 @@ public class Reportero {
                         case 20: cellDato.setCellType(CellType.NUMERIC);
                             cellDato.setCellValue(caso.getFecDespacho()); break;
                         case 21: cellDato.setCellType(CellType.NUMERIC);
-                            cellDato.setCellValue(caso.getFecNotificiacion()); break;
+                            cellDato.setCellValue(caso.getFecNotificacion()); break;
                         case 22: cellDato.setCellValue(caso.getCorreosCartasString()); break;
                         case 23: cellDato.setCellValue(caso.getCorreosActasString()); break;
                         case 24: cellDato.setCellValue(caso.isErrorNroCarta()); break;

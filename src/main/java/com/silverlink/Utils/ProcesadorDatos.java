@@ -140,7 +140,7 @@ public class ProcesadorDatos {
             caso.setFecEmision(carta.getFechaEmision());
             for (Acta acta : actas) {
                 caso.setFecDespacho(acta.getFechaEntrega());
-                caso.setFecNotificiacion(acta.getFechaEntrega());
+                caso.setFecNotificacion(acta.getFechaEntrega());
                 if (carta.getFechaEmision().isAfter(acta.getFechaEntrega().toLocalDate()) ||
                     acta.getFechaEntrega().toLocalDate().minusDays(7).isEqual(carta.getFechaEmision()) ||
                     acta.getFechaEntrega().toLocalDate().minusDays(7).isAfter(carta.getFechaEmision())) {
@@ -167,7 +167,7 @@ public class ProcesadorDatos {
                 caso.setEstado(Estado.getEstado(row.getCell(17).getStringCellValue()));
                 caso.setFecEmisionDateTime(row.getCell(19).getLocalDateTimeCellValue());
                 caso.setFecDespacho(row.getCell(20).getLocalDateTimeCellValue());
-                caso.setFecNotificiacion(row.getCell(21).getLocalDateTimeCellValue());
+                caso.setFecNotificacion(row.getCell(21).getLocalDateTimeCellValue());
                 caso.setCorreosCartasString(row.getCell(22).getStringCellValue());
                 caso.setCorreosActasString(row.getCell(23).getStringCellValue());
                 caso.setErrorNroCarta(row.getCell(24).getBooleanCellValue());
@@ -176,6 +176,7 @@ public class ProcesadorDatos {
                 caso.setErrorFaltaFirma(row.getCell(27).getBooleanCellValue());
                 caso.setErrorFaltaCartas(row.getCell(28).getBooleanCellValue());
                 caso.setErrorFaltaActas(row.getCell(29).getBooleanCellValue());
+                caso.setMensajeError(row.getCell(40).getStringCellValue());
                 casos.add(caso);
             }
         } catch (IOException ioe) {

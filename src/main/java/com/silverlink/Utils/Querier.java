@@ -261,7 +261,7 @@ public class Querier {
                 caso.setFecCreacion(dateToLocalDate(rs.getDate(17)));
                 caso.setFecEmisionDateTime(timestampToLocalDateTime(rs.getTimestamp(18)));
                 caso.setFecDespacho(timestampToLocalDateTime(rs.getTimestamp(19)));
-                caso.setFecNotificiacion(timestampToLocalDateTime(rs.getTimestamp(20)));
+                caso.setFecNotificacion(timestampToLocalDateTime(rs.getTimestamp(20)));
                 caso.setFecNotificacionCarta(timestampToLocalDateTime(rs.getTimestamp(21)));
                 caso.setFecUltimaModificacion(dateToLocalDate(rs.getDate(22))); //TODO bota error aqui, por NULL
                 caso.setFecha(dateToLocalDate(rs.getDate(23)));
@@ -298,5 +298,38 @@ public class Querier {
             return null;
         }
         return timestamp.toLocalDateTime();
+    }
+
+    public static ArrayList<Caso> queryCasosPorDescargarSalesforce() {
+        ArrayList<Caso> casos = new ArrayList<>();
+
+        String casosPendientesDescargaSalesforceQuery = "SELECT [anio], [nroOS], [idCasoCorrespondenciaDigital], " +
+                "[idActividad], [nroCaso], [idEstado], [fecEmision], [fecDespacho], [fecNotificacion], [dirCorreoActa]," +
+                "[mensajeError] " +
+                "FROM [digi].[casosCorrespondenciaDigital] " +
+                "WHERE descargadoEnSalesforce = 0 AND revisado = 1";
+
+        try (PreparedStatement ps = conn.prepareStatement(casosPendientesDescargaSalesforceQuery)) {
+            Caso caso;
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                caso = new Caso();
+                caso.setAnio(rs.getShort(1));
+                caso.setNroOS(rs.getShort(2));
+                caso.setIdCaso(rs.getShort(3));
+                caso.setIdActividad(rs.getString(4));
+                caso.setNroCaso(rs.getInt(5));
+                caso.setEstado(Estado.getEstado(rs.getShort(6)));
+                caso.setFecEmisionDateTime(timestampToLocalDateTime(rs.getTimestamp(7)));
+                caso.setFecDespacho(timestampToLocalDateTime(rs.getTimestamp(8)));
+                caso.setFecNotificacion(timestampToLocalDateTime(rs.getTimestamp(9)));
+                caso.setCorreosActasString(rs.getString(10));
+                caso.setMensajeError(rs.getString(11));
+                casos.add(caso);
+            }
+        } catch (SQLException sqle) {
+            System.out.println("No se pudo consultar el caso pendiente de descarga en Salesforce.");
+        }
+        return casos;
     }
 }

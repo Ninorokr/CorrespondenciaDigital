@@ -36,6 +36,7 @@ public class Carta {
     }
 
     private void obtenerCorreo() {
+        //TODO IMPORTANTE recoger todos los correos en el encabezado de la carta, usando un limitador
         Pattern emailPattern = Pattern.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}");
         Matcher matcher = emailPattern.matcher(texto);
         if(matcher.find()){
@@ -70,7 +71,7 @@ public class Carta {
         String mes = matcher.group();
         int month;
         //TODO si es "setiembre" devolver 9, si es septiembre devolver 9 o el ordinal del enum (whichever is better)
-        if(mes.equalsIgnoreCase("setiembre")){
+        if(mes.equalsIgnoreCase("septiembre")){
             month = 9;
         } else {
             month = Mes.valueOf(mes.toLowerCase()).ordinal()+1;

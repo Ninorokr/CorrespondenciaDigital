@@ -324,9 +324,9 @@ public class Commander {
             ps.setString(7, caso.concatCorreosCartasString());
             ps.setString(8, caso.concatCorreosActasString());
             ps.setTimestamp(9, Timestamp.valueOf(LocalDateTime.of(caso.getFecEmision(),
-                                                        caso.getFecNotificiacion().toLocalTime())));
+                                                        caso.getFecNotificacion().toLocalTime())));
             ps.setTimestamp(10, Timestamp.valueOf(caso.getFecDespacho()));
-            ps.setTimestamp(11, Timestamp.valueOf(caso.getFecNotificiacion()));
+            ps.setTimestamp(11, Timestamp.valueOf(caso.getFecNotificacion()));
             ps.setString(12, caso.getIdActividad());
             ps.execute();
         } catch (SQLException sqle){
@@ -339,14 +339,14 @@ public class Commander {
         String updateCasosRevisadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET " +
                 "idEstado = ?, fecEmision = ?, fecDespacho = ?, fecNotificacion = ?, dirCorreoCarta = ?, " +
                 "dirCorreoActa = ?, errorNroCarta = ?, errorCorreoNotif = ?, errorFechas = ?, errorFaltaFirma = ?, " +
-                "errorFaltaCarta = ?, errorFaltaActa = ?, revisado = ? " +
+                "errorFaltaCarta = ?, errorFaltaActa = ?, mensajeError = ?, revisado = ? " +
                 "WHERE anio = ? AND nroOS = ? AND idCasoCorrespondenciaDigital = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(updateCasosRevisadosQuery)) {
             ps.setShort(1, caso.getEstado().getIdEstado());
             ps.setTimestamp(2, Timestamp.valueOf(caso.getFecEmisionDateTime()));
             ps.setTimestamp(3, Timestamp.valueOf(caso.getFecDespacho()));
-            ps.setTimestamp(4, Timestamp.valueOf(caso.getFecNotificiacion()));
+            ps.setTimestamp(4, Timestamp.valueOf(caso.getFecNotificacion()));
             ps.setString(5, caso.getCorreosCartasString());
             ps.setString(6, caso.getCorreosActasString());
             ps.setBoolean(7, caso.isErrorNroCarta());
@@ -355,15 +355,33 @@ public class Commander {
             ps.setBoolean(10, caso.isErrorFaltaFirma());
             ps.setBoolean(11, caso.isErrorFaltaCartas());
             ps.setBoolean(12, caso.isErrorFaltaActas());
-            ps.setBoolean(13, true);
-            ps.setShort(14, caso.getAnio());
-            ps.setShort(15, caso.getNroOS());
-            ps.setShort(16, caso.getIdCaso());
+            ps.setString(13, caso.getMensajeError());
+            ps.setBoolean(14, true);
+            ps.setShort(15, caso.getAnio());
+            ps.setShort(16, caso.getNroOS());
+            ps.setShort(17, caso.getIdCaso());
             ps.execute();
         } catch (SQLException sqle) {
             System.out.println("No se pudo actualizar caso revisado");
         }
     }
+
+    public static void updateDescargadoEnSalesforce(Caso caso) {
+        String updateCasosRevisadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET " +
+                "descargadoEnSalesforce = ? " +
+                "WHERE anio = ? AND nroOS = ? AND idCasoCorrespondenciaDigital = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(updateCasosRevisadosQuery)) {
+            ps.setBoolean(1, true);
+            ps.setShort(2, caso.getAnio());
+            ps.setShort(3, caso.getNroOS());
+            ps.setShort(4, caso.getIdCaso());
+            ps.execute();
+        } catch (SQLException sqle) {
+            System.out.println("No se pudo actualizar caso revisado");
+        }
+    }
+
 
 //    public static void updateCasosRevisados(Caso caso) {
 //        String setArchivosDescargadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET " +

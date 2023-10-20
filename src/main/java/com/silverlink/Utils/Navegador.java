@@ -1,6 +1,7 @@
 package com.silverlink.Utils;
 
 import com.silverlink.Entidades.Caso;
+import com.silverlink.Entidades.Mes;
 import com.silverlink.Main;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -15,15 +16,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 import static com.silverlink.Main.tempPath;
+import static com.silverlink.Utils.Commander.updateDescargadoEnSalesforce;
 
 public class Navegador {
 
@@ -91,7 +91,7 @@ public class Navegador {
 
             WebElement mainIFrame = driver.findElement(By.xpath("/html/body/div[4]/div/div[3]/div/div/iframe"));
             driver.switchTo().frame(mainIFrame);
-            try { WebElement infCorrespondenciaDigital = driver.findElement(By.xpath("//button[text()='Modificar']"));
+            try { WebElement infCorrespondenciaDigital = driver.findElement(By.xpath("//*[@id=\"00O1o000005aVRP_NAME\"]/div[2]/a"));
             infCorrespondenciaDigital.click();
             System.out.println("Abriendo informe de Correspondencia Digital (pendiente)");
             } catch (NoSuchElementException nsee) { System.out.println("No se ubicó el enlace al Inf. de Correspondencia Digital (pendiente)"); }
@@ -176,35 +176,183 @@ public class Navegador {
     public void descargarCasoEnSalesforce(Caso caso) {
         driver.get("https://enelsud.my.salesforce.com/" + caso.getIdActividad());
 
+        boolean ok = false;
+
         switch(caso.getEstado().getIdEstado()) {
-            case 4: descargarCasoNormal(caso); break;
-            case 5: descargarCasoRechazado(caso); break;
+            case 4: ok = descargarCasoNormal(caso); break;
+            case 5: ok = descargarCasoRechazado(caso); break;
+        }
+        if (ok) {
+            updateDescargadoEnSalesforce(caso);
         }
 
     }
 
-    private void descargarCasoNormal(Caso caso) {
+    private boolean descargarCasoNormal(Caso caso) {
+        //TODO Correr con el bichito hasta asegurar funcionamiento correcto
         WebElement btnModificar = driver.findElement(By.xpath("//input[@title='Modificar' and @name='edit']"));
         btnModificar.click();
 
         Select cboBoxEstado = new Select(driver.findElement(By.id("tsk12")));
         cboBoxEstado.selectByValue("Notificada");
+        ArrayList<Mes> meses = new ArrayList<>(List.of(Mes.values()));
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
-        String formattedDate = dateFormat.format(caso.getFecEmisionDateTime());
-        System.out.println(formattedDate);
+        String fecEmisionDay = String.valueOf(caso.getFecEmisionDateTime().getDayOfMonth());
+        String fecEmisionMonth = String.valueOf(meses.get(caso.getFecEmisionDateTime().getMonth().minus(1).getValue()));
+        String fecEmisionYear = String.valueOf(caso.getFecEmisionDateTime().getYear());
+        
+        String fecDespachoDay = String.valueOf(caso.getFecDespacho().getDayOfMonth());
+        String fecDespachoMonth = String.valueOf(meses.get(caso.getFecDespacho().getMonth().minus(1).getValue()));
+        String fecDespachoYear = String.valueOf(caso.getFecDespacho().getYear());
+        
+        String fecNotificacionDay = String.valueOf(caso.getFecNotificacion().getDayOfMonth());
+        String fecNotificacionMonth = String.valueOf(meses.get(caso.getFecNotificacion().getMonth().minus(1).getValue()));
+        String fecNotificacionYear = String.valueOf(caso.getFecNotificacion().getYear());
 
-        WebElement txtfecEmision = driver.findElement(By.id("00N3600000RPuD5"));
-        txtfecEmision.sendKeys();
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+//        String fecEmision = dateFormat.format(Timestamp.valueOf(caso.getFecEmisionDateTime()));
+//        String fecDespacho = dateFormat.format(Timestamp.valueOf(caso.getFecDespacho()));
+//        String fecNotificacion = dateFormat.format(Timestamp.valueOf(caso.getFecNotificacion()));
 
+        WebElement inputfecEmision = driver.findElement(By.id("00N3600000RPuD5"));
+        WebElement inputfecDespacho = driver.findElement(By.id("00N1o00000Jw99J"));
+        WebElement inputfecNotificacion = driver.findElement(By.id("00N1o00000Jw99P"));
+
+        inputfecEmision.sendKeys("");
+        Select calYearPicker = new Select(driver.findElement(By.id("calYearPicker")));
+        calYearPicker.selectByVisibleText(fecEmisionYear);
+        Select calMonthPicker = new Select(driver.findElement(By.id("calMonthPicker")));
+        calMonthPicker.selectByVisibleText(fecEmisionMonth);
+        WebElement calDayPicker = driver.findElement(By.xpath("//td[text()=" + fecEmisionDay + "]"));
+        calDayPicker.click();
+
+//        inputfecEmision.clear();
+//        inputfecEmision.sendKeys(fecEmision);
+//        inputfecEmision.sendKeys("");
+
+        inputfecDespacho.sendKeys("");
+        calYearPicker = new Select(driver.findElement(By.id("calYearPicker")));
+        calYearPicker.selectByVisibleText(fecDespachoYear);
+        calMonthPicker = new Select(driver.findElement(By.id("calMonthPicker")));
+        calMonthPicker.selectByVisibleText(fecDespachoMonth);
+        calDayPicker = driver.findElement(By.xpath("//td[text()=" + fecDespachoDay + "]"));
+        calDayPicker.click();
+
+//        inputfecDespacho.clear();
+//        inputfecDespacho.sendKeys(fecDespacho);
+//        inputfecDespacho.sendKeys("");
+
+        inputfecNotificacion.sendKeys("");
+        calYearPicker = new Select(driver.findElement(By.id("calYearPicker")));
+        calYearPicker.selectByVisibleText(fecNotificacionYear);
+        calMonthPicker = new Select(driver.findElement(By.id("calMonthPicker")));
+        calMonthPicker.selectByVisibleText(fecNotificacionMonth);
+        calDayPicker = driver.findElement(By.xpath("//td[text()=" + fecNotificacionDay + "]"));
+        calDayPicker.click();
+
+//        inputfecNotificacion.clear();
+//        inputfecNotificacion.sendKeys(fecNotificacion);
+//        inputfecNotificacion.sendKeys("");
+
+        WebElement txtAreaComentarios = driver.findElement(By.id("tsk6"));
+        txtAreaComentarios.sendKeys(caso.getCorreosActasString());
+        Select cboEjectuadoPor = new Select(driver.findElement(By.id("00N1o00000Jw99M")));
+        cboEjectuadoPor.selectByVisibleText("Proveedor de Mensajería");
+
+        //SÓLO TESTEO
+//        WebElement btnCancelar = driver.findElement(By.xpath("//input[@title='Cancelar' and @name='cancel']"));
+//        btnCancelar.click();
+        WebElement btnGuardar = driver.findElement(By.xpath("//input[@title='Guardar' and @name='save']"));
+        btnGuardar.click();
+        WebElement lblDetalleDeTarea;
+
+        try {
+            //No funciona porque el elemento SIEMPRE existe
+            //TODO verificar otra manera de capturar el error de caso cerrado
+//            WebElement errorCasoCerrado = driver.findElement(By.xpath("//div[@id='errorDiv_ep']"));
+            cboBoxEstado = new Select(driver.findElement(By.id("tsk12")));
+            System.out.println("Caso cerrado");
+            cboBoxEstado.selectByValue("Despachada");
+            btnGuardar = driver.findElement(By.xpath("//input[@title='Guardar' and @name='save']"));
+            btnGuardar.click();
+            //TODO registrar caso como "Caso cerrado" en la BD
+            try {
+                lblDetalleDeTarea = driver.findElement(By.xpath("//h2[text()='Detalle de Tarea']"));
+            } catch (NoSuchElementException nsee) {
+                System.out.println("La tarea no se logró guardar correctamente");
+                nsee.printStackTrace(); System.exit(0);
+            }
+            System.out.println("Se guardó tarea de caso cerrado como \"Despachada\"");
+        } catch (NoSuchElementException nsee) {
+            btnModificar = driver.findElement(By.xpath("//input[@title='Modificar' and @name='edit']"));
+            btnModificar.click();
+            cboBoxEstado = new Select(driver.findElement(By.id("tsk12")));
+            cboBoxEstado.selectByValue("Descargada");
+            btnGuardar = driver.findElement(By.xpath("//input[@title='Guardar' and @name='save']"));
+            btnGuardar.click();
+            try {
+                lblDetalleDeTarea = driver.findElement(By.xpath("//h2[text()='Detalle de Tarea']"));
+            } catch (NoSuchElementException nsee2) {
+                System.out.println("La tarea no se logró guardar correctamente");
+                nsee.printStackTrace(); System.exit(0);
+            }
+        }
+
+        return true;
     }
 
-    private void descargarCasoRechazado(Caso caso) {
+    private boolean descargarCasoRechazado(Caso caso) {
+        //TODO Correr con el bichito hasta asegurar funcionamiento correcto
         WebElement btnModificar = driver.findElement(By.xpath("//input[@title='Modificar' and @name='edit']"));
         btnModificar.click();
 
         Select cboBoxEstado = new Select(driver.findElement(By.id("tsk12")));
-        cboBoxEstado.selectByValue("Revisión ENEL");
+        cboBoxEstado.selectByVisibleText("Revisión ENEL");
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+        String fecEmision = dateFormat.format(Timestamp.valueOf(caso.getFecEmisionDateTime()));
+
+        WebElement inputfecEmision = driver.findElement(By.id("00N3600000RPuD5"));
+        inputfecEmision.clear(); inputfecEmision.sendKeys(fecEmision);
+
+        WebElement txtAreaComentarios = driver.findElement(By.id("tsk6"));
+        txtAreaComentarios.sendKeys(caso.getMensajeError());
+
+        //SÓLO TESTEO
+//        WebElement btnCancelar = driver.findElement(By.xpath("//input[@title='Cancelar' and @name='cancel']"));
+//        btnCancelar.click();
+
+        WebElement btnGuardar = driver.findElement(By.xpath("//input[@title='Guardar' and @name='save']"));
+        btnGuardar.click();
+        WebElement lblDetalleDeTarea;
+
+        try {
+            //No funciona porque el elemento SIEMPRE existe
+            //TODO verificar otra manera de capturar el error de caso cerrado
+//            WebElement errorCasoCerrado = driver.findElement(By.xpath("//div[@id='errorDiv_ep']"));
+            cboBoxEstado = new Select(driver.findElement(By.id("tsk12")));
+            System.out.println("Caso cerrado");
+            cboBoxEstado.selectByValue("Despachada");
+            System.out.println("Se guardó tarea de caso cerrado como \"Despachada\"");
+            btnGuardar = driver.findElement(By.xpath("//input[@title='Guardar' and @name='save']"));
+            btnGuardar.click();
+            //TODO registrar caso como "Caso cerrado" en la BD
+            try {
+                lblDetalleDeTarea = driver.findElement(By.xpath("//h2[text()='Detalle de Tarea']"));
+            } catch (NoSuchElementException nsee) {
+                System.out.println("La tarea no se logró guardar correctamente");
+                nsee.printStackTrace(); System.exit(0);
+            }
+            System.out.println("Se guardó tarea de caso cerrado como \"Despachada\"");
+        } catch (NoSuchElementException nsee) {
+            try {
+                lblDetalleDeTarea = driver.findElement(By.xpath("//h2[text()='Detalle de Tarea']"));
+            } catch (NoSuchElementException nsee2) {
+                System.out.println("La tarea no se logró guardar correctamente");
+                nsee.printStackTrace(); System.exit(0);
+            }
+        }
+        return true;
     }
 
 }
