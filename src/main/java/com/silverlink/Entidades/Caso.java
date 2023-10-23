@@ -1,5 +1,6 @@
 package com.silverlink.Entidades;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -327,12 +328,27 @@ public class Caso {
         return fecEmisionDateTime;
     }
 
+    public Timestamp getFecEmisionDateTimeTimestamp() {
+        if(fecEmisionDateTime == null) {
+            return null;
+        }
+        return Timestamp.valueOf(fecEmisionDateTime);
+    }
+
     public void setFecEmisionDateTime(LocalDateTime dateTime) {
+        System.out.println(dateTime);
         this.fecEmisionDateTime = dateTime;
     }
 
     public LocalDateTime getFecDespacho() {
         return fecDespacho;
+    }
+
+    public Timestamp getFecDespachoTimestamp() {
+        if(fecDespacho == null) {
+            return null;
+        }
+        return Timestamp.valueOf(fecDespacho);
     }
 
     public void setFecDespacho(LocalDateTime fecDespacho) {
@@ -341,6 +357,13 @@ public class Caso {
 
     public LocalDateTime getFecNotificacion() {
         return fecNotificacion;
+    }
+
+    public Timestamp getFecNotificacionTimestamp() {
+        if(fecNotificacion == null) {
+            return null;
+        }
+        return Timestamp.valueOf(fecNotificacion);
     }
 
     public void setFecNotificacion(LocalDateTime fecNotificacion) {
@@ -467,16 +490,30 @@ public class Caso {
 
     public String concatCorreosCartasString() {
         StringBuilder sb = new StringBuilder();
-        for(String correo : correosCartas) {
-            sb.append(correo).append(";");
+        if(correosCartas.size() == 1) {
+            sb.append(correosCartas.get(0));
+        } else {
+            for(String correo : correosCartas) {
+                if(correo.equals(correosCartas.get(correosCartas.size()-1)))
+                    sb.append(correo);
+                else
+                    sb.append(correo).append("/");
+            }
         }
         return sb.toString();
     }
 
     public String concatCorreosActasString() {
         StringBuilder sb = new StringBuilder();
-        for(String correo : correosActas) {
-            sb.append(correo).append(";");
+        if(correosActas.size() == 1) {
+            sb.append(correosActas.get(0));
+        } else {
+            for(String correo : correosActas) {
+                if(correo.equals(correosActas.get(correosActas.size()-1)))
+                    sb.append(correo);
+                else
+                    sb.append(correo).append("/");
+            }
         }
         return sb.toString();
     }

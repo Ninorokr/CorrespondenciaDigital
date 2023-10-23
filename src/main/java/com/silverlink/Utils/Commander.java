@@ -258,17 +258,7 @@ public class Commander {
 
     }
 
-        private static Date getDateValue(LocalDate fecha) {
-            if(fecha == null)
-                return null;
-            return Date.valueOf(fecha);
-        }
 
-        private static Timestamp getTimeStampValue(LocalDateTime fechaYHora) {
-            if(fechaYHora == null)
-                return null;
-            return Timestamp.valueOf(fechaYHora);
-        }
 
 //    public static void insertCasoABDMejorado(Caso caso) {
 //
@@ -344,9 +334,9 @@ public class Commander {
 
         try (PreparedStatement ps = conn.prepareStatement(updateCasosRevisadosQuery)) {
             ps.setShort(1, caso.getEstado().getIdEstado());
-            ps.setTimestamp(2, Timestamp.valueOf(caso.getFecEmisionDateTime()));
-            ps.setTimestamp(3, Timestamp.valueOf(caso.getFecDespacho()));
-            ps.setTimestamp(4, Timestamp.valueOf(caso.getFecNotificacion()));
+            ps.setTimestamp(2, caso.getFecEmisionDateTimeTimestamp());
+            ps.setTimestamp(3, caso.getFecDespachoTimestamp());
+            ps.setTimestamp(4, caso.getFecNotificacionTimestamp());
             ps.setString(5, caso.getCorreosCartasString());
             ps.setString(6, caso.getCorreosActasString());
             ps.setBoolean(7, caso.isErrorNroCarta());
@@ -381,6 +371,35 @@ public class Commander {
             System.out.println("No se pudo actualizar caso revisado");
         }
     }
+
+    public static void updateCasoEstadoCasoCerrado(Caso caso) {
+        String updateCasosRevisadosQuery = "UPDATE [digi].[casosCorrespondenciaDigital] SET " +
+                "idEstado = ? " +
+                "WHERE anio = ? AND nroOS = ? AND idCasoCorrespondenciaDigital = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(updateCasosRevisadosQuery)) {
+            ps.setShort(1, (short) 3);
+            ps.setShort(2, caso.getAnio());
+            ps.setShort(3, caso.getNroOS());
+            ps.setShort(4, caso.getIdCaso());
+            ps.execute();
+        } catch (SQLException sqle) {
+            System.out.println("No se pudo actualizar estado de caso a \"despachada\"");
+        }
+    }
+
+    private static Date getDateValue(LocalDate fecha) {
+        if(fecha == null)
+            return null;
+        return Date.valueOf(fecha);
+    }
+
+    private static Timestamp getTimeStampValue(LocalDateTime fechaYHora) {
+        if(fechaYHora == null)
+            return null;
+        return Timestamp.valueOf(fechaYHora);
+    }
+
 
 
 //    public static void updateCasosRevisados(Caso caso) {
@@ -426,10 +445,5 @@ public class Commander {
 //            sqle.printStackTrace();
 //        }
 //    }
-
-
-
-
-
 
 }

@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static com.silverlink.Main.tempPath;
-import static com.silverlink.Utils.Commander.updateDescargadoEnSalesforce;
+import static com.silverlink.Utils.Commander.*;
 
 public class Navegador {
 
@@ -276,6 +276,7 @@ public class Navegador {
             btnGuardar = driver.findElement(By.xpath("//input[@title='Guardar' and @name='save']"));
             btnGuardar.click();
             //TODO registrar caso como "Caso cerrado" en la BD
+            updateCasoEstadoCasoCerrado(caso);
             try {
                 lblDetalleDeTarea = driver.findElement(By.xpath("//h2[text()='Detalle de Tarea']"));
             } catch (NoSuchElementException nsee) {
@@ -309,11 +310,27 @@ public class Navegador {
         Select cboBoxEstado = new Select(driver.findElement(By.id("tsk12")));
         cboBoxEstado.selectByVisibleText("Revisión ENEL");
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
-        String fecEmision = dateFormat.format(Timestamp.valueOf(caso.getFecEmisionDateTime()));
+        ArrayList<Mes> meses = new ArrayList<>(List.of(Mes.values()));
 
-        WebElement inputfecEmision = driver.findElement(By.id("00N3600000RPuD5"));
-        inputfecEmision.clear(); inputfecEmision.sendKeys(fecEmision);
+        if(!caso.isErrorFaltaCartas() && !caso.isErrorFaltaActas()){
+            String fecEmisionDay = String.valueOf(caso.getFecEmisionDateTime().getDayOfMonth());
+            String fecEmisionMonth = String.valueOf(meses.get(caso.getFecEmisionDateTime().getMonth().minus(1).getValue()));
+            String fecEmisionYear = String.valueOf(caso.getFecEmisionDateTime().getYear());
+
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+//        String fecEmision = dateFormat.format(Timestamp.valueOf(caso.getFecEmisionDateTime()));
+
+            WebElement inputfecEmision = driver.findElement(By.id("00N3600000RPuD5"));
+//        inputfecEmision.clear(); inputfecEmision.sendKeys(fecEmision);
+
+            inputfecEmision.sendKeys("");
+            Select calYearPicker = new Select(driver.findElement(By.id("calYearPicker")));
+            calYearPicker.selectByVisibleText(fecEmisionYear);
+            Select calMonthPicker = new Select(driver.findElement(By.id("calMonthPicker")));
+            calMonthPicker.selectByVisibleText(fecEmisionMonth);
+            WebElement calDayPicker = driver.findElement(By.xpath("//td[text()=" + fecEmisionDay + "]"));
+            calDayPicker.click();
+        }
 
         WebElement txtAreaComentarios = driver.findElement(By.id("tsk6"));
         txtAreaComentarios.sendKeys(caso.getMensajeError());

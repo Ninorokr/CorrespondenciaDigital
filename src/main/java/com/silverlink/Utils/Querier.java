@@ -305,7 +305,7 @@ public class Querier {
 
         String casosPendientesDescargaSalesforceQuery = "SELECT [anio], [nroOS], [idCasoCorrespondenciaDigital], " +
                 "[idActividad], [nroCaso], [idEstado], [fecEmision], [fecDespacho], [fecNotificacion], [dirCorreoActa]," +
-                "[mensajeError] " +
+                "[mensajeError], [errorFaltaCarta], [errorFaltaActa] " +
                 "FROM [digi].[casosCorrespondenciaDigital] " +
                 "WHERE descargadoEnSalesforce = 0 AND revisado = 1";
 
@@ -325,6 +325,8 @@ public class Querier {
                 caso.setFecNotificacion(timestampToLocalDateTime(rs.getTimestamp(9)));
                 caso.setCorreosActasString(rs.getString(10));
                 caso.setMensajeError(rs.getString(11));
+                caso.setErrorFaltaCartas(rs.getBoolean(12));
+                caso.setErrorFaltaActas(rs.getBoolean(13));
                 casos.add(caso);
             }
         } catch (SQLException sqle) {

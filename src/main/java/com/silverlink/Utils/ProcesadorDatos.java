@@ -4,6 +4,7 @@ import com.silverlink.Entidades.Acta;
 import com.silverlink.Entidades.Carta;
 import com.silverlink.Entidades.Caso;
 import com.silverlink.Entidades.Estado;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -13,6 +14,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static com.silverlink.Main.*;
@@ -156,6 +160,7 @@ public class ProcesadorDatos {
         ArrayList<Caso> casos = new ArrayList<>();
         try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(inputPath));
                 XSSFWorkbook wb = new XSSFWorkbook(bis)) {
+            wb.setMissingCellPolicy(Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
             XSSFSheet sheet = wb.getSheetAt(0);
             Caso caso;
             for(int i = 1; i <= sheet.getLastRowNum(); i++) {
@@ -178,6 +183,7 @@ public class ProcesadorDatos {
                 caso.setErrorFaltaActas(row.getCell(29).getBooleanCellValue());
                 caso.setMensajeError(row.getCell(40).getStringCellValue());
                 casos.add(caso);
+                System.out.println(i + ". ");
             }
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -185,6 +191,12 @@ public class ProcesadorDatos {
 
         return casos;
     }
+
+//    static private LocalDateTime timestampToLocalDateTime(Timestamp datetime) {
+//        if (datetime == null)
+//            return null;
+//        return datetime.toLocalDateTime();
+//    }
 
     public static boolean isDescargaArchivosCompletada(int cantArchivos) throws IOException {
         //Debe dar OK si cantArchivos = nroArchivos en carpeta
