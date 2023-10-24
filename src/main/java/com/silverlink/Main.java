@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import static com.silverlink.Utils.Commander.registrarNuevaOS;
 import static com.silverlink.Utils.Commander.updateCasosRevisados;
 import static com.silverlink.Utils.ProcesadorDatos.*;
 import static com.silverlink.Utils.Querier.*;
@@ -213,6 +214,7 @@ public class Main {
         nuevaCarpeta = rootFolder + anio + "\\" + String.format("%04d", nroOS);
         try {
             Files.createDirectories(Path.of(nuevaCarpeta));
+            registrarNuevaOS(anio, nroOS);
         } catch (IOException ioe) {
             System.out.println("No se pudo crear la carpeta en " + nuevaCarpeta);
             return;

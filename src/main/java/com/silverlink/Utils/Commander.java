@@ -13,6 +13,23 @@ import static com.silverlink.Utils.Datasource.conn;
 
 public class Commander {
 
+    public static void registrarNuevaOS(int anio, int nroOS) {
+        String insertNuevaOSQuery = "INSERT INTO [digi].[OSs] ([anio], [nroOS], [fecCreacion]) VALUES (?, ?, ?)";
+
+        try(PreparedStatement ps = conn.prepareStatement(insertNuevaOSQuery)){
+            ps.setShort(1, (short) anio);
+            ps.setShort(2, (short) nroOS);
+            ps.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
+            ps.execute();
+        } catch (SQLException sqle){
+            System.out.println("No se pudo crear la nueva OS " + String.format("%04d", nroOS));
+            sqle.printStackTrace();
+            return;
+        }
+        System.out.println("Se creó la nueva OS: " + String.format("%04d", nroOS));
+    }
+
+
     public static void insertTipoAtencion(String nomTipoAtencion){
         String insertTipoAtencionQuery = "INSERT INTO [digi].[tipoAtencion] ([nomTipoAtencion]) VALUES (?)";
 

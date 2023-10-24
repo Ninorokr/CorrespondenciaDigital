@@ -336,7 +336,6 @@ public class Caso {
     }
 
     public void setFecEmisionDateTime(LocalDateTime dateTime) {
-        System.out.println(dateTime);
         this.fecEmisionDateTime = dateTime;
     }
 
