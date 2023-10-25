@@ -50,9 +50,8 @@ public class Carta {
     private void obtenerFecha() {
 //        Pattern fechaPattern = Pattern.compile("\\d{1,2}[ ].*[a-zA-Z]{4,}[ ].*[2][0]\\d\\d");
 //        Pattern fechaPattern = Pattern.compile("\\b\\d{1,2}(?:\\s+de\\s+)?[a-zA-Z]+(?:\\s+de\\s+\\d{4})?(?:\\s+del\\s+\\d{4})?|\\b\\d{1,2}\\s+[a-zA-Z]+\\s+\\d{4}\\b");
-        Pattern fechaPattern = Pattern.compile("[0-3]?\\d  ?(de )?[a-zA-Z]{4,} (de )?(del )?20\\d\\d");
+        Pattern fechaPattern = Pattern.compile("[0-3]?\\d  ?(de )?[a-zA-Z]{4,}  ?(de )?(del )?20\\d\\d");
         Matcher matcher = fechaPattern.matcher(texto);
-//        System.out.println(texto);
         matcher.find();
         System.out.println(matcher.group());
         this.fechaEmision = descifrarFecha(matcher.group());

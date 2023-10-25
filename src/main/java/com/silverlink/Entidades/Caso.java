@@ -17,6 +17,8 @@ public class Caso {
     private String idActividad;
     private TipoCarta tipoCarta;
     private int nroCaso;
+    private int nroCarta;
+    private int nroActa;
     private EstadoCaso estadoCaso;
     private CanalNotificacion canalNotificacion;
     private LocalDate fecCreacionCaso;
@@ -168,6 +170,22 @@ public class Caso {
 
     public void setNroCaso(String nroCaso) {
         this.nroCaso = Integer.parseInt(nroCaso);
+    }
+
+    public int getNroCarta() {
+        return nroCarta;
+    }
+
+    public void setNroCarta(int nroCarta) {
+        this.nroCarta = nroCarta;
+    }
+
+    public int getNroActa() {
+        return nroActa;
+    }
+
+    public void setNroActa(int nroActa) {
+        this.nroActa = nroActa;
     }
 
     public EstadoCaso getEstadoCaso() {
@@ -651,5 +669,19 @@ public class Caso {
                 "Canal Registro: " + canalRegistro.getNomCanalRegistro() + "\n" +
                 "Propietario Caso: " + propietarioCaso + "\n" +
                 "Días Vencidos / Por Vencer: " + diasVencidosPorVencer + "\n";
+    }
+
+    public String getIdCompleto() {
+        String nroOS = String.format("%04d", this.nroOS);
+        String item = String.format("%04d", this.idCaso);
+
+        return "002" + this.anio + nroOS + item;
+    }
+
+    public String getFormattedId() {
+        String nroOS = String.format("%04d", this.nroOS);
+        String item = String.format("%04d", this.idCaso);
+
+        return "002-" + this.anio + "-" + nroOS + "-" + item;
     }
 }

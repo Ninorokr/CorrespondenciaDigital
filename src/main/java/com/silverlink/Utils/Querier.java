@@ -334,4 +334,44 @@ public class Querier {
         }
         return casos;
     }
+
+    public static ArrayList<Caso> queryAllCasosRechazados() {
+        ArrayList<Caso> casosRechazados = new ArrayList<>();
+
+        String casosPendientesDescargaSalesforceQuery = "SELECT [anio], [nroOS], [idCasoCorrespondenciaDigital], " +
+                "[idActividad], [nroCaso], [idEstado], [fecEmision], [fecDespacho], [fecNotificacion], " +
+                "[dirCorreoCarta], [dirCorreoActa], [errorNroCarta], [errorCorreoNotif], [errorFechas], " +
+                "[errorFaltaCarta], [errorFaltaActa], [errorFaltaFirma] " +
+                "FROM [digi].[casosCorrespondenciaDigital] " +
+                "WHERE idEstado = 5";
+
+        try (PreparedStatement ps = conn.prepareStatement(casosPendientesDescargaSalesforceQuery)) {
+            Caso caso;
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                caso = new Caso();
+                caso.setAnio(rs.getShort(1));
+                caso.setNroOS(rs.getShort(2));
+                caso.setIdCaso(rs.getShort(3));
+                caso.setIdActividad(rs.getString(4));
+                caso.setNroCaso(rs.getInt(5));
+                caso.setEstado(Estado.getEstado(rs.getShort(6)));
+                caso.setFecEmisionDateTime(timestampToLocalDateTime(rs.getTimestamp(7)));
+                caso.setFecDespacho(timestampToLocalDateTime(rs.getTimestamp(8)));
+                caso.setFecNotificacion(timestampToLocalDateTime(rs.getTimestamp(9)));
+                caso.setCorreosCartasString(rs.getString(10));
+                caso.setCorreosActasString(rs.getString(11));
+                caso.setErrorNroCarta(rs.getBoolean(12));
+                caso.setErrorCorreoNotif(rs.getBoolean(13));
+                caso.setErrorFechas(rs.getBoolean(14));
+                caso.setErrorFaltaCartas(rs.getBoolean(15));
+                caso.setErrorFaltaActas(rs.getBoolean(16));
+                caso.setErrorFaltaFirma(rs.getBoolean(17));
+                casosRechazados.add(caso);
+            }
+        } catch (SQLException sqle) {
+            System.out.println("No se pudo consultar el caso pendiente de descarga en Salesforce.");
+        }
+        return casosRechazados;
+    }
 }

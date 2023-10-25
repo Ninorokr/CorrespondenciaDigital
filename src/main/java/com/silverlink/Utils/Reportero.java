@@ -115,9 +115,9 @@ public class Reportero {
         return outputPath;
     }
 
-    private String getMensajeRechazo(Caso caso) {
-        String msj = null;
-
+//    private String getMensajeRechazo(Caso caso) {
+//        String msj = null;
+//
 //        if (caso.getEstado().getIdEstado() == 5) {
 //            if (caso.isErrorFaltaCartas()) {
 //                msj = "Falta adjuntar carta";
@@ -136,8 +136,8 @@ public class Reportero {
 //
 //            }
 //        }
-        return msj;
-    }
+//        return msj;
+//    }
 
 //    private String msjErrorCorreo(Caso caso) {
 //        String msj = null;

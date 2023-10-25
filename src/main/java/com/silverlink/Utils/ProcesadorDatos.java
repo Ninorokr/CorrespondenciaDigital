@@ -48,6 +48,7 @@ public class ProcesadorDatos {
                 boolean fechasOK = fechasOK(caso);
                 if (!nroCartaOK || !correoOK || !fechasOK) {
                     caso.getEstado().setIdEstado((short) 5); //RECHAZADA
+                    caso.setNroCarta(caso.getCartas());
                 } else {
                     caso.getEstado().setIdEstado((short) 4); //DESCARGADA
                 }
@@ -59,6 +60,52 @@ public class ProcesadorDatos {
 //            SaveImagesInPdf printer = new SaveImagesInPdf(caso);
         }
     }
+
+    public static String createMensajeRechazo(Caso caso) {
+        String msj = null;
+
+            if (caso.isErrorFaltaCartas()) {
+                msj = "Falta adjuntar carta";
+            } else if (caso.isErrorFaltaActas()) {
+                msj = "Falta adjuntar acta";
+            } else if (caso.isErrorFaltaCartas() && caso.isErrorFaltaActas()) {
+                msj = "No hay archivos adjuntos";
+            } else {
+                if (caso.isErrorNroCarta()) {
+                    msj += "Error con el nro. de carta";
+                } else if (caso.isErrorCorreoNotif()) {
+                    msj += "Error en el correo de notificación";
+                } else if (caso.isErrorFechas()) {
+                    msj += "La fecha de emisión de la carta ";
+                }
+            }
+        return msj;
+    }
+
+//    private String getMensajeRechazo(Caso caso) {
+//        String msj = null;
+//
+//        if (caso.getEstado().getIdEstado() == 5) {
+//            if (caso.isErrorFaltaCartas()) {
+//                msj = "Falta adjuntar carta";
+//            } else if (caso.isErrorFaltaActas()) {
+//                msj = "Falta adjuntar acta";
+//            } else if (caso.isErrorFaltaCartas() && caso.isErrorFaltaActas()) {
+//                msj = "No hay archivos adjuntos";
+//            } else {
+//                if (caso.isErrorNroCarta()) {
+//                    msj += "Error con el nro. de carta";
+//                } else if (caso.isErrorCorreoNotif()) {
+//                    msj += "Error en el correo de notificación";
+//                } else if (caso.isErrorFechas()) {
+//                    msj += "La fecha de emisión de la carta ";
+//                }
+//
+//            }
+//        }
+//        return msj;
+//    }
+
 
     public static boolean docsOK(Caso caso) {
         //VERIFICADOR: Archivos completos
@@ -157,6 +204,7 @@ public class ProcesadorDatos {
     }
 
     public static ArrayList<Caso> procesarCasosRevisados(String inputPath) {
+        //Recoger los casos del excel revision.xlsx para actualizar los datos en la BD
         ArrayList<Caso> casos = new ArrayList<>();
         try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(inputPath));
                 XSSFWorkbook wb = new XSSFWorkbook(bis)) {

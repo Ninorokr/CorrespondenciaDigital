@@ -100,6 +100,7 @@ public class Main {
                 case 2: procesarCasosPendientes(); break;
                 case 3: revisarCasosPendientesDescarga(); break;
                 case 9431: descargarCasosEnSalesforce(); break;
+                case 4: probarMensajeDeError(); break;
                 case 9: System.exit(0);
             }
         }
@@ -146,6 +147,7 @@ public class Main {
         nuevaCarpeta = rootFolder + anio + "\\" + String.format("%04d", nroOS);
         try {
             Files.createDirectories(Path.of(nuevaCarpeta));
+            registrarNuevaOS(anio, nroOS);
         } catch (IOException ioe) {
             System.out.println("No se pudo crear la carpeta en " + nuevaCarpeta);
             return;
@@ -313,7 +315,7 @@ public class Main {
         System.out.println("Se actualizaron los casos revisados.\n");
     }
 
-    //Menú op. 4
+    //Menú op. 9431
 
     private static void descargarCasosEnSalesforce() {
         System.out.println("¿Estás seguro que deseas descargar los casos revisados? (S/N)");
@@ -333,6 +335,15 @@ public class Main {
             }
             nav.descargarCasoEnSalesforce(caso);
             System.out.println("Se descargó el caso: " + caso.getIdCaso() + ". " + caso.getIdActividad() + " | " + caso.getNroCaso());
+        }
+    }
+
+    private static void probarMensajeDeError() {
+        ArrayList<Caso> casosRechazados = queryAllCasosRechazados();
+
+        for (Caso caso : casosRechazados) {
+            createMensajeRechazo(caso);
+            System.out.println(caso.getFormattedId() + ": " + caso.getMensajeError());
         }
     }
 
