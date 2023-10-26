@@ -93,8 +93,9 @@ public class Reportero {
                         case 37: cellDato.setCellValue(caso.getPropietarioCaso().getCodUsuario()); break;
                         case 38: cellDato.setCellType(CellType.NUMERIC);
                          cellDato.setCellValue(caso.getDiasVencidosPorVencer()); break;
-                        case 39: cellDato.setCellValue("https://enelsud.my.salesforce.com/" + caso.getIdActividad());
-//                        case 37: cellDato.setCellValue(getMensajeRechazo(caso)); break;
+                        case 39: cellDato.setCellValue("https://enelsud.my.salesforce.com/" + caso.getIdActividad()); break;
+                        case 40: cellDato.setCellValue(caso.getMensajeError()); break;
+//                        case 40: cellDato.setCellValue(getMensajeRechazo(caso)); break;
                     }
                 }
             }

@@ -48,7 +48,7 @@ public class ProcesadorDatos {
                 boolean fechasOK = fechasOK(caso);
                 if (!nroCartaOK || !correoOK || !fechasOK) {
                     caso.getEstado().setIdEstado((short) 5); //RECHAZADA
-                    caso.setNroCarta(caso.getCartas());
+//                    caso.setNroCarta(caso.getCartas());
                 } else {
                     caso.getEstado().setIdEstado((short) 4); //DESCARGADA
                 }

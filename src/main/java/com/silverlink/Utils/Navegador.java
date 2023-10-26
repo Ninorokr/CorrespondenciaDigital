@@ -223,7 +223,8 @@ public class Navegador {
         calYearPicker.selectByVisibleText(fecEmisionYear);
         Select calMonthPicker = new Select(driver.findElement(By.id("calMonthPicker")));
         calMonthPicker.selectByVisibleText(fecEmisionMonth);
-        WebElement calDayPicker = driver.findElement(By.xpath("//td[text()=" + fecEmisionDay + "]"));
+        WebElement calDayPicker = driver.findElement(By.xpath("//td[text()=\"" + fecEmisionDay +
+                "\" and (@class=\"weekday\" or @class=\"weekday todayDate\" or @class=\"weekday selectedDate\" or @class=\"weekday todayDate selectedDate\")]"));
         calDayPicker.click();
 
 //        inputfecEmision.clear();
@@ -235,7 +236,8 @@ public class Navegador {
         calYearPicker.selectByVisibleText(fecDespachoYear);
         calMonthPicker = new Select(driver.findElement(By.id("calMonthPicker")));
         calMonthPicker.selectByVisibleText(fecDespachoMonth);
-        calDayPicker = driver.findElement(By.xpath("//td[text()=" + fecDespachoDay + "]"));
+        calDayPicker = driver.findElement(By.xpath("//td[text()=\"" + fecDespachoDay +
+                "\" and (@class=\"weekday\" or @class=\"weekday todayDate\" or @class=\"weekday selectedDate\" or @class=\"weekday todayDate selectedDate\")]"));
         calDayPicker.click();
 
 //        inputfecDespacho.clear();
@@ -247,7 +249,8 @@ public class Navegador {
         calYearPicker.selectByVisibleText(fecNotificacionYear);
         calMonthPicker = new Select(driver.findElement(By.id("calMonthPicker")));
         calMonthPicker.selectByVisibleText(fecNotificacionMonth);
-        calDayPicker = driver.findElement(By.xpath("//td[text()=" + fecNotificacionDay + "]"));
+        calDayPicker = driver.findElement(By.xpath("//td[text()=\"" + fecNotificacionDay +
+                "\" and (@class=\"weekday\" or @class=\"weekday todayDate\" or @class=\"weekday selectedDate\" or @class=\"weekday todayDate selectedDate\")]"));
         calDayPicker.click();
 
 //        inputfecNotificacion.clear();
@@ -328,7 +331,8 @@ public class Navegador {
             calYearPicker.selectByVisibleText(fecEmisionYear);
             Select calMonthPicker = new Select(driver.findElement(By.id("calMonthPicker")));
             calMonthPicker.selectByVisibleText(fecEmisionMonth);
-            WebElement calDayPicker = driver.findElement(By.xpath("//td[text()=" + fecEmisionDay + "]"));
+            WebElement calDayPicker = driver.findElement(By.xpath("//td[text()=\"" + fecEmisionDay +
+                "\" and (@class=\"weekday\" or @class=\"weekday todayDate\") or @class=\"weekday selectedDate\" or @class=\"weekday todayDate selectedDate\"]"));
             calDayPicker.click();
         }
 

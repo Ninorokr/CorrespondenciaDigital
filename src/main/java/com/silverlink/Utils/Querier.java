@@ -233,7 +233,7 @@ public class Querier {
                 "[fecNotificacionCarta], [fecUltimaModificacion], [fecha], [fecVencimientoLegal], [idCreadoPor], " +
                 "[canalRegistro], [idPropietarioCaso], [diasVencidosPorVencer], [dirCorreoCarta], [dirCorreoActa], " +
                 "[errorNroCarta], [errorCorreoNotif], [errorFechas], " +
-                "[errorFaltaCarta], [errorFaltaActa], [errorFaltaFirma] " +
+                "[errorFaltaCarta], [errorFaltaActa], [errorFaltaFirma], [mensajeError] " +
                 "FROM [digi].[casosCorrespondenciaDigital] " +
                 "WHERE descargadoEnSalesforce = 0";
 
@@ -278,6 +278,7 @@ public class Querier {
                 caso.setErrorFaltaCartas(rs.getBoolean(34));
                 caso.setErrorFaltaActas(rs.getBoolean(35));
                 caso.setErrorFaltaFirma(rs.getBoolean(36));
+                caso.setMensajeError(rs.getString(37));
                 casos.add(caso);
             }
         } catch (SQLException sqle) {
