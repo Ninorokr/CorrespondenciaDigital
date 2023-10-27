@@ -342,7 +342,7 @@ public class Main {
         ArrayList<Caso> casosRechazados = queryAllCasosRechazados();
 
         for (Caso caso : casosRechazados) {
-            createMensajeRechazo(caso);
+            System.out.println(createMensajeRechazo(caso));
             System.out.println(caso.getFormattedId() + ": " + caso.getMensajeError());
         }
     }

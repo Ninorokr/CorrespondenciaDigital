@@ -3,7 +3,7 @@ package com.silverlink.Entidades;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,11 +13,13 @@ public class Carta {
     String texto;
     int nroCarta;
     String correoDestinatario;
+    ArrayList<String> correosCarta;
     LocalDate fechaEmision;
 
-    public Carta (PDDocument doc, String texto) {
+    public Carta (PDDocument doc, String texto, ArrayList<String> correosCarta) {
         this.documentoPDF = doc;
         this.texto = texto;
+        this.correosCarta = correosCarta;
         obtenerNroCarta();
         obtenerCorreo();
         obtenerFecha();
@@ -32,19 +34,24 @@ public class Carta {
         Matcher matcher = emailPattern.matcher(texto);
         matcher.find();
         this.nroCarta = Integer.parseInt(matcher.group());
-        System.out.println("Carta | nroCarta: " + this.nroCarta);
+//        System.out.println("Carta | nroCarta: " + this.nroCarta);
     }
 
     private void obtenerCorreo() {
         //TODO IMPORTANTE recoger todos los correos en el encabezado de la carta, usando un limitador
         Pattern emailPattern = Pattern.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}");
-        Matcher matcher = emailPattern.matcher(texto);
-        if(matcher.find()){
-            this.correoDestinatario = matcher.group();
-            System.out.println("Carta | correoDes: " + this.correoDestinatario);
-        } else {
-            System.out.println("Carta no tiene correo");
+        Matcher matcher = emailPattern.matcher(texto.substring(0, 1000));
+        while(matcher.find()){
+            correosCarta.add(matcher.group());
+//            System.out.println("Carta | correoDes: " + this.correoDestinatario);
         }
+
+//        if(matcher.find()){
+//            this.correoDestinatario = matcher.group();
+//            System.out.println("Carta | correoDes: " + this.correoDestinatario);
+//        } else {
+//            System.out.println("Carta no tiene correo");
+//        }
     }
 
     private void obtenerFecha() {
@@ -55,7 +62,7 @@ public class Carta {
         matcher.find();
         System.out.println(matcher.group());
         this.fechaEmision = descifrarFecha(matcher.group());
-        System.out.println("Carta | fecha: " + this.fechaEmision);
+//        System.out.println("Carta | fecha: " + this.fechaEmision);
     }
 
     private LocalDate descifrarFecha(String textoFecEmision) {
@@ -88,9 +95,9 @@ public class Carta {
         return nroCarta;
     }
 
-    public String getCorreoDestinatario() {
-        return correoDestinatario;
-    }
+//    public String getCorreoDestinatario() {
+//        return correoDestinatario;
+//    }
 
     public LocalDate getFechaEmision() {
         return fechaEmision;

@@ -62,6 +62,7 @@ public class ProcesadorDatos {
     }
 
     public static String createMensajeRechazo(Caso caso) {
+        //TODO FALTA TERMINAR E IMPLEMENTAR
         String msj = null;
 
             if (caso.isErrorFaltaCartas()) {
@@ -147,42 +148,70 @@ public class ProcesadorDatos {
 
     public static boolean correoOK(Caso caso) {
         //VERIFICADOR: Correo de notificación
+        //TODO IMPORTANTE, VERIFICAR PORQUE NO ESTÁ REGISTRANDO COMO FALSE,
+        //TODO pero si está registrando el caso como rechazada
         correosCarta = null;
         correosActa = null;
         boolean ok = true;
 
-        ArrayList<Carta> cartas = caso.getCartas();
-        for (Acta acta : caso.getActas()) {
-            if(!caso.getCorreosActas().contains(acta.getCorreoDestinatario())){
-                caso.getCorreosActas().add(acta.getCorreoDestinatario());
-            }
-//            if (caso.getCorreosActas() != null) {
-//                if (caso.getCorreosActas().contains(acta.getCorreoDestinatario()))
-//                    caso.getCorreosActas().add(acta.getCorreoDestinatario());
-//            } else {
-//                caso.getCorreosActas().add(acta.getCorreoDestinatario());
-//            }
+        ArrayList<String> correosCartas = caso.getCorreosCartas();
+        ArrayList<String> correosActas = caso.getCorreosActas();
 
-            for (Carta carta : cartas) {
-                if(!caso.getCorreosCartas().contains(carta.getCorreoDestinatario())){
-                    caso.getCorreosCartas().add(carta.getCorreoDestinatario());
-                }
-//                if (caso.getCorreosCartas() != null) {
-//                    if (caso.getCorreosCartas().contains(acta.getCorreoDestinatario()))
-//                        caso.getCorreosCartas().add(acta.getCorreoDestinatario());
-//                } else {
-//                    caso.getCorreosCartas().add(acta.getCorreoDestinatario());
-//                }
-
-                if (!acta.getCorreoDestinatario().equalsIgnoreCase(carta.getCorreoDestinatario())) {
-                    caso.setErrorCorreoNotif(true);
-//                    caso.getEstado().setIdEstado((short) 5); //RECHAZADO
-                    ok = false;
-                }
+        for(String correoCarta : correosCartas) {
+            if (!correosActas.contains(correoCarta)) {
+                ok = false;
+                break;
             }
         }
+
+        for (String correoActa : correosActas) {
+            if (!correosCartas.contains(correoActa)) {
+                ok = false;
+                break;
+            }
+        }
+
         return ok;
     }
+
+//    public static boolean correoOK(Caso caso) {
+//        //VERIFICADOR: Correo de notificación
+//        correosCarta = null;
+//        correosActa = null;
+//        boolean ok = true;
+//
+//        ArrayList<Carta> cartas = caso.getCartas();
+//        for (Acta acta : caso.getActas()) {
+//            if (!caso.getCorreosActas().contains(acta.getCorreoDestinatario())) {
+//                caso.getCorreosActas().add(acta.getCorreoDestinatario());
+//            }
+////            if (caso.getCorreosActas() != null) {
+////                if (caso.getCorreosActas().contains(acta.getCorreoDestinatario()))
+////                    caso.getCorreosActas().add(acta.getCorreoDestinatario());
+////            } else {
+////                caso.getCorreosActas().add(acta.getCorreoDestinatario());
+////            }
+//
+//            for (Carta carta : cartas) {
+//                if (!caso.getCorreosCartas().contains(carta.getCorreoDestinatario())) {
+//                    caso.getCorreosCartas().add(carta.getCorreoDestinatario());
+//                }
+////                if (caso.getCorreosCartas() != null) {
+////                    if (caso.getCorreosCartas().contains(acta.getCorreoDestinatario()))
+////                        caso.getCorreosCartas().add(acta.getCorreoDestinatario());
+////                } else {
+////                    caso.getCorreosCartas().add(acta.getCorreoDestinatario());
+////                }
+//
+//                if (!acta.getCorreoDestinatario().equalsIgnoreCase(carta.getCorreoDestinatario())) {
+//                    caso.setErrorCorreoNotif(true);
+////                    caso.getEstado().setIdEstado((short) 5); //RECHAZADO
+//                    ok = false;
+//                }
+//            }
+//        }
+//        return ok;
+//    }
 
     public static boolean fechasOK(Caso caso) {
         //VERIFICADOR: Fechas
