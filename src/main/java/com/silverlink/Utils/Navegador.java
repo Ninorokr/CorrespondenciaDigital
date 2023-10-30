@@ -181,6 +181,7 @@ public class Navegador {
         switch(caso.getEstado().getIdEstado()) {
             case 4: ok = descargarCasoNormal(caso); break;
             case 5: ok = descargarCasoRechazado(caso); break;
+            case 6: ok = descargarCasoNotificada(caso); break;
         }
         if (ok) {
             updateDescargadoEnSalesforce(caso);
@@ -302,6 +303,47 @@ public class Navegador {
             }
         }
 
+        return true;
+    }
+
+    private boolean descargarCasoNotificada(Caso caso) {
+        //TODO Correr con el bichito hasta asegurar funcionamiento correcto
+        WebElement btnModificar = driver.findElement(By.xpath("//input[@title='Modificar' and @name='edit']"));
+        btnModificar.click();
+
+        Select cboBoxEstado = new Select(driver.findElement(By.id("tsk12")));
+        cboBoxEstado.selectByVisibleText("Descargada");
+
+        WebElement btnGuardar = driver.findElement(By.xpath("//input[@title='Guardar' and @name='save']"));
+        btnGuardar.click();
+        WebElement lblDetalleDeTarea;
+
+        try {
+            //No funciona porque el elemento SIEMPRE existe
+            //TODO verificar otra manera de capturar el error de caso cerrado
+//            WebElement errorCasoCerrado = driver.findElement(By.xpath("//div[@id='errorDiv_ep']"));
+            cboBoxEstado = new Select(driver.findElement(By.id("tsk12")));
+            System.out.println("Caso cerrado");
+            cboBoxEstado.selectByValue("Despachada");
+            System.out.println("Se guardó tarea de caso cerrado como \"Despachada\"");
+            btnGuardar = driver.findElement(By.xpath("//input[@title='Guardar' and @name='save']"));
+            btnGuardar.click();
+            //TODO registrar caso como "Caso cerrado" en la BD
+            try {
+                lblDetalleDeTarea = driver.findElement(By.xpath("//h2[text()='Detalle de Tarea']"));
+            } catch (NoSuchElementException nsee) {
+                System.out.println("La tarea no se logró guardar correctamente");
+                nsee.printStackTrace(); System.exit(0);
+            }
+            System.out.println("Se guardó tarea de caso cerrado como \"Despachada\"");
+        } catch (NoSuchElementException nsee) {
+            try {
+                lblDetalleDeTarea = driver.findElement(By.xpath("//h2[text()='Detalle de Tarea']"));
+            } catch (NoSuchElementException nsee2) {
+                System.out.println("La tarea no se logró guardar correctamente");
+                nsee.printStackTrace(); System.exit(0);
+            }
+        }
         return true;
     }
 

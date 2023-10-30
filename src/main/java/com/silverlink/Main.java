@@ -229,7 +229,7 @@ public class Main {
     //Menú op. 2
     private static void procesarCasosPendientes() {
         //Jalar casos pendientes de la BD (solo los datos relevantes)
-        ArrayList<Caso> casos = queryCasosPendientes();
+        ArrayList<Caso> casos = queryCasosNuevos();
         boolean isTempFolderEmpty = true;
 
         //Recorrer caso por caso, abrir página en salesforce y descargar los archivos
@@ -295,7 +295,7 @@ public class Main {
         //TODO los necesarios para que cada verificador
 
         ProcesadorDatos pro = new ProcesadorDatos();
-        pro.recolectarYVerificarDatos(queryCasosPendientes());
+        pro.recolectarYVerificarDatos(queryCasosNuevos());
 
     }
 
