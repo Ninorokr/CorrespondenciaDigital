@@ -173,6 +173,32 @@ public class Navegador {
         return cantArchivos;
     }
 
+    public ArrayList<String> descargarArchivosCasoPreciso(Caso caso) {
+        int cantArchivos;
+        ArrayList<String> nomsArchivos = new ArrayList<>();
+        String nomArchivo;
+
+        driver.get("https://enelsud.my.salesforce.com/" + caso.getIdActividad());
+
+        WebElement archivoLink;
+        WebElement nomArchivoLink;
+        for (int i = 2; true; i++) {
+            try {
+                archivoLink = driver.findElement(By.xpath("//table/tbody/tr[" + i + "]/td[1]/a[text()='Descargar']"));
+                nomArchivoLink = driver.findElement(By.xpath("//table/tbody/tr[" + i + "]/th[1]/a"));
+                nomArchivo = nomArchivoLink.getText() + ".pdf";
+                archivoLink.click();
+                nomsArchivos.add(nomArchivo);
+            } catch (NoSuchElementException nsee) {
+                cantArchivos = i-2;
+                System.out.println(nroDoc + ". Nro. de archivos en " + caso.getIdActividad() + " : " + cantArchivos);
+                break;
+            }
+        }
+        nroDoc++;
+        return nomsArchivos;
+    }
+
     public void descargarCasoEnSalesforce(Caso caso) {
         driver.get("https://enelsud.my.salesforce.com/" + caso.getIdActividad());
 
@@ -186,7 +212,6 @@ public class Navegador {
         if (ok) {
             updateDescargadoEnSalesforce(caso);
         }
-
     }
 
     private boolean descargarCasoNormal(Caso caso) {

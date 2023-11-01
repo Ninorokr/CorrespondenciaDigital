@@ -51,6 +51,7 @@ public class AnalistaPDF {
 
     public static void reconocerActaOCarta(File file, Caso caso) {
         //Reconocer qué documento es carta y cuál es acta y agregarlo a su respectiva colección
+        int imageNumber = 0;
 
         try (PDDocument doc = Loader.loadPDF(file)) {
             PDFTextStripper stripper = new PDFTextStripper();
@@ -65,8 +66,9 @@ public class AnalistaPDF {
                 caso.getCartas().add(new Carta(doc, texto, caso.getCorreosCartas()));
                 SaveImagesInPdf printer;
                 for(PDPage page : doc.getPages()) {
-                    printer = new SaveImagesInPdf(caso);
+                    printer = new SaveImagesInPdf(caso, imageNumber);
                     printer.processPage(page);
+                    imageNumber = printer.imageNumber;
                 }
             }
         } catch (IOException ioe) {
@@ -80,13 +82,14 @@ class SaveImagesInPdf extends PDFStreamEngine {
 
     //        public int docNum;
     //        public int pageNum;
-    public int imageNumber = 1;
+    public int imageNumber;
     Caso caso;
 
-    SaveImagesInPdf (Caso caso) {
+    SaveImagesInPdf (Caso caso, int imageNumber) {
 //            this.docNum = docNum;
 //            this.pageNum = pageNum;
         this.caso = caso;
+        this.imageNumber = imageNumber;
     }
 
     @Override
@@ -108,7 +111,8 @@ class SaveImagesInPdf extends PDFStreamEngine {
 
                 // Each bank element in the data buffer is a 32-bit integer
                 long sizeBytes = ((long) dataBuffer.getSize()) * 4L;
-                long sizeKB = sizeBytes / (1024L);
+                double sizeKB = sizeBytes / (1024.0);
+//                System.out.println("size in KB: " + sizeKB + " MBs");
 //                long sizeMB = sizeBytes / (1024L * 1024L);
 
 //                System.out.println(imageNumber + ", size in: ");
@@ -116,10 +120,14 @@ class SaveImagesInPdf extends PDFStreamEngine {
 //                System.out.println("MBytes: " + sizeKB + " KBs");
                 //TAMAÑO MÍNIMO: 7KB
                 //TAMAÑO MÁXIMO: 120KB
-                ImageIO.write(bImage,"PNG", new File(exportPath + "firma_" + caso.getIdCaso() +
-                        "_" + imageNumber + ".png"));
+                //TODO Se están sobreescribiendo las imágenes
+                //TODO Filtro de tamaño de PRUEBA desactivar para procesar correspondencia de verdad
+                if (sizeBytes > 51080) {
+                    ImageIO.write(bImage,"PNG", new File(exportPath + "firma_" + caso.getIdCaso() +
+                            "_" + imageNumber + ".png"));
 //                System.out.println("Image saved.");
-                imageNumber++;
+                    imageNumber++;
+                }
             }
             else if(xobject instanceof PDFormXObject) {
                 PDFormXObject form = (PDFormXObject)xobject;

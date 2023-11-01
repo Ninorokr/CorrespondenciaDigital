@@ -40,9 +40,14 @@ public class Carta {
     private void obtenerCorreo() {
         //TODO IMPORTANTE recoger todos los correos en el encabezado de la carta, usando un limitador
         Pattern emailPattern = Pattern.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}");
-        Matcher matcher = emailPattern.matcher(texto.substring(0, 1000));
+        Matcher matcher = emailPattern.matcher(texto);
         while(matcher.find()){
-            correosCarta.add(matcher.group());
+            if (matcher.group().equals("fonocliente@enel.com") || matcher.group().equals("atencionfonoempresas@enel.com")) {
+               continue;
+            }
+            if(!correosCarta.contains(matcher.group())) {
+                correosCarta.add(matcher.group());
+            }
 //            System.out.println("Carta | correoDes: " + this.correoDestinatario);
         }
 

@@ -256,6 +256,39 @@ public class Querier {
         return casosPendientes;
     }
 
+    public static ArrayList<Caso> queryCasosNuevos2() {
+        String casosPendientesQuery = "SELECT anio, nroOS, idCasoCorrespondenciaDigital, idActividad, nroCaso, " +
+                "idEstado, errorNroCarta, errorCorreoNotif, errorFechas, isArchivosDescargados, errorFaltaCarta, " +
+                "errorFaltaActa " +
+                "FROM [digi].[casosCorrespondenciaDigital2] " +
+                "WHERE idEstado = 1 OR idEstado = 6";
+        ArrayList<Caso> casosPendientes = new ArrayList<>();
+
+        try (PreparedStatement ps = conn.prepareStatement(casosPendientesQuery)) {
+            ResultSet rs = ps.executeQuery();
+            Caso caso;
+            while(rs.next()){
+                caso = new Caso();
+                caso.setAnio(rs.getShort(1));
+                caso.setNroOS(rs.getShort(2));
+                caso.setIdCaso(rs.getShort(3));
+                caso.setIdActividad(rs.getString(4));
+                caso.setNroCaso(rs.getInt(5));
+                caso.setEstado(new Estado(rs.getShort(6)));
+                caso.setErrorNroCarta(rs.getBoolean(7));
+                caso.setErrorCorreoNotif(rs.getBoolean(8));
+                caso.setErrorFechas(rs.getBoolean(9));
+                caso.setArchivosDescargados(rs.getBoolean(10));
+                caso.setErrorFaltaCartas(rs.getBoolean(11));
+                caso.setErrorFaltaActas(rs.getBoolean(12));
+                casosPendientes.add(caso);
+            }
+        } catch (SQLException sqle) {
+            System.out.println("No se pudieron consultar los ids y nros. de los casos");
+        }
+        return casosPendientes;
+    }
+
     public static ArrayList<Caso> queryCasosPendientesDescargaSalesforce() {
         ArrayList<Caso> casos = new ArrayList<>();
 
@@ -268,6 +301,70 @@ public class Querier {
                 "[errorNroCarta], [errorCorreoNotif], [errorFechas], " +
                 "[errorFaltaCarta], [errorFaltaActa], [errorFaltaFirma], [mensajeError] " +
                 "FROM [digi].[casosCorrespondenciaDigital] " +
+                "WHERE descargadoEnSalesforce = 0";
+
+        try (PreparedStatement ps = conn.prepareStatement(casosPendientesDescargaSalesforceQuery)) {
+            Caso caso;
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                caso = new Caso();
+                caso.setAnio(rs.getShort(1));
+                caso.setNroOS(rs.getShort(2));
+                caso.setIdCaso(rs.getShort(3));
+                caso.setTipoAtencion(TipoAtencion.getTipoAtencion(rs.getShort(4)));
+                caso.setTipoRegCaso(TipoRegCaso.getTipoRegCaso(rs.getShort(5)));
+                caso.setIdActividad(rs.getString(6));
+                caso.setTipoCarta(TipoCarta.getTipoCarta(rs.getShort(7)));
+                caso.setNroCaso(rs.getInt(8));
+                caso.setEstadoCaso(EstadoCaso.getEstadoCaso(rs.getShort(9)));
+                caso.setFecCreacionCaso(dateToLocalDate(rs.getDate(10)));
+                caso.setCorrelativoCarta(rs.getShort(11));
+                caso.setNroSuministro(rs.getString(12));
+                caso.setCanalNotificacion(CanalNotificacion.getCanalNotificacion(rs.getShort(13)));
+                caso.setProvincia(Provincia.getProvincia(rs.getShort(14)));
+                caso.setPrioridad(Prioridad.getPrioridad(rs.getShort(15)));
+                caso.setEstado(Estado.getEstado(rs.getShort(16)));
+                caso.setFecCreacion(dateToLocalDate(rs.getDate(17)));
+                caso.setFecEmisionDateTime(timestampToLocalDateTime(rs.getTimestamp(18)));
+                caso.setFecDespacho(timestampToLocalDateTime(rs.getTimestamp(19)));
+                caso.setFecNotificacion(timestampToLocalDateTime(rs.getTimestamp(20)));
+                caso.setFecNotificacionCarta(timestampToLocalDateTime(rs.getTimestamp(21)));
+                caso.setFecUltimaModificacion(dateToLocalDate(rs.getDate(22))); //TODO bota error aqui, por NULL
+                caso.setFecha(dateToLocalDate(rs.getDate(23)));
+                caso.setFecVencimientoLegal(timestampToLocalDateTime(rs.getTimestamp(24)));
+                caso.setCreadoPor(Usuario.getUsuario(rs.getShort(25)));
+                caso.setCanalRegistro(CanalRegistro.getCanalRegistro(rs.getShort(26)));
+                caso.setPropietarioCaso(Usuario.getUsuario(rs.getShort(27)));
+                caso.setDiasVencidosPorVencer(rs.getShort(28));
+                caso.setCorreosCartasString(rs.getString(29));
+                caso.setCorreosActasString(rs.getString(30));
+                caso.setErrorNroCarta(rs.getBoolean(31));
+                caso.setErrorCorreoNotif(rs.getBoolean(32));
+                caso.setErrorFechas(rs.getBoolean(33));
+                caso.setErrorFaltaCartas(rs.getBoolean(34));
+                caso.setErrorFaltaActas(rs.getBoolean(35));
+                caso.setErrorFaltaFirma(rs.getBoolean(36));
+                caso.setMensajeError(rs.getString(37));
+                casos.add(caso);
+            }
+        } catch (SQLException sqle) {
+            System.out.println("No se pudo consultar el caso pendiente de descarga en Salesforce.");
+        }
+        return casos;
+    }
+
+    public static ArrayList<Caso> queryCasosPendientesDescargaSalesforce2() {
+        ArrayList<Caso> casos = new ArrayList<>();
+
+        String casosPendientesDescargaSalesforceQuery = "SELECT [anio], [nroOS], [idCasoCorrespondenciaDigital], " +
+                "[idTipoAtencion], [idTipoRegCaso], [idActividad], [idTipoCarta], [nroCaso], [idEstadoCaso], " +
+                "[fechaCreacionCaso], [correlativoCarta], [nroSuministro], [idCanalNotificacion], [idProvincia], " +
+                "[idPrioridad], [idEstado], [fecCreacion], [fecEmision], [fecDespacho], [fecNotificacion], " +
+                "[fecNotificacionCarta], [fecUltimaModificacion], [fecha], [fecVencimientoLegal], [idCreadoPor], " +
+                "[canalRegistro], [idPropietarioCaso], [diasVencidosPorVencer], [dirCorreoCarta], [dirCorreoActa], " +
+                "[errorNroCarta], [errorCorreoNotif], [errorFechas], " +
+                "[errorFaltaCarta], [errorFaltaActa], [errorFaltaFirma], [mensajeError] " +
+                "FROM [digi].[casosCorrespondenciaDigital2] " +
                 "WHERE descargadoEnSalesforce = 0";
 
         try (PreparedStatement ps = conn.prepareStatement(casosPendientesDescargaSalesforceQuery)) {

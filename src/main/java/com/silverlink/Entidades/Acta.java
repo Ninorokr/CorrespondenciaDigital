@@ -39,7 +39,7 @@ public class Acta {
             matcher = palabraConstancia.matcher(texto);
         }
         int searchLimit = matcher.start();
-
+        //TODO cambiar nombre de variable "emailPattern" es "nroCartaPattern"
         Pattern emailPattern = Pattern.compile("(?!0)\\d{9}"); //Matches a consecutive 9-digit, but it doesn't start with 0
         matcher = emailPattern.matcher(texto.substring(0, searchLimit));
         matcher.find();

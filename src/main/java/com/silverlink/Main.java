@@ -14,8 +14,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import static com.silverlink.Utils.Commander.registrarNuevaOS;
-import static com.silverlink.Utils.Commander.updateCasosRevisados;
+import static com.silverlink.Utils.Commander.*;
 import static com.silverlink.Utils.ProcesadorDatos.*;
 import static com.silverlink.Utils.Querier.*;
 
@@ -230,37 +229,25 @@ public class Main {
     private static void procesarCasosPendientes() {
         //Jalar casos pendientes de la BD (solo los datos relevantes)
         ArrayList<Caso> casos = queryCasosNuevos();
+//        ArrayList<Caso> casos = queryCasosNuevos();
         boolean isTempFolderEmpty = true;
 
         //Recorrer caso por caso, abrir página en salesforce y descargar los archivos
         for (Caso caso : casos) {
-            if (caso.isArchivosDescargados()) //Si ya se descargaron previamente los archivos, continuar con el sgte.
+            String anio = String.valueOf(caso.getAnio());
+            String nroOS = String.format("%04d", caso.getNroOS());
+            String item = String.format("%04d", caso.getIdCaso());
+            String itemPath = rootFolder + anio + "\\" + nroOS + "\\" + item;
+            //Si la carpeta existe, pasar al siguiente caso (continue)
+            if (Files.exists(Path.of(itemPath))) {
                 continue;
+            }
 
             //Si el navegador está cerrado, abrir nueva instancia y sesión en Salesforce
             if (nav == null) {
                 nav = new Navegador();
                 nav.abrirSesionSalesforce();
             }
-
-//            ArrayList<Path> files;
-//            Verificar que la carpeta temp esté vacía antes de continuar
-//            TODO pendiente verificar
-//            while (!isTempFolderEmpty) {
-//                try (DirectoryStream<Path> ds = Files.newDirectoryStream(Path.of(tempPath))) {
-//                    Iterator<Path> iterator = ds.iterator();
-//                    files = new ArrayList<>();
-//                    while (iterator.hasNext()) {
-//                        files.add(iterator.next());
-//                    }
-//                    if (files.size() == 0) {
-//                        isTempFolderEmpty = true;
-//                    }
-//                } catch (IOException ioe) {
-//                    System.out.println(ioe.getMessage());
-//                }
-//            }
-
             File folder = new File(tempPath);
             while (!isTempFolderEmpty) {
                 if (folder.list().length == 0) {
@@ -268,49 +255,45 @@ public class Main {
                 }
             }
 
-            int cantArchivos = nav.descargarArchivosCaso(caso);
+            ArrayList<String> nomsArchivos = nav.descargarArchivosCasoPreciso(caso);
 
+            for(String nomArchivo : nomsArchivos) {
+                String rutaArchivo = tempPath + nomArchivo;
+                Path rutaArchivoPath = Path.of(rutaArchivo);
+                while(!Files.exists(rutaArchivoPath)) {
+                }
+                try {
+                    Files.createDirectories(Path.of(itemPath));
+                    Files.move(rutaArchivoPath, Path.of(itemPath + "\\" + nomArchivo));
+                }
+                catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+            }
 
             isTempFolderEmpty = false;
-//                    try {Thread.sleep(5000);} catch (InterruptedException ie) {}
-            try {
-                while (true) {
-                    if (isDescargaArchivosCompletada(cantArchivos)) {
-                        break;
-                    }
-//                    try {Thread.sleep(1000);} catch (InterruptedException ie) {}
-                }
-                encarpetarArchivos(caso, cantArchivos);
                 caso.setArchivosDescargados(true); //Marcar archivos como descargados
                 Commander.setArchivosDescargadosToTrue(caso);
 
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
-            }
-
         }
-        //Se consulta otra vez para obtener la lista actualizada después de descargar archivos
-//        casos = queryCasosPendientes();
-        //TODO si fuera necesario, hacer que el método queryCasosPendientes() consulte más datos
-        //TODO los necesarios para que cada verificador
 
         ProcesadorDatos pro = new ProcesadorDatos();
-        pro.recolectarYVerificarDatos(queryCasosNuevos());
+        pro.recolectarYVerificarDatos(queryCasosNuevos2());
 
     }
 
     //Menú op. 3
-
     private static void revisarCasosPendientesDescarga() {
         Reportero reportero = new Reportero();
         //Exporta los casos verificados y pendientes de descarga en salesforce
-        String outputPath = reportero.exportarCasosPorOS(queryCasosPendientesDescargaSalesforce());
+        String outputPath = reportero.exportarCasosPorOS(queryCasosPendientesDescargaSalesforce2());
+//        String outputPath = reportero.exportarCasosPorOS(queryCasosPendientesDescargaSalesforce());
         System.out.println("REVISAR y CORREGIR el archivo de Excel antes de continuar (Presionar ENTER para continuar)");
         scanner.nextLine();
         //Captura los casos revisados del excel y los actualiza en la BD
 //        ArrayList<Caso> casosRevisadosPorDescargar = procesarCasosRevisados(outputPath);
         for(Caso caso : procesarCasosRevisados(outputPath)) {
-            updateCasosRevisados(caso);
+            updateCasosRevisados2(caso);
         }
         System.out.println("Se actualizaron los casos revisados.\n");
     }

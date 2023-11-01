@@ -52,10 +52,10 @@ public class ProcesadorDatos {
                 } else {
                     caso.getEstado().setIdEstado((short) 4); //DESCARGADA
                 }
-                Commander.updateCasosVerificadosCompletos(caso);
+                Commander.updateCasosVerificadosCompletos2(caso);
             } else {
                 caso.getEstado().setIdEstado((short) 5); //RECHAZADA
-                Commander.updateCasosVerificadosIncompletos(caso);
+                Commander.updateCasosVerificadosIncompletos2(caso);
             }
 //            SaveImagesInPdf printer = new SaveImagesInPdf(caso);
         }
@@ -148,7 +148,7 @@ public class ProcesadorDatos {
 
     public static boolean correoOK(Caso caso) {
         //VERIFICADOR: Correo de notificación
-        //TODO IMPORTANTE, VERIFICAR PORQUE NO ESTÁ REGISTRANDO COMO FALSE,
+        //TODO IMPORTANTE, VERIFICAR PORQUE ESTÁ REGISTRANDO COMO FALSE,
         //TODO pero si está registrando el caso como rechazada
         correosCarta = null;
         correosActa = null;
@@ -170,7 +170,7 @@ public class ProcesadorDatos {
                 break;
             }
         }
-
+        caso.setErrorCorreoNotif(!ok);
         return ok;
     }
 
@@ -340,7 +340,9 @@ public class ProcesadorDatos {
 
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-            reconocerActaOCarta(file.toFile(), caso);
+            if (file.toString().endsWith(".pdf") || file.toString().endsWith(".PDF")) {
+                reconocerActaOCarta(file.toFile(), caso);
+            }
             return super.visitFile(file, attrs);
         }
     }
