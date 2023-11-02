@@ -112,20 +112,12 @@ class SaveImagesInPdf extends PDFStreamEngine {
                 // Each bank element in the data buffer is a 32-bit integer
                 long sizeBytes = ((long) dataBuffer.getSize()) * 4L;
                 double sizeKB = sizeBytes / (1024.0);
-//                System.out.println("size in KB: " + sizeKB + " MBs");
-//                long sizeMB = sizeBytes / (1024L * 1024L);
-
-//                System.out.println(imageNumber + ", size in: ");
-//                System.out.println("Bytes: " + sizeBytes + " bytes");
-//                System.out.println("MBytes: " + sizeKB + " KBs");
                 //TAMAÑO MÍNIMO: 7KB
                 //TAMAÑO MÁXIMO: 120KB
-                //TODO Se están sobreescribiendo las imágenes
-                //TODO Filtro de tamaño de PRUEBA desactivar para procesar correspondencia de verdad
-                if (sizeBytes > 51080) {
+                //Este filtro de tamaño es para evitar que se extraigan todas las imagenes menores a 1 KB (>500 x doc.)
+                if (sizeBytes > 31080) {
                     ImageIO.write(bImage,"PNG", new File(exportPath + "firma_" + caso.getIdCaso() +
                             "_" + imageNumber + ".png"));
-//                System.out.println("Image saved.");
                     imageNumber++;
                 }
             }

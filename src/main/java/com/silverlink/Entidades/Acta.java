@@ -68,6 +68,7 @@ public class Acta {
 ////        return this.correoDestinatario;
 //    }
 
+    //TODO LA FECHA DE NOTIFICACION NO PUEDE SER MAYOR AL DÍA ACTUAL
     private void obtenerFecha() {
         Pattern fechaPattern = Pattern.compile("[0-9]{4}-[a-z]{3}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}");
         Matcher matcher = fechaPattern.matcher(texto);

@@ -248,12 +248,12 @@ public class Main {
                 nav = new Navegador();
                 nav.abrirSesionSalesforce();
             }
-            File folder = new File(tempPath);
-            while (!isTempFolderEmpty) {
-                if (folder.list().length == 0) {
-                    isTempFolderEmpty = true;
-                }
-            }
+//            File folder = new File(tempPath);
+//            while (!isTempFolderEmpty) {
+//                if (folder.list().length == 0) {
+//                    isTempFolderEmpty = true;
+//                }
+//            }
 
             ArrayList<String> nomsArchivos = nav.descargarArchivosCasoPreciso(caso);
 
@@ -278,7 +278,7 @@ public class Main {
         }
 
         ProcesadorDatos pro = new ProcesadorDatos();
-        pro.recolectarYVerificarDatos(queryCasosNuevos2());
+        pro.recolectarYVerificarDatos(queryCasosNuevos());
 
     }
 
@@ -286,14 +286,14 @@ public class Main {
     private static void revisarCasosPendientesDescarga() {
         Reportero reportero = new Reportero();
         //Exporta los casos verificados y pendientes de descarga en salesforce
-        String outputPath = reportero.exportarCasosPorOS(queryCasosPendientesDescargaSalesforce2());
+        String outputPath = reportero.exportarCasosPorOS(queryCasosPendientesDescargaSalesforce());
 //        String outputPath = reportero.exportarCasosPorOS(queryCasosPendientesDescargaSalesforce());
         System.out.println("REVISAR y CORREGIR el archivo de Excel antes de continuar (Presionar ENTER para continuar)");
         scanner.nextLine();
         //Captura los casos revisados del excel y los actualiza en la BD
 //        ArrayList<Caso> casosRevisadosPorDescargar = procesarCasosRevisados(outputPath);
         for(Caso caso : procesarCasosRevisados(outputPath)) {
-            updateCasosRevisados2(caso);
+            updateCasosRevisados(caso);
         }
         System.out.println("Se actualizaron los casos revisados.\n");
     }

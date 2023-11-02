@@ -260,7 +260,7 @@ public class Querier {
         String casosPendientesQuery = "SELECT anio, nroOS, idCasoCorrespondenciaDigital, idActividad, nroCaso, " +
                 "idEstado, errorNroCarta, errorCorreoNotif, errorFechas, isArchivosDescargados, errorFaltaCarta, " +
                 "errorFaltaActa " +
-                "FROM [digi].[casosCorrespondenciaDigital2] " +
+                "FROM [digi].[casosCorrespondenciaDigital] " +
                 "WHERE idEstado = 1 OR idEstado = 6";
         ArrayList<Caso> casosPendientes = new ArrayList<>();
 

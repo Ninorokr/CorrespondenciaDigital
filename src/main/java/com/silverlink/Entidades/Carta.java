@@ -2,6 +2,7 @@ package com.silverlink.Entidades;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -58,7 +59,7 @@ public class Carta {
 //            System.out.println("Carta no tiene correo");
 //        }
     }
-
+    //TODO LA FECHA DE EMISIÓN NO PUEDE SER MAYOR AL DÍA ACTUAL
     private void obtenerFecha() {
 //        Pattern fechaPattern = Pattern.compile("\\d{1,2}[ ].*[a-zA-Z]{4,}[ ].*[2][0]\\d\\d");
 //        Pattern fechaPattern = Pattern.compile("\\b\\d{1,2}(?:\\s+de\\s+)?[a-zA-Z]+(?:\\s+de\\s+\\d{4})?(?:\\s+del\\s+\\d{4})?|\\b\\d{1,2}\\s+[a-zA-Z]+\\s+\\d{4}\\b");
@@ -93,7 +94,13 @@ public class Carta {
         matcher.find();
         int day = Integer.parseInt(matcher.group());
 
-        return LocalDate.of(year, month, day);
+        try {
+            return LocalDate.of(year, month, day);
+        } catch (DateTimeException dte) {
+            System.out.println("Fue imposible obtener la fecha de la carta");
+            System.out.println(dte.getMessage());
+        }
+        return null;
     }
 
     public int getNroCarta() {

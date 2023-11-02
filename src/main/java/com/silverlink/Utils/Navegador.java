@@ -382,7 +382,7 @@ public class Navegador {
 
         ArrayList<Mes> meses = new ArrayList<>(List.of(Mes.values()));
 
-        if(!caso.isErrorFaltaCartas() && !caso.isErrorFaltaActas()){
+        if(!caso.isErrorFaltaCartas() && !caso.isErrorFaltaActas() && caso.getFecEmisionDateTime() != null){
             String fecEmisionDay = String.valueOf(caso.getFecEmisionDateTime().getDayOfMonth());
             String fecEmisionMonth = String.valueOf(meses.get(caso.getFecEmisionDateTime().getMonth().minus(1).getValue()));
             String fecEmisionYear = String.valueOf(caso.getFecEmisionDateTime().getYear());

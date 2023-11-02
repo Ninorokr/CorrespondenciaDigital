@@ -5,6 +5,7 @@ import com.silverlink.Entidades.Caso;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import static com.silverlink.Main.*;
 import static com.silverlink.Utils.Querier.*;
@@ -347,8 +348,10 @@ public class Commander {
             ps.setBoolean(6, caso.isErrorFechas());
             ps.setString(7, caso.concatCorreosCartasString());
             ps.setString(8, caso.concatCorreosActasString());
-            ps.setTimestamp(9, Timestamp.valueOf(LocalDateTime.of(caso.getFecEmision(),
-                                                        caso.getFecNotificacion().toLocalTime())));
+//            ps.setTimestamp(9, Timestamp.valueOf(LocalDateTime.of(caso.getFecEmision(),
+//                                                        caso.getFecNotificacion().toLocalTime())));
+            ps.setTimestamp(9, getTimeStampValue(timeStampValueFrom(caso.getFecEmision(),
+                    caso.getFecNotificacion().toLocalTime())));
             ps.setTimestamp(10, Timestamp.valueOf(caso.getFecDespacho()));
             ps.setTimestamp(11, Timestamp.valueOf(caso.getFecNotificacion()));
             ps.setString(12, caso.getIdActividad());
@@ -375,7 +378,9 @@ public class Commander {
             ps.setBoolean(6, caso.isErrorFechas());
             ps.setString(7, caso.concatCorreosCartasString());
             ps.setString(8, caso.concatCorreosActasString());
-            ps.setTimestamp(9, Timestamp.valueOf(LocalDateTime.of(caso.getFecEmision(),
+//            ps.setTimestamp(9, Timestamp.valueOf(LocalDateTime.of(caso.getFecEmision(),
+//                    caso.getFecNotificacion().toLocalTime())));
+            ps.setTimestamp(9, getTimeStampValue(timeStampValueFrom(caso.getFecEmision(),
                     caso.getFecNotificacion().toLocalTime())));
             ps.setTimestamp(10, Timestamp.valueOf(caso.getFecDespacho()));
             ps.setTimestamp(11, Timestamp.valueOf(caso.getFecNotificacion()));
@@ -393,6 +398,8 @@ public class Commander {
                 "dirCorreoActa = ?, errorNroCarta = ?, errorCorreoNotif = ?, errorFechas = ?, errorFaltaFirma = ?, " +
                 "errorFaltaCarta = ?, errorFaltaActa = ?, mensajeError = ?, revisado = ? " +
                 "WHERE anio = ? AND nroOS = ? AND idCasoCorrespondenciaDigital = ?";
+
+//        System.out.println(caso.getNroOS() + "-" + caso.getIdCaso());
 
         try (PreparedStatement ps = conn.prepareStatement(updateCasosRevisadosQuery)) {
             ps.setShort(1, caso.getEstado().getIdEstado());
@@ -424,6 +431,8 @@ public class Commander {
                 "dirCorreoActa = ?, errorNroCarta = ?, errorCorreoNotif = ?, errorFechas = ?, errorFaltaFirma = ?, " +
                 "errorFaltaCarta = ?, errorFaltaActa = ?, mensajeError = ?, revisado = ? " +
                 "WHERE anio = ? AND nroOS = ? AND idCasoCorrespondenciaDigital = ?";
+
+        System.out.println(caso.getNroOS() + "-" + caso.getIdCaso());
 
         try (PreparedStatement ps = conn.prepareStatement(updateCasosRevisadosQuery)) {
             ps.setShort(1, caso.getEstado().getIdEstado());
@@ -491,6 +500,12 @@ public class Commander {
         if(fechaYHora == null)
             return null;
         return Timestamp.valueOf(fechaYHora);
+    }
+
+    private static LocalDateTime timeStampValueFrom(LocalDate fecha, LocalTime hora) {
+        if (fecha == null || hora == null)
+            return null;
+        return LocalDateTime.of(fecha, hora);
     }
 
 

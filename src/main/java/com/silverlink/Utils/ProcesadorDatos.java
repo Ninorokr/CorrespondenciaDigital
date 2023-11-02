@@ -10,6 +10,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.*;
@@ -38,6 +39,7 @@ public class ProcesadorDatos {
 
             try {
                 Files.walkFileTree(rutaItem, new VerificadorArchivos(caso));
+                Files.walkFileTree(rutaItem, new EliminadorImagenes());
             } catch (IOException ioe) {
                 System.out.println(ioe.getMessage());
             }
@@ -52,10 +54,10 @@ public class ProcesadorDatos {
                 } else {
                     caso.getEstado().setIdEstado((short) 4); //DESCARGADA
                 }
-                Commander.updateCasosVerificadosCompletos2(caso);
+                Commander.updateCasosVerificadosCompletos(caso);
             } else {
                 caso.getEstado().setIdEstado((short) 5); //RECHAZADA
-                Commander.updateCasosVerificadosIncompletos2(caso);
+                Commander.updateCasosVerificadosIncompletos(caso);
             }
 //            SaveImagesInPdf printer = new SaveImagesInPdf(caso);
         }
@@ -221,6 +223,10 @@ public class ProcesadorDatos {
             for (Acta acta : actas) {
                 caso.setFecDespacho(acta.getFechaEntrega());
                 caso.setFecNotificacion(acta.getFechaEntrega());
+                if (carta.getFechaEmision() == null) {
+                    caso.setErrorFechas(true);
+                    return false;
+                }
                 if (carta.getFechaEmision().isAfter(acta.getFechaEntrega().toLocalDate()) ||
                     acta.getFechaEntrega().toLocalDate().minusDays(7).isEqual(carta.getFechaEmision()) ||
                     acta.getFechaEntrega().toLocalDate().minusDays(7).isAfter(carta.getFechaEmision())) {
@@ -260,7 +266,7 @@ public class ProcesadorDatos {
                 caso.setErrorFaltaActas(row.getCell(29).getBooleanCellValue());
                 caso.setMensajeError(row.getCell(40).getStringCellValue());
                 casos.add(caso);
-                System.out.println(i + ". ");
+//                System.out.println(i + ". ");
             }
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -346,6 +352,22 @@ public class ProcesadorDatos {
             return super.visitFile(file, attrs);
         }
     }
+
+    static class EliminadorImagenes extends SimpleFileVisitor<Path> {
+
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+            if (file.toString().endsWith(".png")) {
+                long fileSize = Files.size(file);
+                if (fileSize < (7*1024) || fileSize > (120*1024)) {
+                    Files.delete(file);
+                }
+
+            }
+            return super.visitFile(file, attrs);
+        }
+    }
+
 
 //    class SaveImagesInPdf extends PDFStreamEngine {
 //
