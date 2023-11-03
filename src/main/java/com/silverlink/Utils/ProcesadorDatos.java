@@ -18,6 +18,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDate;
+import java.time.chrono.ChronoLocalDateTime;
 import java.util.ArrayList;
 
 import static com.silverlink.Main.*;
@@ -224,6 +226,11 @@ public class ProcesadorDatos {
                 caso.setFecDespacho(acta.getFechaEntrega());
                 caso.setFecNotificacion(acta.getFechaEntrega());
                 if (carta.getFechaEmision() == null) {
+                    caso.setErrorFechas(true);
+                    return false;
+                }
+                if (carta.getFechaEmision().isAfter(ChronoLocalDate.from(fechaYHoraActual)) ||
+                    acta.getFechaEntrega().isAfter(ChronoLocalDateTime.from(fechaYHoraActual))) {
                     caso.setErrorFechas(true);
                     return false;
                 }

@@ -1,11 +1,8 @@
 package com.silverlink.Utils;
 
 import com.silverlink.Entidades.Caso;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.*;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -30,11 +27,33 @@ public class Reportero {
                 "Fecha de la última modificación", "Fecha", "Fecha de vencimiento legal", "Creado por", "Canal de registro",
                 "Propietario del caso", "Propietario del caso", "Días Vencidos / Por Vencer", "Enlace web", "Mensaje"};
 
-            XSSFWorkbook wb = new XSSFWorkbook();
-            XSSFSheet sheet = wb.createSheet();
-            XSSFRow encabezado = sheet.createRow(0);
+        XSSFWorkbook wb = new XSSFWorkbook();
+        XSSFSheet sheet = wb.createSheet();
+        sheet.setZoom(70);
+        XSSFRow encabezado = sheet.createRow(0);
+
+        XSSFCellStyle headerStyle = wb.createCellStyle();
+        XSSFFont headerFont = wb.createFont();
+        headerFont.setBold(true);
+        headerStyle.setFont(headerFont);
+
+        XSSFCellStyle dateCellStyle = wb.createCellStyle();
+        dateCellStyle.setDataFormat((short) 14);
+
+        XSSFCellStyle dateTimeCellStyle = wb.createCellStyle();
+        CreationHelper helper = wb.getCreationHelper();
+        short format = helper.createDataFormat().getFormat("dd/mm/yyyy hh:mm");
+        dateTimeCellStyle.setDataFormat(format);
+
+        XSSFCellStyle trueCellStyle = wb.createCellStyle();
+        trueCellStyle.setFillBackgroundColor(IndexedColors.RED.getIndex());
+        XSSFFont trueFont = wb.createFont();
+        trueFont.setColor(IndexedColors.DARK_RED.getIndex());
+        trueCellStyle.setFont(trueFont);
+
             for (int i = 0; i < titulosEncabezado.length; i++) {
                 XSSFCell cell = encabezado.createCell(i, CellType.STRING);
+                cell.setCellStyle(headerStyle);
                 cell.setCellValue(titulosEncabezado[i]);
             }
 
@@ -44,56 +63,118 @@ public class Reportero {
                 for (int j = 0; j < titulosEncabezado.length; j++) {
                     XSSFCell cellDato = rowCaso.createCell(j, CellType.STRING);
                     switch (j) {
-                        case 0: cellDato.setCellValue(caso.getAnio()); break;
-                        case 1: cellDato.setCellValue(caso.getNroOS()); break;
-                        case 2: cellDato.setCellValue(caso.getIdCaso()); break;
-                        case 3: cellDato.setCellValue(caso.getTipoAtencion().getNomTipoAtencion()); break;
-                        case 4: cellDato.setCellValue(caso.getTipoRegCaso().getNomTipoRegCaso()); break;
-                        case 5: cellDato.setCellValue(caso.getIdActividad()); break;
-                        case 6: cellDato.setCellValue(caso.getTipoCarta().getNomTipoCarta()); break;
-                        case 7: cellDato.setCellValue(caso.getNroCaso()); break;
-                        case 8: cellDato.setCellValue(caso.getEstadoCaso().getNomEstadoCaso()); break;
+                        case 0: cellDato.setCellValue(caso.getAnio());
+                                sheet.setColumnHidden(j, true); break;
+                        case 1: cellDato.setCellValue(caso.getNroOS());
+                                sheet.setColumnHidden(j, true); break;
+                        case 2: cellDato.setCellValue(caso.getIdCaso());
+                            sheet.setColumnWidth(j, 256 * 4); break;
+                        case 3: cellDato.setCellValue(caso.getTipoAtencion().getNomTipoAtencion());
+                                sheet.setColumnHidden(j, true); break;
+                        case 4: cellDato.setCellValue(caso.getTipoRegCaso().getNomTipoRegCaso());
+                                sheet.setColumnHidden(j, true); break;
+                        case 5: cellDato.setCellValue(caso.getIdActividad());
+                                sheet.setColumnWidth(j, 256 * 20); break;
+                        case 6: cellDato.setCellValue(caso.getTipoCarta().getNomTipoCarta());
+                                sheet.setColumnHidden(j, true); break;
+                        case 7: cellDato.setCellValue(caso.getNroCaso());
+                            sheet.setColumnWidth(j, 256 * 12); break;
+                        case 8: cellDato.setCellValue(caso.getEstadoCaso().getNomEstadoCaso());
+                                sheet.setColumnHidden(j, true); break;
                         case 9: cellDato.setCellType(CellType.NUMERIC);
-                            cellDato.setCellValue(caso.getFecCreacionCaso()); break;
-                        case 10: cellDato.setCellValue(caso.getCorrelativoCarta()); break;
-                        case 11: cellDato.setCellValue(caso.getNroSuministro()); break;
-                        case 12: cellDato.setCellValue("Correspondencia Digital"); break;
-                        case 13: cellDato.setCellValue(caso.getCanalNotificacion().getNomCanalNotificacion()); break;
-                        case 14: cellDato.setCellValue("Proveedor Mensajeria"); break;
-                        case 15: cellDato.setCellValue(caso.getProvincia().getNomProvincia()); break;
-                        case 16: cellDato.setCellValue(caso.getPrioridad().getNomPrioridad()); break;
-                        case 17: cellDato.setCellValue(caso.getEstado().getNomEstado()); break;
+                                cellDato.setCellValue(caso.getFecCreacionCaso());
+                                cellDato.setCellStyle(dateCellStyle);
+                                sheet.setColumnHidden(j, true); break;
+                        case 10: cellDato.setCellValue(caso.getCorrelativoCarta());
+                                sheet.setColumnHidden(j, true); break;
+                        case 11: cellDato.setCellValue(caso.getNroSuministro());
+                                sheet.setColumnHidden(j, true); break;
+                        case 12: cellDato.setCellValue("Correspondencia Digital");
+                                sheet.setColumnHidden(j, true); break;
+                        case 13: cellDato.setCellValue(caso.getCanalNotificacion().getNomCanalNotificacion());
+                                sheet.setColumnHidden(j, true); break;
+                        case 14: cellDato.setCellValue("Proveedor Mensajeria");
+                                sheet.setColumnHidden(j, true); break;
+                        case 15: cellDato.setCellValue(caso.getProvincia().getNomProvincia());
+                                sheet.setColumnHidden(j, true); break;
+                        case 16: cellDato.setCellValue(caso.getPrioridad().getNomPrioridad());
+                                sheet.setColumnHidden(j, true); break;
+                        case 17: cellDato.setCellValue(caso.getEstado().getNomEstado());
+                                sheet.autoSizeColumn(j); break;
                         case 18: cellDato.setCellType(CellType.NUMERIC);
-                            cellDato.setCellValue(caso.getFecCreacion()); break;
+                                cellDato.setCellValue(caso.getFecCreacion());
+                                cellDato.setCellStyle(dateCellStyle);
+                                sheet.setColumnHidden(j, true); break;
                         case 19: cellDato.setCellType(CellType.NUMERIC);
-                            cellDato.setCellValue(caso.getFecEmisionDateTime()); break;
+                            cellDato.setCellStyle(dateCellStyle);
+                            cellDato.setCellValue(caso.getFecEmisionDateTime());
+                            sheet.setColumnWidth(j, 256 * 12); break;
                         case 20: cellDato.setCellType(CellType.NUMERIC);
-                            cellDato.setCellValue(caso.getFecDespacho()); break;
+                            cellDato.setCellStyle(dateCellStyle);
+                            cellDato.setCellValue(caso.getFecDespacho());
+                            sheet.setColumnWidth(j, 256 * 12); break;
                         case 21: cellDato.setCellType(CellType.NUMERIC);
-                            cellDato.setCellValue(caso.getFecNotificacion()); break;
-                        case 22: cellDato.setCellValue(caso.getCorreosCartasString()); break;
-                        case 23: cellDato.setCellValue(caso.getCorreosActasString()); break;
-                        case 24: cellDato.setCellValue(caso.isErrorNroCarta()); break;
-                        case 25: cellDato.setCellValue(caso.isErrorCorreoNotif()); break;
-                        case 26: cellDato.setCellValue(caso.isErrorFechas()); break;
-                        case 27: cellDato.setCellValue(caso.isErrorFaltaFirma()); break;
-                        case 28: cellDato.setCellValue(caso.isErrorFaltaCartas()); break;
-                        case 29: cellDato.setCellValue(caso.isErrorFaltaActas()); break;
+                            cellDato.setCellStyle(dateCellStyle);
+                            cellDato.setCellValue(caso.getFecNotificacion());
+                            sheet.setColumnWidth(j, 256 * 12);
+                            sheet.setColumnHidden(j, true); break;
+                        case 22: cellDato.setCellValue(caso.getCorreosCartasString());
+                            sheet.setColumnWidth(j, 256 * 38); break;
+                        case 23: cellDato.setCellValue(caso.getCorreosActasString());
+                            sheet.setColumnWidth(j, 256 * 38); break;
+                        case 24: cellDato.setCellValue(caso.isErrorNroCarta());
+                            if (caso.isErrorNroCarta()) {
+                                cellDato.setCellStyle(trueCellStyle);
+                            } break;
+                        case 25: cellDato.setCellValue(caso.isErrorCorreoNotif());
+                            if (caso.isErrorNroCarta()) {
+                                cellDato.setCellStyle(trueCellStyle);
+                            } break;
+                        case 26: cellDato.setCellValue(caso.isErrorFechas());
+                            if (caso.isErrorNroCarta()) {
+                                cellDato.setCellStyle(trueCellStyle);
+                            } break;
+                        case 27: cellDato.setCellValue(caso.isErrorFaltaFirma());
+                            if (caso.isErrorNroCarta()) {
+                                cellDato.setCellStyle(trueCellStyle);
+                            } break;
+                        case 28: cellDato.setCellValue(caso.isErrorFaltaCartas());
+                            if (caso.isErrorNroCarta()) {
+                                cellDato.setCellStyle(trueCellStyle);
+                            } break;
+                        case 29: cellDato.setCellValue(caso.isErrorFaltaActas());
+                            if (caso.isErrorNroCarta()) {
+                                cellDato.setCellStyle(trueCellStyle);
+                            } break;
                         case 30: cellDato.setCellType(CellType.NUMERIC);
-                            cellDato.setCellValue(caso.getFecNotificacionCarta()); break;
+                            cellDato.setCellValue(caso.getFecNotificacionCarta());
+                            cellDato.setCellStyle(dateTimeCellStyle);
+                                sheet.setColumnHidden(j, true); break;
                         case 31: cellDato.setCellType(CellType.NUMERIC);
-                            cellDato.setCellValue(caso.getFecUltimaModificacion()); break;
+                            cellDato.setCellValue(caso.getFecUltimaModificacion());
+                            cellDato.setCellStyle(dateCellStyle);
+                                sheet.setColumnHidden(j, true); break;
                         case 32: cellDato.setCellType(CellType.NUMERIC);
-                            cellDato.setCellValue(caso.getFecha()); break;
+                            cellDato.setCellValue(caso.getFecha());
+                            cellDato.setCellStyle(dateCellStyle);
+                                sheet.setColumnHidden(j, true); break;
                         case 33: cellDato.setCellType(CellType.NUMERIC);
-                            cellDato.setCellValue(caso.getFecVencimientoLegal()); break;
-                        case 34: cellDato.setCellValue(caso.getCreadoPor().getNomUsuario()); break;
-                        case 35: cellDato.setCellValue(caso.getCanalRegistro().getNomCanalRegistro()); break;
-                        case 36: cellDato.setCellValue(caso.getPropietarioCaso().getNomUsuario()); break;
-                        case 37: cellDato.setCellValue(caso.getPropietarioCaso().getCodUsuario()); break;
+                            cellDato.setCellValue(caso.getFecVencimientoLegal());
+                            cellDato.setCellStyle(dateTimeCellStyle);
+                                sheet.setColumnHidden(j, true); break;
+                        case 34: cellDato.setCellValue(caso.getCreadoPor().getNomUsuario());
+                                sheet.setColumnHidden(j, true); break;
+                        case 35: cellDato.setCellValue(caso.getCanalRegistro().getNomCanalRegistro());
+                                sheet.setColumnHidden(j, true); break;
+                        case 36: cellDato.setCellValue(caso.getPropietarioCaso().getNomUsuario());
+                                sheet.setColumnHidden(j, true); break;
+                        case 37: cellDato.setCellValue(caso.getPropietarioCaso().getCodUsuario());
+                                sheet.setColumnHidden(j, true); break;
                         case 38: cellDato.setCellType(CellType.NUMERIC);
-                         cellDato.setCellValue(caso.getDiasVencidosPorVencer()); break;
-                        case 39: cellDato.setCellValue("https://enelsud.my.salesforce.com/" + caso.getIdActividad()); break;
+                         cellDato.setCellValue(caso.getDiasVencidosPorVencer());
+                                sheet.setColumnHidden(j, true); break;
+                        case 39: cellDato.setCellValue("https://enelsud.my.salesforce.com/" + caso.getIdActividad());
+                            sheet.setColumnHidden(j, false); break;
                         case 40: cellDato.setCellValue(caso.getMensajeError()); break;
 //                        case 40: cellDato.setCellValue(getMensajeRechazo(caso)); break;
                     }

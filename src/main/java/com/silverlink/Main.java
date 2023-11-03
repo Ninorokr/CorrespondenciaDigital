@@ -45,6 +45,8 @@ public class Main {
     public static String nuevaCarpeta;
     public static Navegador nav;
 
+    public static LocalDateTime fechaYHoraActual = LocalDateTime.now();
+
     public static void main(String[] args) throws InterruptedException {
 
         imprimirMenuPrincipal();
@@ -121,8 +123,6 @@ public class Main {
 
     private static void descargarCasosNuevosAutomaticamente() {
         //1. Si el Chromedriver ya se encuentra abierto, utilizar la instancia actual
-        //TODO 2. En caso haya fallado la descarga, ofrecer skippear la descarga automatica
-        //TODO y leer un archivo descargado manualmente
 
         //Elimina "all" en la carpeta "Temp" antes de empezar
         try {
